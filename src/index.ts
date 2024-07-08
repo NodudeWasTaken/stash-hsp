@@ -129,7 +129,7 @@ const hspIndex = async (req: Request, res: Response) => {
 	try {
 		const baseurl = getBaseURL(req);
 		const banner: HeresphereBanner = {
-			image: `${baseurl}/apple-touch-icon.png`,
+			image: `${baseurl}/apple-touch-icon.png`, // TODO: .
 			link: baseurl,
 		};
 
@@ -226,10 +226,13 @@ const hspIndex = async (req: Request, res: Response) => {
 			await Promise.all(fetchPromises);
 
 			library.library.sort((a, b) => {
-				if (a.name < b.name) {
+				const aname = a.name.toLowerCase()
+				const bname = b.name.toLowerCase()
+
+				if (aname < bname) {
 					return -1;
 				}
-				if (a.name > b.name) {
+				if (aname > bname) {
 					return 1;
 				}
 				return 0;
@@ -545,11 +548,13 @@ app.get("/healthcheck", async (req: Request, res: Response) => {
 		await client.query({
 			query: CONFIG_QUERY,
 		});	
-		res.status(200)
+		res.json({message: "OK"})
 	} catch (error) {
 		res.status(500).json(error)
 	}
 });
+
+// TODO: /favicon.ico
 
 app.listen(port, SERVICE_IP, () => {
 	ensureDirectoryExists(VAR_SCREENSHOT_DIR);
