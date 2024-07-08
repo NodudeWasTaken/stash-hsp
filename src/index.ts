@@ -1,5 +1,5 @@
 import { ApolloClient, InMemoryCache  } from '@apollo/client';
-import { FIND_SAVED_FILTERS_QUERY, FIND_SCENES_QUERY, CONFIG_QUERY, FIND_SCENES_SLIM_QUERY } from "./queries/query"
+import { FIND_SAVED_FILTERS_QUERY, FIND_SCENES_QUERY, CONFIG_QUERY, FIND_SCENES_SLIM_QUERY, FIND_SCENE_QUERY } from "./queries/query"
 import { CriterionFixer } from './criterion_fix';
 import { HeresphereBanner, HeresphereIndex, HeresphereIndexEntry, HeresphereMember } from './heresphere_structs';
 import express, { Express, Request, Response } from "express";
@@ -162,10 +162,32 @@ app.get("/heresphere", async (req: Request, res: Response) => {
 		}
 		
 		{
+			const fetchPromises: Promise<void>[] = [];
+
 			// TODO: Generate thumbnails
+
+			await Promise.all(fetchPromises);
 		}
 
 		res.json(library);
+	} catch (error) {
+		console.error(error)
+		res.json(error);
+	}
+});
+
+app.get("/heresphere/:sceneId", async (req: Request, res: Response) => {
+	try {
+		const sceneData = await client.query({
+			query: FIND_SCENE_QUERY,
+			variables: {
+				id: req.params.sceneId,
+			}
+		});
+
+		// TODO: Fill HeresphereVideoEntry
+
+		res.json(sceneData.data.findScene);
 	} catch (error) {
 		console.error(error)
 		res.json(error);
