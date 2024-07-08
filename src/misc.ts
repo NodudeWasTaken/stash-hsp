@@ -51,43 +51,39 @@ export async function fileExists(path: string) {
 }
 
 export async function fetchAndResizeImage(imageUrl: string, outputPath: string, maxDimension: number) {
-    try {
-		// Check if the output file already exists
-		if (await fileExists(outputPath)) {
-			//console.log(`File ${outputPath} already exists. Skipping download and resize.`);
-			return;
-		}
+	// Check if the output file already exists
+	if (await fileExists(outputPath)) {
+		//console.log(`File ${outputPath} already exists. Skipping download and resize.`);
+		return;
+	}
 
-        // Fetch the image
-        const response = await fetch(imageUrl);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch image from ${imageUrl}`);
-        }
+	// Fetch the image
+	const response = await fetch(imageUrl);
+	if (!response.ok) {
+		throw new Error(`Failed to fetch image from ${imageUrl}`);
+	}
 
-        // Read the image data as a buffer
-        const imageBuffer = await response.buffer();
+	// Read the image data as a buffer
+	const imageBuffer = await response.buffer();
 
-        // Use sharp to resize the image
-        const image = sharp(imageBuffer);
-        const metadata = await image.metadata();
+	// Use sharp to resize the image
+	const image = sharp(imageBuffer);
+	const metadata = await image.metadata();
 
-        // Determine new dimensions while maintaining the aspect ratio
-        const aspectRatio = metadata.width! / metadata.height!;
-        let width, height;
-        if (metadata.width! > metadata.height!) {
-            width = maxDimension;
-            height = Math.round(maxDimension / aspectRatio);
-        } else {
-            height = maxDimension;
-            width = Math.round(maxDimension * aspectRatio);
-        }
+	// Determine new dimensions while maintaining the aspect ratio
+	const aspectRatio = metadata.width! / metadata.height!;
+	let width, height;
+	if (metadata.width! > metadata.height!) {
+		width = maxDimension;
+		height = Math.round(maxDimension / aspectRatio);
+	} else {
+		height = maxDimension;
+		width = Math.round(maxDimension * aspectRatio);
+	}
 
-        // Resize the image and save
-        await image.resize(width, height)
-			.toFile(outputPath);
+	// Resize the image and save
+	await image.resize(width, height)
+		.toFile(outputPath);
 
-        console.log(`Image saved to ${outputPath}`);
-    } catch (error) {
-        console.error('Error processing the image:', error);
-    }
+	console.log(`Image saved to ${outputPath}`);
 }

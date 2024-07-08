@@ -21,11 +21,11 @@ import {
 } from './heresphere_structs';
 import express, { Express, Request, Response } from "express";
 import { FindProjectionTags } from './projection';
-import { checkUrl, ensureDirectoryExists, fetchAndResizeImage, fileExists, getBasename, getFileAge, getFileAgeDays } from './misc';
+import { checkUrl, ensureDirectoryExists, fetchAndResizeImage, fileExists, getBasename, getFileAge } from './misc';
 import fs from 'fs';
 import { writeFile } from 'fs/promises';
-import { isPropertyAccessExpression } from 'typescript';
 import pLimit from 'p-limit';
+import cron from 'node-cron';
 
 
 const app: Express = express();
@@ -50,7 +50,9 @@ const VAR_SCREENSHOT_DIR = process.env.SCREENSHOTS_DIR || "./screenshots"
 const VAR_CACHE_DIR = process.env.CACHE_DIR || "./cache"
 const VAR_SCALELIMIT = process.env.SCALE_PROCESS_LIMIT || "8"
 const VAR_RLIMIT = process.env.REQUEST_PROCESS_LIMIT || "50"
-const VAR_SCANCACHE_AGE = process.env.SCANCACHE_AGE || 24*60*60*1000
+// m h dom mon dow
+const VAR_SCANCACHE_CRON = process.env.SCANCACHE_CRON || '0 6 * * *'
+const VAR_SCANCACHE_AGE = 24*60*60*1000
 const slimit = pLimit(Number(VAR_SCALELIMIT));
 const rlimit = pLimit(Number(VAR_RLIMIT));
 const client = new ApolloClient({
@@ -251,6 +253,16 @@ function formatDate(dateString: string): string {
 	return `${year}-${month}-${day}`;
 }
 
+function fillTags(scene: any, processed: HeresphereVideoEntry|HeresphereVideoEntryShort) {
+	processed.tags = [];
+	for (let tag of scene.tags) {
+		const hsptag: HeresphereVideoTag = {
+			name: `Tag:${tag.name}`
+		}
+		processed.tags.push(hsptag)
+	}
+}
+
 const fetchHeresphereVideoEntry = async(sceneId: string, baseUrl: string): Promise<HeresphereVideoEntry> => {
 	const sceneQuery = await client.query({
 		query: FIND_SCENE_QUERY,
@@ -319,13 +331,7 @@ const fetchHeresphereVideoEntry = async(sceneId: string, baseUrl: string): Promi
 		}
 	}
 
-	processed.tags = [];
-	for (let tag of sceneData.tags) {
-		const hsptag: HeresphereVideoTag = {
-			name: `Tag:${tag.name}`
-		}
-		processed.tags.push(hsptag)
-	}
+	fillTags(sceneData, processed);
 
 	// TODO: HeresphereAuthReq
 	if (sceneData.files.length > 0) {
@@ -412,13 +418,7 @@ const fetchHeresphereVideoEntrySlim = async(sceneId: string, baseUrl: string): P
 		processed.title = getBasename(sceneData.files[0].path)
 	}
 
-	processed.tags = [];
-	for (let tag of sceneData.tags) {
-		const hsptag: HeresphereVideoTag = {
-			name: `Tag:${tag.name}`
-		}
-		processed.tags.push(hsptag)
-	}
+	fillTags(sceneData, processed);
 
 	if (sceneData.files.length > 0) {
 		processed.duration = sceneData.files[0].duration * 1000;
@@ -467,6 +467,7 @@ async function genScanDB(first: boolean) {
 		);
 
 		// Downscale images
+		// TODO: Catch error?
 		const screenshotPromises: Promise<void>[] = videodata.map((scene: any) => 
 			slimit(() => fetchAndResizeImage(
 				`${STASH_URL}/scene/${scene.id}/screenshot`, 
@@ -476,43 +477,49 @@ async function genScanDB(first: boolean) {
 		)
 
 		// Wait for all promises to resolve
-		await Promise.all(scenePromises);
-		// Wait for all the screenshots to be done
-		await Promise.all(screenshotPromises);
+		await Promise.all([...scenePromises, ...screenshotPromises]);
 
 		const scanidx: HeresphereScanIndex = {
 			scanData: scenes
 		}
-		console.debug("write hsp scan");
 		await writeFile(SCANDB, JSON.stringify( scanidx ));
+		console.debug("wrote hsp scan");
 	} else {
 		console.debug("skipping hsp scan");
 	}
 	
 	if (first) {
-		setInterval(() => { genScanDB(false) }, Number(VAR_SCANCACHE_AGE))
+		cron.schedule(VAR_SCANCACHE_CRON, () => {
+			genScanDB(false)
+		});
 	}
 }
 
 app.get("/heresphere/video/:sceneId/screenshot", async (req: Request, res: Response) => {
-	const sceneId = Number(req.params.sceneId)
+	try {
+		const sceneId = Number(req.params.sceneId)
 
-	await slimit(() => fetchAndResizeImage(
-		`${STASH_URL}/scene/${sceneId}/screenshot`, 
-		`${VAR_SCREENSHOT_DIR}/${sceneId}.jpg`,
-		maxRes
-	))
+		// Read the image file
+		const imagePath = `${VAR_SCREENSHOT_DIR}/${sceneId}.jpg`;
 
-	// Read the image file
-	const imagePath = `${VAR_SCREENSHOT_DIR}/${sceneId}.jpg`;
-	// TODO: Error if not exists
-	const image = fs.readFileSync(imagePath);
+		await slimit(() => fetchAndResizeImage(
+			`${STASH_URL}/scene/${sceneId}/screenshot`, 
+			imagePath,
+			maxRes
+		))
 
-	// Set content type to image/jpeg or image/png based on your image
-	res.contentType('image/jpeg'); // Adjust content type based on your image type
+		// TODO: Error if not exists
+		const image = fs.readFileSync(imagePath);
 
-	// Return the image as a response
-	res.send(image);
+		// Set content type to image/jpeg or image/png based on your image
+		res.contentType('image/jpeg'); // Adjust content type based on your image type
+
+		// Return the image as a response
+		res.send(image);
+	} catch (error) {
+		console.error(error)
+		res.json(error)
+	}
 });
 app.get("/heresphere/video/:sceneId/event", async (req: Request, res: Response) => {
 	res.json({message: "event"})
