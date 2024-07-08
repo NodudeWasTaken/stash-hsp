@@ -7,14 +7,14 @@ query FindScenes($filter: FindFilterType, $scene_filter: SceneFilterType, $scene
       filesize
       duration
       scenes {
-        ...SlimSceneData
+        ...ReallySlimSceneData
         __typename
       }
       __typename
     }
   }
   
-  fragment SlimSceneData on Scene {
+  fragment ReallySlimSceneData on Scene {
     id
   }`
   

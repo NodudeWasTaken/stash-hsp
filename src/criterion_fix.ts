@@ -1,4 +1,12 @@
+/*
+Note
 
+The reason this exists is because stash has alot alot of types
+i mean alot alot.
+This was simply an easier option than creating types for everything.
+Which would be the proper way.
+Anyone willing can take it upon themselves to cast this as some type and handle it properly.
+*/
 const INT_CRITERIONS = ["id","file_count","rating100","o_counter","framerate","bitrate","duration","tag_count","performer_age","performer_count","interactive_speed","resume_time","play_count","play_duration"]
 const STRING_CRITERIONS = ["title","code","details","director","oshash","checksum","phash","path","video_codec","audio_codec","stash_id","url","captions"]
 const PHASH_DISTANCE_CRITERIONS = ["phash_distance"]
@@ -101,7 +109,7 @@ function getResolutionEnum(resolution: string): ResolutionEnum {
 // Fix all the stash idiosyncrasies
 function CriterionFixer(obj: any) {
 	if (process.env.DEBUG) {
-		console.log(obj)
+		console.debug(obj)
 	}
 
 	var lst: any = {}
@@ -179,7 +187,7 @@ function CriterionFixer(obj: any) {
 	}
 
 	if (process.env.DEBUG) {
-		console.log(lst)
+		console.debug(lst)
 	}
 
 	return lst

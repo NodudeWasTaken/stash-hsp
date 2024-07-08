@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  stashhsp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    network_mode: "host"
+    restart: on-failure
+    ports:
+      - "3001:3001"  # Adjust port as needed
+    environment:
+      STASH_URL: "http://192.168.1.123:9999"
+      SERVICE_IP: "0.0.0.0"
+      PORT: 3001
