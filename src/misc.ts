@@ -6,8 +6,17 @@ import { constants } from 'fs';
 import { dirname } from 'path';
 import fs from 'fs';
 import axios from 'axios';
+import { CONFIG_QUERY } from './queries/query';
 
 export var VR_TAG = "Virtual Reality"
+
+export async function getVrTag(client: any) {
+	const uiconfig = await client.query({
+		query: CONFIG_QUERY,
+	});
+
+	VR_TAG = uiconfig.data.configuration.ui.vrTag;
+}
 
 export function getBasename(filePath: string): string {
 	return path.basename(filePath);

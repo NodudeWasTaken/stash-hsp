@@ -21,11 +21,12 @@ import {
 } from './heresphere_structs';
 import express, { Express, Request, Response } from "express";
 import { FindProjectionTags } from './projection';
-import { checkUrl, ensureDirectoryExists, fetchAndResizeImage, fileExists, getBasename, getFileAge } from './misc';
+import { checkUrl, ensureDirectoryExists, fetchAndResizeImage, fileExists, getBasename, getFileAge, getVrTag, VR_TAG } from './misc';
 import fs from 'fs';
 import { writeFile } from 'fs/promises';
 import pLimit from 'p-limit';
 import cron from 'node-cron';
+import compression from 'compression';
 
 
 const app: Express = express();
@@ -36,6 +37,7 @@ app.use(
 		extended: true,
 	})
 );
+app.use(compression());
 app.use(function(req, res, next) {
 	res.header("HereSphere-JSON-Version", `${HeresphereJsonVersion}`);
 	// TODO: We could auth here, but what about context passing
@@ -285,7 +287,7 @@ const fetchHeresphereVideoEntry = async(sceneId: string, baseUrl: string): Promi
 		thumbnailVideo: `${STASH_URL}/scene/${sceneData.id}/preview`,
 		dateAdded: formatDate(sceneData.created_at),
 		favorites: 0,
-		isFavorite: false,
+		isFavorite: false, // TODO: .
 		projection: HeresphereProjectionPerspective,
 		stereo: HeresphereStereoMono,
 		isEyeSwapped: false,
@@ -353,6 +355,7 @@ const fetchHeresphereVideoEntry = async(sceneId: string, baseUrl: string): Promi
 		}
 		processed.media.push(entry);
 		processed.duration = sceneData.files[0].duration * 1000;
+		// TODO: HLS and DASH transcoding
 	}
 	if (sceneData.date) {
 		processed.dateReleased = formatDate(sceneData.date);
@@ -415,7 +418,7 @@ const fetchHeresphereVideoEntrySlim = async(sceneId: string, baseUrl: string): P
 		dateAdded: formatDate(sceneData.created_at),
 		favorites: 0,
 		comments: 0,
-		isFavorite: false,
+		isFavorite: false, // TODO: .
 		tags: []
 	}
 	if (!processed.title && sceneData.files.length > 0) {
@@ -537,12 +540,21 @@ app.get("/", async (req: Request, res: Response) => {
 	res.json({message: "the end is never the end"})
 });
 
-// TODO: Health endpoint
+app.get("/healthcheck", async (req: Request, res: Response) => {
+	try {
+		await client.query({
+			query: CONFIG_QUERY,
+		});	
+		res.status(200)
+	} catch (error) {
+		res.status(500).json(error)
+	}
+});
 
 app.listen(port, SERVICE_IP, () => {
-	// TODO: Set VR_TAG from vars with stash ui config
 	ensureDirectoryExists(VAR_SCREENSHOT_DIR);
 	ensureDirectoryExists(VAR_CACHE_DIR);
+	getVrTag(client);
 
 	console.log(`Example app listening at http://${SERVICE_IP}:${port}`);
 	console.log(`Generating scan.json in 10 seconds`);
