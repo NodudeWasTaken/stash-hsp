@@ -98,7 +98,7 @@ app.get("/debug/finddefscenes", async (req: Request, res: Response) => {
 		res.json(findscenes);
 	} catch (error) {
 		console.error(error)
-		res.json(error);
+		res.status(500).json(error);
 	}
 });
 
@@ -116,7 +116,7 @@ app.get("/debug/findscene/:sceneId", async (req: Request, res: Response) => {
 		res.json(sceneData.data.findScene);
 	} catch (error) {
 		console.error(error)
-		res.json(error);
+		res.status(500).json(error);
 	}
 });
 
@@ -234,7 +234,7 @@ const hspIndex = async (req: Request, res: Response) => {
 		res.json(library);
 	} catch (error) {
 		console.error(error)
-		res.json(error);
+		res.status(500).json(error);
 	}
 };
 app.get("/heresphere", hspIndex);
@@ -373,7 +373,7 @@ const sceneFetch = async (req: Request, res: Response) => {
 		res.json(await fetchHeresphereVideoEntry(sceneId, getBaseURL(req)));
 	} catch (error) {
 		console.error(error);
-		res.json(error);
+		res.status(500).json(error);
 	}
 };
 app.get("/heresphere/video/:sceneId", sceneFetch);
@@ -499,7 +499,6 @@ app.get("/heresphere/video/:sceneId/screenshot", async (req: Request, res: Respo
 	try {
 		const sceneId = Number(req.params.sceneId)
 
-		// Read the image file
 		const imagePath = `${VAR_SCREENSHOT_DIR}/${sceneId}.jpg`;
 
 		await slimit(() => fetchAndResizeImage(
@@ -508,17 +507,21 @@ app.get("/heresphere/video/:sceneId/screenshot", async (req: Request, res: Respo
 			maxRes
 		))
 
-		// TODO: Error if not exists
-		const image = fs.readFileSync(imagePath);
+		if (fs.existsSync(imagePath)) {
+			// Read the image file
+			const image = fs.readFileSync(imagePath);
 
-		// Set content type to image/jpeg or image/png based on your image
-		res.contentType('image/jpeg'); // Adjust content type based on your image type
+			// Set content type to image/jpeg or image/png based on your image
+			res.contentType('image/jpeg'); // Adjust content type based on your image type
 
-		// Return the image as a response
-		res.send(image);
+			// Return the image as a response
+			res.send(image);
+		} else {
+			throw new Error(`Image not found at ${imagePath}`);
+		}
 	} catch (error) {
 		console.error(error)
-		res.json(error)
+		res.status(500).json(error)
 	}
 });
 app.get("/heresphere/video/:sceneId/event", async (req: Request, res: Response) => {
