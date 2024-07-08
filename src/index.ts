@@ -50,7 +50,7 @@ const VAR_SCREENSHOT_DIR = process.env.SCREENSHOTS_DIR || "./screenshots"
 const VAR_CACHE_DIR = process.env.CACHE_DIR || "./cache"
 const VAR_SCALELIMIT = process.env.SCALE_PROCESS_LIMIT || "8"
 const VAR_RLIMIT = process.env.REQUEST_PROCESS_LIMIT || "50"
-const VAR_SCANCACHE_AGE = 24*60*60*1000
+const VAR_SCANCACHE_AGE = process.env.SCANCACHE_AGE || 24*60*60*1000
 const slimit = pLimit(Number(VAR_SCALELIMIT));
 const rlimit = pLimit(Number(VAR_RLIMIT));
 const client = new ApolloClient({
@@ -436,7 +436,7 @@ const fetchHeresphereVideoEntrySlim = async(sceneId: string, baseUrl: string): P
 	return processed
 }
 async function genScanDB(first: boolean) {
-	if (!await fileExists(SCANDB) || getFileAge(SCANDB) >= VAR_SCANCACHE_AGE-1 || !first) {
+	if (!await fileExists(SCANDB) || getFileAge(SCANDB) >= Number(VAR_SCANCACHE_AGE)-1 || !first) {
 		console.debug("hsp scan");
 		var scenes: HeresphereVideoEntryShort[] = [];
 		
@@ -449,11 +449,12 @@ async function genScanDB(first: boolean) {
 				}
 			}
 		});
+		const videodata = findscenes.data.findScenes.scenes;
 
 		// Fetch video data
-		const outof = findscenes.data.findScenes.scenes.length;
+		const outof = videodata.length;
 		var inof = 0;
-		const scenePromises: Promise<void>[] = findscenes.data.findScenes.scenes.map((scene: any) => 
+		const scenePromises: Promise<void>[] = videodata.map((scene: any) => 
 			rlimit(() => 
 				fetchHeresphereVideoEntrySlim(scene.id, SCANDB_STR)
 					.then(hspscene => {
@@ -466,7 +467,7 @@ async function genScanDB(first: boolean) {
 		);
 
 		// Downscale images
-		const screenshotPromises: Promise<void>[] = findscenes.data.findScenes.scenes.map((scene: any) => 
+		const screenshotPromises: Promise<void>[] = videodata.map((scene: any) => 
 			slimit(() => fetchAndResizeImage(
 				`${STASH_URL}/scene/${scene.id}/screenshot`, 
 				`${VAR_SCREENSHOT_DIR}/${scene.id}.jpg`,
@@ -489,7 +490,7 @@ async function genScanDB(first: boolean) {
 	}
 	
 	if (first) {
-		setInterval(() => { genScanDB(false) }, VAR_SCANCACHE_AGE)
+		setInterval(() => { genScanDB(false) }, Number(VAR_SCANCACHE_AGE))
 	}
 }
 
