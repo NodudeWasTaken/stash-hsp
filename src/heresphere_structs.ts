@@ -113,7 +113,7 @@ export interface HeresphereVideoEntry {
   duration?: number;
   rating?: number;
   favorites: number;
-  comments: number;
+  comments?: number;
   isFavorite: boolean;
   projection: HeresphereProjection;
   stereo: HeresphereStereo;

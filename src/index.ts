@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache  } from '@apollo/client';
 import { FIND_SAVED_FILTERS_QUERY, FIND_SCENES_QUERY, CONFIG_QUERY, FIND_SCENES_SLIM_QUERY, FIND_SCENE_QUERY } from "./queries/query"
 import { CriterionFixer } from './criterion_fix';
-import { HeresphereBanner, HeresphereIndex, HeresphereIndexEntry, HeresphereMember } from './heresphere_structs';
+import { HeresphereBanner, HeresphereIndex, HeresphereIndexEntry, HeresphereLensLinear, HeresphereMember, HeresphereProjectionPerspective, HeresphereStereoMono, HeresphereVideoEntry } from './heresphere_structs';
 import express, { Express, Request, Response } from "express";
 
 const app: Express = express();
@@ -13,8 +13,9 @@ app.use(
 	})
 );
 
+const STASH_URL = "http://192.168.1.200:9990"
 const client = new ApolloClient({
-	uri: 'http://192.168.1.200:9990/graphql',
+	uri: `${STASH_URL}/graphql`,
 	cache: new InMemoryCache(),
 });
 
@@ -165,6 +166,7 @@ app.get("/heresphere", async (req: Request, res: Response) => {
 			const fetchPromises: Promise<void>[] = [];
 
 			// TODO: Generate thumbnails
+			// maybe https://github.com/lovell/sharp
 
 			await Promise.all(fetchPromises);
 		}
@@ -178,14 +180,47 @@ app.get("/heresphere", async (req: Request, res: Response) => {
 
 app.get("/heresphere/:sceneId", async (req: Request, res: Response) => {
 	try {
+		const sceneId = req.params.sceneId
+
 		const sceneData = await client.query({
 			query: FIND_SCENE_QUERY,
 			variables: {
-				id: req.params.sceneId,
+				id: sceneId,
 			}
 		});
 
 		// TODO: Fill HeresphereVideoEntry
+		const baseurl = getbaseurl(req)
+		var processed: HeresphereVideoEntry = {
+			access: HeresphereMember,
+			title: sceneData.data.title, // or filename
+			description: sceneData.data.details,
+			thumbnailImage: `${baseurl}/heresphere/${sceneId}/screenshot`,
+			thumbnailVideo: `${STASH_URL}/scene/${sceneId}/preview`,
+			dateAdded: "2006-01-02",
+			duration: 0,
+			rating: 0,
+			favorites: 0,
+			isFavorite: false,
+			projection: HeresphereProjectionPerspective,
+			stereo: HeresphereStereoMono,
+			isEyeSwapped: false,
+			fov: 180,
+			lens: HeresphereLensLinear,
+			cameraIPD: 6.5,
+			eventServer: `${baseurl}/heresphere/${sceneId}/event`,
+			scripts: [],
+			subtitles: [],
+			tags: [],
+			media: [],
+			writeFavorite: false,
+			writeRating: false,
+			writeTags: false,
+			writeHSP: false,
+		}
+		// TODO: HeresphereAuthReq
+
+		console.log(processed)
 
 		res.json(sceneData.data.findScene);
 	} catch (error) {
