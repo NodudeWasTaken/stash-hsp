@@ -1,5 +1,5 @@
 import { ApolloClient, InMemoryCache  } from '@apollo/client';
-import { FIND_SAVED_FILTERS_QUERY, FIND_SCENES_QUERY, CONFIG_QUERY } from "./queries/query"
+import { FIND_SAVED_FILTERS_QUERY, FIND_SCENES_QUERY, CONFIG_QUERY, FIND_SCENES_SLIM_QUERY } from "./queries/query"
 import { CriterionFixer } from './criterion_fix';
 import { HeresphereBanner, HeresphereIndex, HeresphereIndexEntry, HeresphereMember } from './heresphere_structs';
 import express, { Express, Request, Response } from "express";
@@ -132,25 +132,37 @@ app.get("/heresphere", async (req: Request, res: Response) => {
 		}
 
 		{
+			const fetchPromises: Promise<void>[] = [];
+
 			for (let filt of allfilters) {
 				console.log(filt);
-				const findscenes = await client.query({
-					query: FIND_SCENES_QUERY,
-					variables: {
-						filter: filt.find_filter, // find_filter
-						scene_filter: filt.object_filter // object_filter
-					},
-				});
-	
-				const entry: HeresphereIndexEntry = {
-					name: filt.name,
-					list: []
-				}
-				for (let scene of findscenes.data.findScenes.scenes) {
-					entry.list.push(`${baseurl}/heresphere/${scene.id}`)
-				}
-				library.library.push(entry)	
+
+				// Push each query promise into the array without awaiting them
+				fetchPromises.push(
+					client.query({
+						query: FIND_SCENES_SLIM_QUERY,
+						variables: {
+							filter: filt.find_filter,
+							scene_filter: filt.object_filter
+						},
+					}).then((findscenes) => {
+						const entry: HeresphereIndexEntry = {
+							name: filt.name,
+							list: findscenes.data.findScenes.scenes.map((scene: any) => `${baseurl}/heresphere/${scene.id}`)
+						};
+						library.library.push(entry);
+					}).catch((error) => {
+						console.error(`Error fetching scenes for filter ${filt.name}:`, error);
+					})
+				);
 			}
+
+			// Wait for all promises to resolve
+			await Promise.all(fetchPromises);
+		}
+		
+		{
+			// TODO: Generate thumbnails
 		}
 
 		res.json(library);
