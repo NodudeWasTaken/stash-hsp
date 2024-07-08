@@ -39,6 +39,7 @@ app.use(
 app.use(function(req, res, next) {
 	res.header("HereSphere-JSON-Version", `${HeresphereJsonVersion}`);
 	// TODO: We could auth here, but what about context passing
+	// 			HeresphereAuthReq check needsMediaSources
 	next()
 });
 
@@ -63,6 +64,8 @@ const client = new ApolloClient({
 function getBaseURL(req: Request) {
 	return `${req.protocol}://${req.get('host')}`;
 }
+
+// TODO: Log errors
 
 app.get("/debug/findfilters", async (req: Request, res: Response) => {
 	const result = await client.query({
@@ -261,6 +264,7 @@ function fillTags(scene: any, processed: HeresphereVideoEntry|HeresphereVideoEnt
 		}
 		processed.tags.push(hsptag)
 	}
+	// TODO: More tags
 }
 
 const fetchHeresphereVideoEntry = async(sceneId: string, baseUrl: string): Promise<HeresphereVideoEntry> => {
@@ -293,7 +297,7 @@ const fetchHeresphereVideoEntry = async(sceneId: string, baseUrl: string): Promi
 		subtitles: [],
 		tags: [],
 		media: [],
-		writeFavorite: false,
+		writeFavorite: false, // TODO: Config
 		writeRating: false,
 		writeTags: false,
 		writeHSP: false,
@@ -333,7 +337,7 @@ const fetchHeresphereVideoEntry = async(sceneId: string, baseUrl: string): Promi
 
 	fillTags(sceneData, processed);
 
-	// TODO: HeresphereAuthReq
+	// TODO: HeresphereAuthReq check needsMediaSources
 	if (sceneData.files.length > 0) {
 		processed.media = [];
 		var source: HeresphereVideoMediaSource = {
@@ -525,6 +529,7 @@ app.get("/heresphere/video/:sceneId/screenshot", async (req: Request, res: Respo
 	}
 });
 app.get("/heresphere/video/:sceneId/event", async (req: Request, res: Response) => {
+	// TODO: .
 	res.json({message: "event"})
 });
 
