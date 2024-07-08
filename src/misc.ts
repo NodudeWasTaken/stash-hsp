@@ -19,6 +19,17 @@ export function ensureDirectoryExists(directoryPath: string): void {
     }
 }
 
+// Function to get the age of a file in milliseconds
+export function getFileAge(filePath: string): number {
+    const stats = fs.statSync(filePath);
+    const currentTime = new Date().getTime();
+    const fileTime = stats.mtime.getTime();
+    return currentTime - fileTime;
+}
+export function getFileAgeDays(filePath: string): number {
+	return getFileAge(filePath) / (1000 * 60 * 60 * 24);
+}
+
 export async function checkUrl(url: string) {
 	const response = await axios.get(url);
 	if (response.status !== 200) {
@@ -29,15 +40,22 @@ export async function checkUrl(url: string) {
 	}
 }
 
+export async function fileExists(path: string) {
+	try {
+		await access(path, constants.F_OK);
+		return true;
+	} catch {
+		// File does not exist
+		return false
+	}
+}
+
 export async function fetchAndResizeImage(imageUrl: string, outputPath: string, maxDimension: number) {
     try {
 		// Check if the output file already exists
-		try {
-			await access(outputPath, constants.F_OK);
+		if (await fileExists(outputPath)) {
 			//console.log(`File ${outputPath} already exists. Skipping download and resize.`);
 			return;
-		} catch {
-			// File does not exist, proceed with downloading and resizing
 		}
 
         // Fetch the image
@@ -64,11 +82,10 @@ export async function fetchAndResizeImage(imageUrl: string, outputPath: string, 
             width = Math.round(maxDimension * aspectRatio);
         }
 
-        // Resize the image
-        const resizedImageBuffer = await image.resize(width, height).toBuffer();
+        // Resize the image and save
+        await image.resize(width, height)
+			.toFile(outputPath);
 
-        // Save the resized image to the specified output path
-        await writeFile(outputPath, resizedImageBuffer);
         console.log(`Image saved to ${outputPath}`);
     } catch (error) {
         console.error('Error processing the image:', error);

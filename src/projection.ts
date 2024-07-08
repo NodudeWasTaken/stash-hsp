@@ -92,8 +92,8 @@ function findProjectionTagsFromFilename(processedScene: HeresphereVideoEntry, fi
 		processedScene.fov = 220.0;
 		processedScene.lens = HeresphereLensVRCA220;
 	}
-	}
-	
+}
+
 export function FindProjectionTags(scene: any, processedScene: HeresphereVideoEntry): void {
 	if (processedScene.tags) {
 		findProjectionTagsFromTags(processedScene, processedScene.tags);
