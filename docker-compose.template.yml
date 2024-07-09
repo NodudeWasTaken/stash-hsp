@@ -17,7 +17,7 @@ services:
       SCREENSHOTS_DIR: "/screenshots"
       VAR_CACHE_DIR: "/cache"
       SCALE_PROCESS_LIMIT: 8
-      REQUEST_PROCESS_LIMIT: 50
+      REQUEST_PROCESS_LIMIT: 20
     volumes:
       - screenshot-storage:/screenshots
       - cache-storage:/cache

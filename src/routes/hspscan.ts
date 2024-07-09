@@ -113,38 +113,46 @@ export async function genScanDB(first: boolean) {
 		// Fetch video data
 		const outof = videodata.length
 		var inof = 0
-		const scenePromises: Promise<void>[] = videodata.map((scene: any) =>
-			rlimit(() =>
-				fetchHeresphereVideoEntrySlim(scene.id, SCANDB_STR)
-					.then((hspscene) => {
-						inof++
-						console.debug("hsp:", scene.id, "prog:", inof, "/", outof)
-						scenes.push(hspscene)
-					})
-					.catch((error) => console.error(error))
-			)
-		)
-
-		// Downscale images
-		// TODO: Catch error?
-		const screenshotPromises: Promise<void>[] = videodata.map((scene: any) =>
-			slimit(() =>
-				fetchAndResizeImage(
-					`${STASH_URL}/scene/${scene.id}/screenshot`,
-					`${VAR_SCREENSHOT_DIR}/${scene.id}.jpg`,
-					maxRes
+		const scenePromises: Promise<void[]> = Promise.all(
+			videodata.map((scene: any) =>
+				rlimit(() =>
+					fetchHeresphereVideoEntrySlim(scene.id, SCANDB_STR)
+						.then((hspscene) => {
+							inof++
+							console.debug("hsp:", scene.id, "prog:", inof, "/", outof)
+							scenes.push(hspscene)
+						})
+						.catch((error) => console.error(error))
 				)
 			)
 		)
 
-		// Wait for all promises to resolve
-		await Promise.all([...scenePromises, ...screenshotPromises])
+		// Downscale images
+		const screenshotPromises: Promise<void[]> = Promise.all(
+			videodata.map((scene: any) =>
+				slimit(() => {
+					try {
+						fetchAndResizeImage(
+							`${STASH_URL}/scene/${scene.id}/screenshot`,
+							`${VAR_SCREENSHOT_DIR}/${scene.id}.jpg`,
+							maxRes
+						)
+					} catch (error) {
+						console.error("generating screenshot error:", error)
+					}
+				})
+			)
+		)
 
+		await scenePromises
 		const scanidx: HeresphereScanIndex = {
 			scanData: scenes,
 		}
 		await writeFile(SCANDB, JSON.stringify(scanidx))
 		console.debug("wrote hsp scan")
+
+		await screenshotPromises
+		console.debug("wrote screenshots")
 	} else {
 		console.debug("skipping hsp scan")
 	}

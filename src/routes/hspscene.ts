@@ -1,7 +1,8 @@
 import { Express, Response } from "express"
 import { HspRequest } from "../authmiddleware"
-import { client } from "../client"
+import { client, StashApiKeyParameter } from "../client"
 import {
+	HeresphereAuthReq,
 	HeresphereLensLinear,
 	HeresphereMember,
 	HeresphereProjectionPerspective,
@@ -15,14 +16,8 @@ import {
 	HeresphereVideoTag,
 } from "../heresphere_structs"
 import { FindProjectionTags } from "../projection"
-import { FIND_SCENE_QUERY } from "../queries/query"
-import {
-	buildUrl,
-	checkUrl,
-	formatDate,
-	getBasename,
-	getBaseURL,
-} from "../utilities"
+import { FIND_SCENE_QUERY, SCENE_UPDATE_MUTATION } from "../queries/query"
+import { buildUrl, formatDate, getBasename, getBaseURL } from "../utilities"
 import { STASH_APIKEY, STASH_URL } from "../vars"
 import { eventPath } from "./hspevent"
 import { screenshotPath } from "./hspscreenshot"
@@ -33,18 +28,63 @@ export function fillTags(
 ) {
 	processed.tags = []
 	for (let tag of scene.tags) {
-		const hsptag: HeresphereVideoTag = {
+		processed.tags.push({
 			name: `Tag:${tag.name}`,
-		}
-		processed.tags.push(hsptag)
+		} as HeresphereVideoTag)
 	}
+
+	processed.tags.push({
+		name: `Interactive:${scene.interactive}`,
+	} as HeresphereVideoTag)
+
+	if (scene.interactive_speed) {
+		processed.tags.push({
+			name: `Funspeed:${scene.interactive_speed}`,
+		} as HeresphereVideoTag)
+	}
+
 	// TODO: More tags
+}
+
+const dataUpdate = async (sceneId: string, authreq: HeresphereAuthReq) => {
+	var input: {
+		id: string
+		rating100?: number
+	} = {
+		id: sceneId,
+	}
+
+	if (authreq.rating) {
+		// TODO: Set null on remove
+		input.rating100 = authreq.rating * 20
+	}
+	if (authreq.isFavorite) {
+		// TODO: .
+	}
+	if (authreq.tags) {
+		// TODO: .
+	}
+
+	if (Object.keys(input).length > 1) {
+		console.debug("dataUpdate:", input)
+		await client.mutate({
+			mutation: SCENE_UPDATE_MUTATION,
+			variables: {
+				input: input,
+			},
+		})
+	}
 }
 
 const fetchHeresphereVideoEntry = async (
 	sceneId: string,
-	baseUrl: string
+	baseUrl: string,
+	authreq?: HeresphereAuthReq
 ): Promise<HeresphereVideoEntry> => {
+	if (authreq) {
+		await dataUpdate(sceneId, authreq)
+	}
+
 	const sceneQuery = await client.query({
 		query: FIND_SCENE_QUERY,
 		variables: {
@@ -60,7 +100,7 @@ const fetchHeresphereVideoEntry = async (
 		description: sceneData.details,
 		thumbnailImage: `${baseUrl}${screenshotPath}/${sceneData.id}`, // TODO: Add apikey
 		thumbnailVideo: buildUrl(`${STASH_URL}/scene/${sceneData.id}/preview`, {
-			StashApiKeyParameter: STASH_APIKEY,
+			[StashApiKeyParameter]: STASH_APIKEY,
 		}),
 		dateAdded: formatDate(sceneData.created_at),
 		favorites: 0,
@@ -76,65 +116,58 @@ const fetchHeresphereVideoEntry = async (
 		subtitles: [],
 		tags: [],
 		media: [],
-		writeFavorite: false, // TODO: Config
-		writeRating: false,
-		writeTags: false,
+		writeFavorite: true, // TODO: Config
+		writeRating: true,
+		writeTags: true,
 		writeHSP: false,
 	}
 	if (!processed.title && sceneData.files.length > 0) {
 		processed.title = getBasename(sceneData.files[0].path)
 	}
 
-	{
+	if (sceneData.interactive) {
 		processed.scripts = []
-		try {
-			await checkUrl(
-				buildUrl(sceneData.paths.funscript, {
-					StashApiKeyParameter: STASH_APIKEY,
-				})
-			)
-			var funscript: HeresphereVideoScript = {
-				name: "Default",
-				url: sceneData.paths.funscript, // TODO: Might not exist
-			}
-			processed.scripts.push(funscript)
-		} catch (error) {
-			// console.debug(error)
+
+		const SCRIPT_URL = buildUrl(sceneData.paths.funscript, {
+			[StashApiKeyParameter]: STASH_APIKEY,
+		})
+
+		var funscript: HeresphereVideoScript = {
+			name: "Default",
+			url: SCRIPT_URL,
 		}
+		processed.scripts.push(funscript)
 	}
-	{
+	if (sceneData.captions) {
 		processed.subtitles = []
-		try {
+
+		for (let caption of sceneData.captions) {
 			const CAPTION_URL = buildUrl(sceneData.paths.caption, {
-				lang: "00",
-				type: "srt",
-				StashApiKeyParameter: STASH_APIKEY,
+				lang: caption.language_code,
+				type: caption.caption_type,
+				[StashApiKeyParameter]: STASH_APIKEY,
 			})
-			await checkUrl(CAPTION_URL)
+
 			var subs: HeresphereVideoSubtitle = {
-				name: "Default",
-				language: "00",
+				name: caption.caption_type,
+				language: caption.language_code,
 				url: CAPTION_URL,
 			}
+
 			processed.subtitles.push(subs)
-		} catch (error) {
-			// console.debug(error)
 		}
 	}
 
 	fillTags(sceneData, processed)
 
-	// TODO: HeresphereAuthReq check needsMediaSources
-	if (sceneData.files.length > 0) {
+	if ((!authreq || authreq.needsMediaSource) && sceneData.files.length > 0) {
 		processed.media = []
 		var source: HeresphereVideoMediaSource = {
 			resolution: sceneData.files[0].height,
 			height: sceneData.files[0].height,
 			width: sceneData.files[0].width,
 			size: sceneData.files[0].size,
-			url: buildUrl(sceneData.paths.stream, {
-				StashApiKeyParameter: STASH_APIKEY,
-			}),
+			url: sceneData.paths.stream,
 		}
 		var entry: HeresphereVideoMedia = {
 			name: "Direct stream",
@@ -165,7 +198,13 @@ const fetchHeresphereVideoEntry = async (
 const sceneFetchHandler = async (req: HspRequest, res: Response) => {
 	try {
 		const sceneId = req.params.sceneId
-		res.json(await fetchHeresphereVideoEntry(sceneId, getBaseURL(req)))
+		res.json(
+			await fetchHeresphereVideoEntry(
+				sceneId,
+				getBaseURL(req),
+				req.heresphereAuthData
+			)
+		)
 	} catch (error) {
 		console.error(error)
 		res.status(500).json(error)

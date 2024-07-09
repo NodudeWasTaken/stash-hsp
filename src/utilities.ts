@@ -93,16 +93,13 @@ export async function fetchAndResizeImage(
 	}
 
 	// Fetch the image
-	const response = await axios.get(imageUrl)
+	const response = await axios.get(imageUrl, { responseType: "arraybuffer" })
 	if (response.status !== 200) {
 		throw new Error(`Failed to fetch image from ${imageUrl}`)
 	}
 
-	// Read the image data as a buffer
-	const imageBuffer = Buffer.from(response.data, "binary")
-
 	// Use sharp to resize the image
-	const image = sharp(imageBuffer)
+	const image = sharp(response.data)
 	const metadata = await image.metadata()
 
 	// Determine new dimensions while maintaining the aspect ratio

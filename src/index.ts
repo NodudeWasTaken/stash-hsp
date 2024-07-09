@@ -1,3 +1,4 @@
+import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev"
 import compression from "compression"
 import express, { Express } from "express"
 import { heresphereAuthMiddleware } from "./authmiddleware"
@@ -12,7 +13,13 @@ import { hspSceneRoutes } from "./routes/hspscene"
 import { hspScreenshotRoutes } from "./routes/hspscreenshot"
 import { miscRoutes } from "./routes/misc"
 import { ensureDirectoryExists } from "./utilities"
-import { getVrTag, SERVICE_IP, VAR_CACHE_DIR, VAR_SCREENSHOT_DIR } from "./vars"
+import {
+	DEBUG_MODE,
+	getVrTag,
+	SERVICE_IP,
+	VAR_CACHE_DIR,
+	VAR_SCREENSHOT_DIR,
+} from "./vars"
 
 const app: Express = express()
 const port: number = Number(process.env.PORT) || 3000
@@ -38,6 +45,12 @@ hspEventRoutes(app)
 hspFileRoutes(app)
 
 // TODO: Frontend UI???
+
+if (DEBUG_MODE) {
+	console.debug("Debug mode enabled")
+	loadDevMessages()
+	loadErrorMessages()
+}
 
 const server = app.listen(port, SERVICE_IP, async () => {
 	ensureDirectoryExists(VAR_SCREENSHOT_DIR)
