@@ -18,7 +18,7 @@ import {
 import { FindProjectionTags } from "../projection"
 import { FIND_SCENE_QUERY, SCENE_UPDATE_MUTATION } from "../queries/query"
 import { buildUrl, formatDate, getBasename, getBaseURL } from "../utilities"
-import { STASH_APIKEY, STASH_URL } from "../vars"
+import { STASH_APIKEY } from "../vars"
 import { eventPath } from "./hspevent"
 import { screenshotPath } from "./hspscreenshot"
 
@@ -181,7 +181,7 @@ const fetchHeresphereVideoEntry = async (
 		title: sceneData.title,
 		description: sceneData.details,
 		thumbnailImage: `${baseUrl}${screenshotPath}/${sceneData.id}`,
-		thumbnailVideo: buildUrl(`${STASH_URL}/scene/${sceneData.id}/preview`, {
+		thumbnailVideo: buildUrl(sceneData.paths.preview, {
 			[StashApiKeyParameter]: STASH_APIKEY,
 		}),
 		dateAdded: formatDate(sceneData.created_at),
