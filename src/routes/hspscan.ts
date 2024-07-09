@@ -130,17 +130,15 @@ export async function genScanDB(first: boolean) {
 		// Downscale images
 		const screenshotPromises: Promise<void[]> = Promise.all(
 			videodata.map((scene: any) =>
-				slimit(() => {
-					try {
-						fetchAndResizeImage(
-							`${STASH_URL}/scene/${scene.id}/screenshot`,
-							`${VAR_SCREENSHOT_DIR}/${scene.id}.jpg`,
-							maxRes
-						)
-					} catch (error) {
+				slimit(() =>
+					fetchAndResizeImage(
+						`${STASH_URL}/scene/${scene.id}/screenshot`,
+						`${VAR_SCREENSHOT_DIR}/${scene.id}.jpg`,
+						maxRes
+					).catch((error) => {
 						console.error("generating screenshot error:", error)
-					}
-				})
+					})
+				)
 			)
 		)
 
