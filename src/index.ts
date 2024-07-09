@@ -13,12 +13,7 @@ import { hspSceneRoutes } from "./routes/hspscene"
 import { hspScreenshotRoutes } from "./routes/hspscreenshot"
 import { miscRoutes } from "./routes/misc"
 import { ensureDirectoryExists } from "./utilities"
-import {
-	DEBUG_MODE,
-	getVrTag,
-	VAR_CACHE_DIR,
-	VAR_SCREENSHOT_DIR,
-} from "./vars"
+import { DEBUG_MODE, getVrTag, VAR_CACHE_DIR, VAR_SCREENSHOT_DIR } from "./vars"
 
 const app: Express = express()
 const port: number = Number(process.env.PORT) || 3000
