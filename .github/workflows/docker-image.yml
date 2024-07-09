@@ -25,5 +25,5 @@ jobs:
 
           - name: 'Build Inventory Image'
             run: |
-              docker build . --tag ghcr.io/NodudeWasTaken/stash-hsp:latest
-              docker push ghcr.io/NodudeWasTaken/stash-hsp:latest
+              docker build . --tag ghcr.io/nodudewastaken/stash-hsp:latest
+              docker push ghcr.io/nodudewastaken/stash-hsp:latest
