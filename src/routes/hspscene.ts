@@ -1,6 +1,6 @@
 import { Express, Response } from "express"
 import { HspRequest } from "../authmiddleware"
-import { client, StashApiKeyParameter } from "../client"
+import { client } from "../client"
 import {
 	HeresphereLensLinear,
 	HeresphereMember,
@@ -16,7 +16,13 @@ import {
 } from "../heresphere_structs"
 import { FindProjectionTags } from "../projection"
 import { FIND_SCENE_QUERY } from "../queries/query"
-import { buildUrl, checkUrl, formatDate, getBasename, getBaseURL } from "../utilities"
+import {
+	buildUrl,
+	checkUrl,
+	formatDate,
+	getBasename,
+	getBaseURL,
+} from "../utilities"
 import { STASH_APIKEY, STASH_URL } from "../vars"
 import { eventPath } from "./hspevent"
 import { screenshotPath } from "./hspscreenshot"
@@ -53,7 +59,9 @@ const fetchHeresphereVideoEntry = async (
 		title: sceneData.title,
 		description: sceneData.details,
 		thumbnailImage: `${baseUrl}${screenshotPath}/${sceneData.id}`, // TODO: Add apikey
-		thumbnailVideo: buildUrl(`${STASH_URL}/scene/${sceneData.id}/preview`, {StashApiKeyParameter: STASH_APIKEY}),
+		thumbnailVideo: buildUrl(`${STASH_URL}/scene/${sceneData.id}/preview`, {
+			StashApiKeyParameter: STASH_APIKEY,
+		}),
 		dateAdded: formatDate(sceneData.created_at),
 		favorites: 0,
 		isFavorite: false, // TODO: .
@@ -80,7 +88,11 @@ const fetchHeresphereVideoEntry = async (
 	{
 		processed.scripts = []
 		try {
-			await checkUrl(buildUrl(sceneData.paths.funscript, {StashApiKeyParameter: STASH_APIKEY}))
+			await checkUrl(
+				buildUrl(sceneData.paths.funscript, {
+					StashApiKeyParameter: STASH_APIKEY,
+				})
+			)
 			var funscript: HeresphereVideoScript = {
 				name: "Default",
 				url: sceneData.paths.funscript, // TODO: Might not exist
@@ -93,7 +105,11 @@ const fetchHeresphereVideoEntry = async (
 	{
 		processed.subtitles = []
 		try {
-			const CAPTION_URL = buildUrl(sceneData.paths.caption, {lang: "00", type: "srt", StashApiKeyParameter: STASH_APIKEY})
+			const CAPTION_URL = buildUrl(sceneData.paths.caption, {
+				lang: "00",
+				type: "srt",
+				StashApiKeyParameter: STASH_APIKEY,
+			})
 			await checkUrl(CAPTION_URL)
 			var subs: HeresphereVideoSubtitle = {
 				name: "Default",
@@ -116,7 +132,9 @@ const fetchHeresphereVideoEntry = async (
 			height: sceneData.files[0].height,
 			width: sceneData.files[0].width,
 			size: sceneData.files[0].size,
-			url: buildUrl(sceneData.paths.stream, {StashApiKeyParameter: STASH_APIKEY}),
+			url: buildUrl(sceneData.paths.stream, {
+				StashApiKeyParameter: STASH_APIKEY,
+			}),
 		}
 		var entry: HeresphereVideoMedia = {
 			name: "Direct stream",

@@ -1,9 +1,9 @@
-import { axiosInstance as axios } from './client';
 import fs, { constants } from "fs"
 import { access } from "fs/promises"
 import path from "path"
 import sharp from "sharp"
 import { HspRequest } from "./authmiddleware"
+import { axiosInstance as axios } from "./client"
 
 export function getBasename(filePath: string): string {
 	return path.basename(filePath)
@@ -19,19 +19,22 @@ export function ensureDirectoryExists(directoryPath: string): void {
 	}
 }
 
-export function buildUrl(baseUrl: string, params: Record<string, string>): string {
-    const url = new URL(baseUrl);
-    const searchParams = new URLSearchParams();
+export function buildUrl(
+	baseUrl: string,
+	params: Record<string, string>
+): string {
+	const url = new URL(baseUrl)
+	const searchParams = new URLSearchParams()
 
-    // Iterate over each key-value pair in params and append to searchParams
-    Object.keys(params).forEach(key => {
-        searchParams.append(key, params[key]);
-    });
+	// Iterate over each key-value pair in params and append to searchParams
+	Object.keys(params).forEach((key) => {
+		searchParams.append(key, params[key])
+	})
 
-    // Append the serialized query parameters to the URL's search
-    url.search = searchParams.toString();
+	// Append the serialized query parameters to the URL's search
+	url.search = searchParams.toString()
 
-    return url.toString();
+	return url.toString()
 }
 
 export function formatDate(dateString: string): string {
@@ -96,7 +99,7 @@ export async function fetchAndResizeImage(
 	}
 
 	// Read the image data as a buffer
-	const imageBuffer = Buffer.from(response.data, 'binary'); 
+	const imageBuffer = Buffer.from(response.data, "binary")
 
 	// Use sharp to resize the image
 	const image = sharp(imageBuffer)

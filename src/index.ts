@@ -1,6 +1,7 @@
 import compression from "compression"
 import express, { Express } from "express"
 import { heresphereAuthMiddleware } from "./authmiddleware"
+import { initClient } from "./client"
 import { indexRoutes } from "./routes"
 import { debugRoutes } from "./routes/debug"
 import { hspEventRoutes } from "./routes/hspevent"
@@ -12,7 +13,6 @@ import { hspScreenshotRoutes } from "./routes/hspscreenshot"
 import { miscRoutes } from "./routes/misc"
 import { ensureDirectoryExists } from "./utilities"
 import { getVrTag, SERVICE_IP, VAR_CACHE_DIR, VAR_SCREENSHOT_DIR } from "./vars"
-import { initClient } from "./client"
 
 const app: Express = express()
 const port: number = Number(process.env.PORT) || 3000
@@ -46,9 +46,9 @@ const server = app.listen(port, SERVICE_IP, async () => {
 	try {
 		await getVrTag()
 	} catch (error) {
-		console.error("failed to contact stash:",error)
+		console.error("failed to contact stash:", error)
 		server.close((err) => {
-			console.log('server closed')
+			console.log("server closed")
 			process.exit(err ? 1 : 0)
 		})
 	}

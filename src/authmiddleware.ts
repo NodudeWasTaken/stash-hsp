@@ -5,7 +5,6 @@ import {
 	HeresphereJsonVersion,
 } from "./heresphere_structs"
 import { authPath } from "./routes/hspauth"
-import { getVrTag, STASH_APIKEY } from "./vars"
 
 export interface HspRequest extends Request {
 	heresphereAuthData?: HeresphereAuthReq
@@ -47,7 +46,12 @@ export function heresphereAuthMiddleware(
 		req.heresphereAuthData = req.body
 	}
 
-	if (!req.heresphereAuthData && needsAuth(req) && req.path != authPath && req.path != "/") {
+	if (
+		!req.heresphereAuthData &&
+		needsAuth(req) &&
+		req.path != authPath &&
+		req.path != "/"
+	) {
 		res.status(401).json({ message: "Unauthorized" })
 		return
 	}
