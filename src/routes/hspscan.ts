@@ -122,7 +122,7 @@ export async function genScanDB(first: boolean) {
 							console.debug("hsp:", scene.id, "prog:", inof, "/", outof)
 							scenes.push(hspscene)
 						})
-						.catch((error) => console.error(error))
+						.catch((error) => console.error("fetch stash scene error:", error))
 				)
 			)
 		)
@@ -135,9 +135,9 @@ export async function genScanDB(first: boolean) {
 						`${STASH_URL}/scene/${scene.id}/screenshot`,
 						`${VAR_SCREENSHOT_DIR}/${scene.id}.jpg`,
 						maxRes
-					).catch((error) => {
+					).catch((error) =>
 						console.error("generating screenshot error:", error)
-					})
+					)
 				)
 			)
 		)
