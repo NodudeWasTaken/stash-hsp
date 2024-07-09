@@ -10,6 +10,9 @@ COPY package*.json ./
 # Copy the rest of the project files to WORKDIR
 COPY . .
 
+# Add libvips
+RUN apk add --no-cache vips-dev
+
 # Bundle the project using bun
 RUN bun install --only=production
 
