@@ -1,31 +1,37 @@
 import path from 'path';
 import fetch from 'node-fetch';
 import sharp from 'sharp';
-import { writeFile, access, mkdir } from 'fs/promises';
+import { access } from 'fs/promises';
 import { constants } from 'fs';
-import { dirname } from 'path';
 import fs from 'fs';
 import axios from 'axios';
-import { CONFIG_QUERY } from './queries/query';
-
-export var VR_TAG = "Virtual Reality"
-
-export async function getVrTag(client: any) {
-	const uiconfig = await client.query({
-		query: CONFIG_QUERY,
-	});
-
-	VR_TAG = uiconfig.data.configuration.ui.vrTag;
-}
+import express, { Express, Request, Response } from "express";
 
 export function getBasename(filePath: string): string {
 	return path.basename(filePath);
+}
+
+export function getBaseURL(req: Request) {
+	return `${req.protocol}://${req.get('host')}`;
 }
 
 export function ensureDirectoryExists(directoryPath: string): void {
     if (!fs.existsSync(directoryPath)) {
         fs.mkdirSync(directoryPath, { recursive: true });
     }
+}
+
+export function formatDate(dateString: string): string {
+	// Parse the date string into a Date object
+	const date = new Date(dateString);
+  
+	// Extract the year, month, and day
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+	const day = String(date.getDate()).padStart(2, '0');
+  
+	// Format the date as "year-month-day"
+	return `${year}-${month}-${day}`;
 }
 
 // Function to get the age of a file in milliseconds

@@ -1,5 +1,6 @@
 import { HeresphereLensMKX200, HeresphereLensMKX220, HeresphereLensVRCA220, HeresphereProjectionEquirectangular, HeresphereProjectionEquirectangular360, HeresphereProjectionEquirectangularCubemap, HeresphereProjectionFisheye, HeresphereProjectionPerspective, HeresphereStereoMono, HeresphereStereoSbs, HeresphereStereoTB, HeresphereVideoEntry, HeresphereVideoTag } from "./heresphere_structs";
-import { getBasename, VR_TAG } from "./misc";
+import { getBasename } from "./utilities";
+import { VR_TAG } from "./vars";
 
 function findProjectionTagsFromTags(processedScene: HeresphereVideoEntry, tags: HeresphereVideoTag[]): void {
 	tags.forEach(tag => {
