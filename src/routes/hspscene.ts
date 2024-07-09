@@ -1,7 +1,6 @@
 import { Express, Response } from "express"
 import { HspRequest } from "../authmiddleware"
 import { client, StashApiKeyParameter } from "../client"
-import { ResolutionEnum } from "../criterion_fix"
 import {
 	HeresphereAuthReq,
 	HeresphereLensLinear,
@@ -18,6 +17,10 @@ import {
 } from "../heresphere_structs"
 import { FindProjectionTags } from "../projection"
 import { FIND_SCENE_QUERY, SCENE_UPDATE_MUTATION } from "../queries/query"
+import {
+	getResolutionsLessThanOrEqualTo,
+	reverseMapping,
+} from "../stash_structs"
 import { buildUrl, formatDate, getBasename, getBaseURL } from "../utilities"
 import { STASH_APIKEY } from "../vars"
 import { eventPath } from "./hspevent"
@@ -157,40 +160,6 @@ const dataUpdate = async (sceneId: string, authreq: HeresphereAuthReq) => {
 			},
 		})
 	}
-}
-
-// Mapping of heights to resolution enum values, excluding numeric values
-const resolutionMapping: { [height: number]: ResolutionEnum } = {
-	240: ResolutionEnum.LOW,
-	480: ResolutionEnum.STANDARD,
-	720: ResolutionEnum.STANDARD_HD,
-	1080: ResolutionEnum.FULL_HD,
-	2160: ResolutionEnum.FOUR_K, // 4K is 2160p
-	0: ResolutionEnum.ORIGINAL, // Assuming HUGE is anything above 8K
-}
-
-// Reverse mapping from resolution strings to heights
-const reverseMapping: { [resolution: string]: number } = {}
-for (const [height, resolution] of Object.entries(resolutionMapping)) {
-	reverseMapping[resolution] = parseInt(height)
-}
-
-const getResolutionsLessThanOrEqualTo = (
-	vidRes: number,
-	maxRes: number
-): ResolutionEnum[] => {
-	let result: ResolutionEnum[] = []
-
-	for (var [height, resolutions] of Object.entries(resolutionMapping)) {
-		const _height =
-			resolutions == ResolutionEnum.ORIGINAL ? vidRes : parseInt(height)
-
-		if (_height <= maxRes) {
-			result.push(resolutions)
-		}
-	}
-
-	return result
 }
 
 const fetchHeresphereVideoEntry = async (
