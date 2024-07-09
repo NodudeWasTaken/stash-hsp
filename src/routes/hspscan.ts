@@ -8,13 +8,14 @@ import { HeresphereScanIndex, HeresphereVideoEntryShort } from "../heresphere_st
 import { FIND_SCENE_SLIM_QUERY, FIND_SCENES_SLIM_QUERY } from "../queries/query";
 import { fillTags } from "./hspscene";
 import cron from 'node-cron';
+import { HspRequest } from "../authmiddleware";
 
 // Stash is too slow to do this live
 // TODO: Add a way to refresh
 const SCANDB = `./${VAR_CACHE_DIR}/scan.json`
 const SCANDB_STR = "REPLACE_ME_XXX_FUCKER_DONT_FIND_SECRET_STRING"
 
-const hspscanfetchHandler = async (req: Request, res: Response) => {
+const hspscanfetchHandler = async (req: HspRequest, res: Response) => {
 	if (await fileExists(SCANDB)) {
 		var scandb = fs.readFileSync(SCANDB).toString().replaceAll(SCANDB_STR,getBaseURL(req));
 		res.contentType("application/json");

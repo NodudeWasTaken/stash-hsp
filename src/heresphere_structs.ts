@@ -44,132 +44,132 @@ export const HeresphereEventClose: HeresphereEventType = 3;
 export const HeresphereAuthHeader = "auth-token";
 
 export interface HeresphereAuthResp {
-  "auth-token": string;
-  access: number;
+	"auth-token": string;
+	access: number;
 }
 
 export interface HeresphereBanner {
-  image: string;
-  link: string;
+	image: string;
+	link: string;
 }
 
 export interface HeresphereIndexEntry {
-  name: string;
-  list: string[];
+	name: string;
+	list: string[];
 }
 
 export interface HeresphereIndex {
-  access: number;
-  banner: HeresphereBanner;
-  library: HeresphereIndexEntry[];
+	access: number;
+	banner: HeresphereBanner;
+	library: HeresphereIndexEntry[];
 }
 
 export interface HeresphereVideoScript {
-  name: string;
-  url: string;
-  rating?: number;
+	name: string;
+	url: string;
+	rating?: number;
 }
 
 export interface HeresphereVideoSubtitle {
-  name: string;
-  language: string;
-  url: string;
+	name: string;
+	language: string;
+	url: string;
 }
 
 export interface HeresphereVideoTag {
-  name: string;
-  start?: number;
-  end?: number;
-  track?: number;
-  rating?: number;
+	name: string;
+	start?: number;
+	end?: number;
+	track?: number;
+	rating?: number;
 }
 
 export interface HeresphereVideoMediaSource {
-  resolution: number;
-  height: number;
-  width: number;
-  size: number;
-  url: string;
+	resolution: number;
+	height: number;
+	width: number;
+	size: number;
+	url: string;
 }
 
 export interface HeresphereVideoMedia {
-  name: string;
-  sources: HeresphereVideoMediaSource[];
+	name: string;
+	sources: HeresphereVideoMediaSource[];
 }
 
 export interface HeresphereHSPEntry {
-  url: string;
-  version: number;
+	url: string;
+	version: number;
 }
 
 export interface HeresphereVideoEntry {
-  access: number;
-  title: string;
-  description: string;
-  thumbnailImage: string;
-  thumbnailVideo?: string;
-  dateReleased?: string;
-  dateAdded?: string;
-  duration?: number;
-  rating?: number;
-  favorites: number;
-  comments?: number;
-  isFavorite: boolean;
-  projection: HeresphereProjection;
-  stereo: HeresphereStereo;
-  isEyeSwapped: boolean;
-  fov?: number;
-  lens: HeresphereLens;
-  cameraIPD: number;
-  hspArray?: HeresphereHSPEntry[];
-  eventServer?: string;
-  scripts?: HeresphereVideoScript[];
-  subtitles?: HeresphereVideoSubtitle[];
-  tags?: HeresphereVideoTag[];
-  media?: HeresphereVideoMedia[];
-  writeFavorite: boolean;
-  writeRating: boolean;
-  writeTags: boolean;
-  writeHSP: boolean;
-  // alphaPackedSettings
-  // chromaKeySettings
+	access: number;
+	title: string;
+	description: string;
+	thumbnailImage: string;
+	thumbnailVideo?: string;
+	dateReleased?: string;
+	dateAdded?: string;
+	duration?: number;
+	rating?: number;
+	favorites: number;
+	comments?: number;
+	isFavorite: boolean;
+	projection: HeresphereProjection;
+	stereo: HeresphereStereo;
+	isEyeSwapped: boolean;
+	fov?: number;
+	lens: HeresphereLens;
+	cameraIPD: number;
+	hspArray?: HeresphereHSPEntry[];
+	eventServer?: string;
+	scripts?: HeresphereVideoScript[];
+	subtitles?: HeresphereVideoSubtitle[];
+	tags?: HeresphereVideoTag[];
+	media?: HeresphereVideoMedia[];
+	writeFavorite: boolean;
+	writeRating: boolean;
+	writeTags: boolean;
+	writeHSP: boolean;
+	// alphaPackedSettings
+	// chromaKeySettings
 }
 
 export interface HeresphereVideoEntryShort {
-  link: string;
-  title: string;
-  dateReleased?: string;
-  dateAdded?: string;
-  duration?: number;
-  rating?: number;
-  favorites: number;
-  comments: number;
-  isFavorite: boolean;
-  tags: HeresphereVideoTag[];
+	link: string;
+	title: string;
+	dateReleased?: string;
+	dateAdded?: string;
+	duration?: number;
+	rating?: number;
+	favorites: number;
+	comments: number;
+	isFavorite: boolean;
+	tags: HeresphereVideoTag[];
 }
 
 export interface HeresphereScanIndex {
-  scanData: HeresphereVideoEntryShort[];
+	scanData: HeresphereVideoEntryShort[];
 }
 
 export interface HeresphereAuthReq {
-  username: string;
-  password: string;
-  needsMediaSource?: boolean;
-  isFavorite?: boolean;
-  rating?: number;
-  tags?: HeresphereVideoTag[];
-  hspBase64?: string;
-  deleteFile?: boolean;
+	username: string;
+	password: string;
+	needsMediaSource?: boolean;
+	isFavorite?: boolean;
+	rating?: number;
+	tags?: HeresphereVideoTag[];
+	hspBase64?: string;
+	deleteFile?: boolean;
 }
 
 export interface HeresphereVideoEvent {
-  username: string;
-  id: string;
-  title: string;
-  event: HeresphereEventType;
-  time: number;
-  speed: number;
-  utc: number;
-  connectionKey: string;
+	username: string;
+	id: string;
+	title: string;
+	event: HeresphereEventType;
+	time: number;
+	speed: number;
+	utc: number;
+	connectionKey: string;
 }

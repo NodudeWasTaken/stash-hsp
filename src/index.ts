@@ -14,6 +14,7 @@ import { hspEventRoutes } from './routes/hspevent';
 import { debugRoutes } from './routes/debug';
 import { miscRoutes } from './routes/misc';
 import { indexRoutes } from './routes';
+import { heresphereAuthMiddleware } from './authmiddleware';
 
 const app: Express = express();
 const port: number = Number(process.env.PORT) || 3000;
@@ -24,12 +25,7 @@ app.use(
 	})
 );
 app.use(compression());
-app.use(function(req, res, next) {
-	res.header("HereSphere-JSON-Version", `${HeresphereJsonVersion}`);
-	// TODO: We could auth here, but what about context passing
-	// 			HeresphereAuthReq check needsMediaSources
-	next()
-});
+app.use(heresphereAuthMiddleware);
 
 // TODO: Log errors
 

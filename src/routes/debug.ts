@@ -1,9 +1,10 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express, Response } from "express";
 import { client } from "../client";
 import { CONFIG_QUERY, FIND_SAVED_FILTERS_QUERY, FIND_SCENE_QUERY, FIND_SCENES_QUERY } from "../queries/query";
 import { CriterionFixer } from "../criterion_fix";
+import { HspRequest } from "../authmiddleware";
 
-const debugFindFiltersHandler = async (req: Request, res: Response) => {
+const debugFindFiltersHandler = async (req: HspRequest, res: Response) => {
 	const result = await client.query({
 		query: FIND_SAVED_FILTERS_QUERY,
 		variables: {
@@ -14,7 +15,7 @@ const debugFindFiltersHandler = async (req: Request, res: Response) => {
 	res.json(result)
 }
 
-const debugFindDefScenesHandler = async (req: Request, res: Response) => {
+const debugFindDefScenesHandler = async (req: HspRequest, res: Response) => {
 	try {
 		const uiconfig = await client.query({
 			query: CONFIG_QUERY,
@@ -41,7 +42,7 @@ const debugFindDefScenesHandler = async (req: Request, res: Response) => {
 	}
 }
 
-const debugFindSceneHandler = async (req: Request, res: Response) => {
+const debugFindSceneHandler = async (req: HspRequest, res: Response) => {
 	try {
 		const sceneId = req.params.sceneId
 

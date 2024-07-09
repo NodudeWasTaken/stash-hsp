@@ -11,35 +11,35 @@ export function getBasename(filePath: string): string {
 	return path.basename(filePath);
 }
 
-export function getBaseURL(req: Request) {
+export function getBaseURL(req: HspRequest) {
 	return `${req.protocol}://${req.get('host')}`;
 }
 
 export function ensureDirectoryExists(directoryPath: string): void {
-    if (!fs.existsSync(directoryPath)) {
-        fs.mkdirSync(directoryPath, { recursive: true });
-    }
+	if (!fs.existsSync(directoryPath)) {
+		fs.mkdirSync(directoryPath, { recursive: true });
+	}
 }
 
 export function formatDate(dateString: string): string {
 	// Parse the date string into a Date object
 	const date = new Date(dateString);
-  
+
 	// Extract the year, month, and day
 	const year = date.getFullYear();
 	const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
 	const day = String(date.getDate()).padStart(2, '0');
-  
+
 	// Format the date as "year-month-day"
 	return `${year}-${month}-${day}`;
 }
 
 // Function to get the age of a file in milliseconds
 export function getFileAge(filePath: string): number {
-    const stats = fs.statSync(filePath);
-    const currentTime = new Date().getTime();
-    const fileTime = stats.mtime.getTime();
-    return currentTime - fileTime;
+	const stats = fs.statSync(filePath);
+	const currentTime = new Date().getTime();
+	const fileTime = stats.mtime.getTime();
+	return currentTime - fileTime;
 }
 export function getFileAgeDays(filePath: string): number {
 	return getFileAge(filePath) / (1000 * 60 * 60 * 24);

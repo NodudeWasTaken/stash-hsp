@@ -4,8 +4,9 @@ import { HeresphereBanner, HeresphereIndex, HeresphereIndexEntry, HeresphereMemb
 import { client } from "../client";
 import { CONFIG_QUERY, FIND_SAVED_FILTERS_QUERY, FIND_SCENES_SLIM_QUERY } from "../queries/query";
 import { CriterionFixer } from "../criterion_fix";
+import { HspRequest } from "../authmiddleware";
 
-const hspIndexHandler = async (req: Request, res: Response) => {
+const hspIndexHandler = async (req: HspRequest, res: Response) => {
 	try {
 		const baseurl = getBaseURL(req);
 		const banner: HeresphereBanner = {

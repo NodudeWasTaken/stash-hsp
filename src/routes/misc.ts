@@ -1,8 +1,9 @@
 import express, { Express, Request, Response } from "express";
 import { CONFIG_QUERY } from "../queries/query";
 import { client } from "../client";
+import { HspRequest } from "../authmiddleware";
 
-const healthcheckHandler = async (req: Request, res: Response) => {
+const healthcheckHandler = async (req: HspRequest, res: Response) => {
 	try {
 		await client.query({
 			query: CONFIG_QUERY,
@@ -13,7 +14,7 @@ const healthcheckHandler = async (req: Request, res: Response) => {
 	}
 }
 
-const faviconHandler = async (req: Request, res: Response) => {
+const faviconHandler = async (req: HspRequest, res: Response) => {
 	// TODO: .
 	res.status(500).json({message: "Not implemented yet"})
 }

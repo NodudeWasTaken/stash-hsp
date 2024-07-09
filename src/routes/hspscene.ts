@@ -5,6 +5,7 @@ import { FindProjectionTags } from "../projection";
 import { FIND_SCENE_QUERY } from "../queries/query";
 import { checkUrl, formatDate, getBasename, getBaseURL } from "../utilities";
 import { STASH_URL } from "../vars";
+import { HspRequest } from "../authmiddleware";
 
 export function fillTags(scene: any, processed: HeresphereVideoEntry|HeresphereVideoEntryShort) {
 	processed.tags = [];
@@ -123,7 +124,7 @@ const fetchHeresphereVideoEntry = async(sceneId: string, baseUrl: string): Promi
 	return processed
 }
 
-const sceneFetchHandler = async (req: Request, res: Response) => {
+const sceneFetchHandler = async (req: HspRequest, res: Response) => {
 	try {
 		const sceneId = req.params.sceneId;
 		res.json(await fetchHeresphereVideoEntry(sceneId, getBaseURL(req)));
