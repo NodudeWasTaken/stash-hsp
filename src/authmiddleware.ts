@@ -29,7 +29,7 @@ function needsAuth(req: HspRequest) {
 
 	const authHeader = req.headers[HeresphereAuthHeader.toLowerCase()]
 	if (authHeader) {
-		// TODO: Cache store some key
+		// TODO: Check cache for store some key
 	}
 
 	return true

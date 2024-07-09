@@ -33,6 +33,8 @@ const hspAuthHandler = async (req: HspRequest, res: Response) => {
 		access: HeresphereGuest,
 	}
 
+	// TODO: Set HeresphereAuthHeader if success
+
 	res.json(auth)
 }
 
