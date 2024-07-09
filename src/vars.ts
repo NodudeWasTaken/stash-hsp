@@ -8,7 +8,6 @@ export var VR_TAG = "Virtual Reality"
 
 export const maxRes = 480
 
-export const SERVICE_IP = process.env.SERVICE_IP || "127.0.0.1"
 export const DEBUG_MODE = process.env.DEBUG
 export const STASH_URL = process.env.STASH_URL || "http://127.0.0.1:9999"
 export const STASH_APIKEY = process.env.STASH_APIKEY || "" // TODO: .

@@ -16,7 +16,6 @@ import { ensureDirectoryExists } from "./utilities"
 import {
 	DEBUG_MODE,
 	getVrTag,
-	SERVICE_IP,
 	VAR_CACHE_DIR,
 	VAR_SCREENSHOT_DIR,
 } from "./vars"
@@ -52,7 +51,7 @@ if (DEBUG_MODE) {
 	loadErrorMessages()
 }
 
-const server = app.listen(port, SERVICE_IP, async () => {
+const server = app.listen(port, "0.0.0.0", async () => {
 	ensureDirectoryExists(VAR_SCREENSHOT_DIR)
 	ensureDirectoryExists(VAR_CACHE_DIR)
 	initClient()
@@ -66,7 +65,7 @@ const server = app.listen(port, SERVICE_IP, async () => {
 		})
 	}
 
-	console.log(`Example app listening at http://${SERVICE_IP}:${port}`)
+	console.log(`Example app listening at http://0.0.0.0:${port}`)
 	console.log(`Generating scan.json in 10 seconds`)
 
 	setTimeout(() => {

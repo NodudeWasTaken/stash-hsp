@@ -12,7 +12,6 @@ services:
       - "3000:3000"  # Adjust port as needed
     environment:
       STASH_URL: "http://192.168.1.123:9999"
-      SERVICE_IP: "0.0.0.0"
       PORT: 3000
       SCREENSHOTS_DIR: "/screenshots"
       VAR_CACHE_DIR: "/cache"

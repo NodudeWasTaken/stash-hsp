@@ -21,10 +21,6 @@ fragment ConfigData on ConfigResult {
     ...ConfigDLNAData
     __typename
   }
-  hsp {
-    ...ConfigHSPData
-    __typename
-  }
   scraping {
     ...ConfigScrapingData
     __typename
@@ -162,17 +158,6 @@ fragment ConfigDLNAData on ConfigDLNAResult {
   whitelistedIPs
   interfaces
   videoSortOrder
-  __typename
-}
-
-fragment ConfigHSPData on ConfigHSPResult {
-  enabled
-  favoriteTagId
-  writeFavorites
-  writeRatings
-  writeTags
-  writeDeletes
-  writeHsp
   __typename
 }
 

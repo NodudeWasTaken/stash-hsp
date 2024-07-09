@@ -98,7 +98,7 @@ const fetchHeresphereVideoEntry = async (
 		access: HeresphereMember,
 		title: sceneData.title,
 		description: sceneData.details,
-		thumbnailImage: `${baseUrl}${screenshotPath}/${sceneData.id}`, // TODO: Add apikey
+		thumbnailImage: `${baseUrl}${screenshotPath}/${sceneData.id}`,
 		thumbnailVideo: buildUrl(`${STASH_URL}/scene/${sceneData.id}/preview`, {
 			[StashApiKeyParameter]: STASH_APIKEY,
 		}),
