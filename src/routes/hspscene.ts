@@ -161,20 +161,12 @@ const dataUpdate = async (sceneId: string, authreq: HeresphereAuthReq) => {
 
 // Mapping of heights to resolution enum values, excluding numeric values
 const resolutionMapping: { [height: number]: ResolutionEnum } = {
-	144: ResolutionEnum.VERY_LOW,
 	240: ResolutionEnum.LOW,
-	//360: ResolutionEnum.R360P,
 	480: ResolutionEnum.STANDARD,
-	540: ResolutionEnum.WEB_HD,
 	720: ResolutionEnum.STANDARD_HD,
 	1080: ResolutionEnum.FULL_HD,
-	1440: ResolutionEnum.QUAD_HD,
 	2160: ResolutionEnum.FOUR_K, // 4K is 2160p
-	2880: ResolutionEnum.FIVE_K,
-	3240: ResolutionEnum.SIX_K,
-	3840: ResolutionEnum.SEVEN_K,
-	4320: ResolutionEnum.EIGHT_K,
-	4321: ResolutionEnum.HUGE, // Assuming HUGE is anything above 8K
+	0: ResolutionEnum.ORIGINAL, // Assuming HUGE is anything above 8K
 }
 
 // Reverse mapping from resolution strings to heights
@@ -183,11 +175,17 @@ for (const [height, resolution] of Object.entries(resolutionMapping)) {
 	reverseMapping[resolution] = parseInt(height)
 }
 
-const getResolutionsLessThanOrEqualTo = (maxRes: number): ResolutionEnum[] => {
+const getResolutionsLessThanOrEqualTo = (
+	vidRes: number,
+	maxRes: number
+): ResolutionEnum[] => {
 	let result: ResolutionEnum[] = []
 
-	for (const [height, resolutions] of Object.entries(resolutionMapping)) {
-		if (parseInt(height) <= maxRes) {
+	for (var [height, resolutions] of Object.entries(resolutionMapping)) {
+		const _height =
+			resolutions == ResolutionEnum.ORIGINAL ? vidRes : parseInt(height)
+
+		if (_height <= maxRes) {
 			result.push(resolutions)
 		}
 	}
@@ -316,7 +314,11 @@ const fetchHeresphereVideoEntry = async (
 			const DASHurl = new URL(sceneData.paths.stream)
 			DASHurl.pathname = `${DASHurl.pathname}.mpd`
 
-			for (const res of getResolutionsLessThanOrEqualTo(maxRes).toReversed()) {
+			// TODO: Fetch max res from stash (store from ui when VR_TAG maybe)
+			for (const res of getResolutionsLessThanOrEqualTo(
+				maxRes,
+				2160
+			).toReversed()) {
 				HLSurl.searchParams.set("resolution", res)
 				DASHurl.searchParams.set("resolution", res)
 

@@ -62,8 +62,8 @@ export enum ResolutionEnum {
 	VERY_LOW = "VERY_LOW",
 	"240p" = "240p",
 	LOW = "LOW",
-	"360p" = "360p",
-	R360P = "R360P",
+	/*"360p" = "360p",
+	R360P = "R360P",*/
 	"480p" = "480p",
 	STANDARD = "STANDARD",
 	"540p" = "540p",
@@ -86,6 +86,7 @@ export enum ResolutionEnum {
 	EIGHT_K = "EIGHT_K",
 	"8K+" = "HUGE",
 	HUGE = "HUGE",
+	ORIGINAL = "ORIGINAL",
 }
 
 function getResolutionEnum(resolution: string): ResolutionEnum {
@@ -102,8 +103,8 @@ function getResolutionEnum(resolution: string): ResolutionEnum {
 		return ResolutionEnum["144p"]
 	} else if (resolutionNumber >= 144 && resolutionNumber < 240) {
 		return ResolutionEnum["240p"]
-	} else if (resolutionNumber >= 240 && resolutionNumber < 360) {
-		return ResolutionEnum["360p"]
+		/*} else if (resolutionNumber >= 240 && resolutionNumber < 360) {
+		return ResolutionEnum["360p"]*/
 	} else if (resolutionNumber >= 360 && resolutionNumber < 480) {
 		return ResolutionEnum["480p"]
 	} else if (resolutionNumber >= 480 && resolutionNumber < 540) {
@@ -114,13 +115,12 @@ function getResolutionEnum(resolution: string): ResolutionEnum {
 		return ResolutionEnum["1080p"]
 	} else if (resolutionNumber >= 1080 && resolutionNumber < 1440) {
 		return ResolutionEnum["FULL_HD"]
-	} else if (resolutionNumber >= 1440 && resolutionNumber < 1920) {
+	} else if (resolutionNumber >= 1440 && resolutionNumber < 2160) {
 		return ResolutionEnum["QUAD_HD"]
-	} else if (resolutionNumber >= 1920 && resolutionNumber < 4000) {
-		return ResolutionEnum["1920p"]
-	} else if (resolutionNumber >= 4000 && resolutionNumber < 5000) {
+	} else if (resolutionNumber >= 2160 && resolutionNumber < 5120) {
 		return ResolutionEnum["FOUR_K"]
-	} else if (resolutionNumber >= 5000 && resolutionNumber < 6000) {
+	} else if (resolutionNumber >= 5120 && resolutionNumber < 6000) {
+		// TODO: Is this correct?
 		return ResolutionEnum["FIVE_K"]
 	} else if (resolutionNumber >= 6000 && resolutionNumber < 7000) {
 		return ResolutionEnum["SIX_K"]
