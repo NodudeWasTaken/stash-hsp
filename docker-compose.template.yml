@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   stashhsp:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/nodudewastaken/stash-hsp:latest
     container_name: stash_hsp
     network_mode: "host"
     restart: unless-stopped
