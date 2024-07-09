@@ -34,13 +34,13 @@ app.use(function(req, res, next) {
 // TODO: Log errors
 
 indexRoutes(app);
+debugRoutes(app);
+miscRoutes(app);
 hspScanRoutes(app);
 hspScreenshotRoutes(app);
 hspSceneRoutes(app);
 hspIndexRoutes(app);
 hspEventRoutes(app);
-debugRoutes(app);
-miscRoutes(app);
 
 app.listen(port, SERVICE_IP, () => {
 	ensureDirectoryExists(VAR_SCREENSHOT_DIR);
