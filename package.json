@@ -13,7 +13,8 @@
     "start": "bun run ./src/index.ts",
     "bundle": "bun build ./src/index.ts --outdir ./out --target bun",
     "dev": "DEBUG=express:* bun --watch run ./src/index.ts",
-    "prettier": "prettier ./src --write"
+    "prettier": "prettier ./src --write",
+    "prettier-check": "prettier ./src --check"
   },
   "dependencies": {
     "@apollo/client": "^3.10.8",
