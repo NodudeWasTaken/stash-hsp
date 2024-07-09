@@ -1,32 +1,50 @@
-import express, { Express, Request, Response } from "express";
-import { client } from "../client";
-import { HeresphereLensLinear, HeresphereMember, HeresphereProjectionPerspective, HeresphereStereoMono, HeresphereVideoEntry, HeresphereVideoEntryShort, HeresphereVideoMedia, HeresphereVideoMediaSource, HeresphereVideoScript, HeresphereVideoSubtitle, HeresphereVideoTag } from "../heresphere_structs";
-import { FindProjectionTags } from "../projection";
-import { FIND_SCENE_QUERY } from "../queries/query";
-import { checkUrl, formatDate, getBasename, getBaseURL } from "../utilities";
-import { STASH_URL } from "../vars";
-import { HspRequest } from "../authmiddleware";
+import express, { Express, Request, Response } from "express"
+import { client } from "../client"
+import {
+	HeresphereLensLinear,
+	HeresphereMember,
+	HeresphereProjectionPerspective,
+	HeresphereStereoMono,
+	HeresphereVideoEntry,
+	HeresphereVideoEntryShort,
+	HeresphereVideoMedia,
+	HeresphereVideoMediaSource,
+	HeresphereVideoScript,
+	HeresphereVideoSubtitle,
+	HeresphereVideoTag,
+} from "../heresphere_structs"
+import { FindProjectionTags } from "../projection"
+import { FIND_SCENE_QUERY } from "../queries/query"
+import { checkUrl, formatDate, getBasename, getBaseURL } from "../utilities"
+import { STASH_URL } from "../vars"
+import { HspRequest } from "../authmiddleware"
 
-export function fillTags(scene: any, processed: HeresphereVideoEntry|HeresphereVideoEntryShort) {
-	processed.tags = [];
+export function fillTags(
+	scene: any,
+	processed: HeresphereVideoEntry | HeresphereVideoEntryShort
+) {
+	processed.tags = []
 	for (let tag of scene.tags) {
 		const hsptag: HeresphereVideoTag = {
-			name: `Tag:${tag.name}`
+			name: `Tag:${tag.name}`,
 		}
 		processed.tags.push(hsptag)
 	}
 	// TODO: More tags
 }
 
-const fetchHeresphereVideoEntry = async(sceneId: string, baseUrl: string): Promise<HeresphereVideoEntry> => {
+const fetchHeresphereVideoEntry = async (
+	sceneId: string,
+	baseUrl: string
+): Promise<HeresphereVideoEntry> => {
 	const sceneQuery = await client.query({
 		query: FIND_SCENE_QUERY,
 		variables: {
 			id: sceneId,
-		}
-	});
+		},
+	})
 
-	const sceneData = sceneQuery.data.findScene;
+	const sceneData = sceneQuery.data.findScene
 	//console.debug(sceneData)
 	var processed: HeresphereVideoEntry = {
 		access: HeresphereMember,
@@ -60,12 +78,12 @@ const fetchHeresphereVideoEntry = async(sceneId: string, baseUrl: string): Promi
 	{
 		processed.scripts = []
 		try {
-			await checkUrl(sceneData.paths.funscript);
+			await checkUrl(sceneData.paths.funscript)
 			var funscript: HeresphereVideoScript = {
 				name: "Default",
-				url: sceneData.paths.funscript // TODO: Might not exist
+				url: sceneData.paths.funscript, // TODO: Might not exist
 			}
-			processed.scripts.push(funscript);
+			processed.scripts.push(funscript)
 		} catch (error) {
 			// console.debug(error)
 		}
@@ -74,23 +92,23 @@ const fetchHeresphereVideoEntry = async(sceneId: string, baseUrl: string): Promi
 		processed.subtitles = []
 		try {
 			const CAPTION_URL = `${sceneData.paths.caption}?lang=00&type=srt`
-			await checkUrl(CAPTION_URL);
+			await checkUrl(CAPTION_URL)
 			var subs: HeresphereVideoSubtitle = {
 				name: "Default",
 				language: "00",
-				url: CAPTION_URL
+				url: CAPTION_URL,
 			}
-			processed.subtitles.push(subs);
+			processed.subtitles.push(subs)
 		} catch (error) {
 			// console.debug(error)
 		}
 	}
 
-	fillTags(sceneData, processed);
+	fillTags(sceneData, processed)
 
 	// TODO: HeresphereAuthReq check needsMediaSources
 	if (sceneData.files.length > 0) {
-		processed.media = [];
+		processed.media = []
 		var source: HeresphereVideoMediaSource = {
 			resolution: sceneData.files[0].height,
 			height: sceneData.files[0].height,
@@ -100,24 +118,24 @@ const fetchHeresphereVideoEntry = async(sceneId: string, baseUrl: string): Promi
 		}
 		var entry: HeresphereVideoMedia = {
 			name: "Direct stream",
-			sources: [source]
+			sources: [source],
 		}
-		processed.media.push(entry);
-		processed.duration = sceneData.files[0].duration * 1000;
+		processed.media.push(entry)
+		processed.duration = sceneData.files[0].duration * 1000
 		// TODO: HLS and DASH transcoding
 	}
 	if (sceneData.date) {
-		processed.dateReleased = formatDate(sceneData.date);
+		processed.dateReleased = formatDate(sceneData.date)
 	}
 	if (sceneData.rating100) {
-		processed.rating = sceneData.rating100/20;
+		processed.rating = sceneData.rating100 / 20
 	}
 	if (processed.isFavorite) {
-		processed.favorites++;
+		processed.favorites++
 	}
 
 	// TODO: hspArray
-	processed.hspArray = undefined;
+	processed.hspArray = undefined
 
 	FindProjectionTags(sceneData, processed)
 
@@ -126,15 +144,15 @@ const fetchHeresphereVideoEntry = async(sceneId: string, baseUrl: string): Promi
 
 const sceneFetchHandler = async (req: HspRequest, res: Response) => {
 	try {
-		const sceneId = req.params.sceneId;
-		res.json(await fetchHeresphereVideoEntry(sceneId, getBaseURL(req)));
+		const sceneId = req.params.sceneId
+		res.json(await fetchHeresphereVideoEntry(sceneId, getBaseURL(req)))
 	} catch (error) {
-		console.error(error);
-		res.status(500).json(error);
+		console.error(error)
+		res.status(500).json(error)
 	}
-};
+}
 
 export function hspSceneRoutes(app: Express) {
-	app.get("/heresphere/video/:sceneId", sceneFetchHandler);
-	app.post("/heresphere/video/:sceneId", sceneFetchHandler);
+	app.get("/heresphere/video/:sceneId", sceneFetchHandler)
+	app.post("/heresphere/video/:sceneId", sceneFetchHandler)
 }

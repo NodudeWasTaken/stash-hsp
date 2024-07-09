@@ -7,7 +7,7 @@
 const config = {
 	trailingComma: "es5",
 	useTabs: true,
-	semi: true,
+	semi: false,
 	singleQuote: false,
 	bracketSpacing: true,
 };

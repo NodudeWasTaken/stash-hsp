@@ -1,6 +1,5 @@
 {
   "name": "stash-hsp",
-  "module": "index.ts",
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest",
@@ -12,7 +11,8 @@
   "scripts": {
     "start": "bun run ./src/index.ts",
     "bundle": "bun build ./src/index.ts --outdir ./out --target bun",
-    "dev": "DEBUG=express:* bun --watch run ./src/index.ts"
+    "dev": "DEBUG=express:* bun --watch run ./src/index.ts",
+    "prettier": "prettier ./src --write"
   },
   "dependencies": {
     "@apollo/client": "^3.10.8",
