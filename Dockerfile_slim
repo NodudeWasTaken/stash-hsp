@@ -23,11 +23,11 @@ WORKDIR /app
 COPY --from=build /app/out ./out
 COPY --from=build /app/package*.json ./
 
-# Install production dependencies
-RUN bun install --production
-
 # Add libvips
 RUN apk add --no-cache vips-dev
+
+# Install production dependencies
+RUN bun install --production
 
 # Command to run when the container starts
 CMD ["bun", "run", "out/index.js"]
