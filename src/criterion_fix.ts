@@ -57,7 +57,7 @@ const GROUPFILTER_TYPE = ["groups_filter", "movies_filter"]
 const SCENEMARKERFILTER_TYPE = ["markers_filter"]
 const OPERATOR_TYPE = ["AND", "OR", "NOT"] // Not needed?
 
-enum ResolutionEnum {
+export enum ResolutionEnum {
 	"144p" = "144p",
 	VERY_LOW = "VERY_LOW",
 	"240p" = "240p",
@@ -74,8 +74,6 @@ enum ResolutionEnum {
 	FULL_HD = "FULL_HD",
 	"1440p" = "QUAD_HD",
 	QUAD_HD = "QUAD_HD",
-	"1920p" = "1920p",
-	VR_HD = "VR_HD",
 	"4K" = "FOUR_K",
 	FOUR_K = "FOUR_K",
 	"5K" = "FIVE_K",

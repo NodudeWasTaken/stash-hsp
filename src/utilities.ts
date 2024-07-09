@@ -24,15 +24,11 @@ export function buildUrl(
 	params: Record<string, string>
 ): string {
 	const url = new URL(baseUrl)
-	const searchParams = new URLSearchParams()
 
 	// Iterate over each key-value pair in params and append to searchParams
 	Object.keys(params).forEach((key) => {
-		searchParams.append(key, params[key])
+		url.searchParams.append(key, params[key])
 	})
-
-	// Append the serialized query parameters to the URL's search
-	url.search = searchParams.toString()
 
 	return url.toString()
 }

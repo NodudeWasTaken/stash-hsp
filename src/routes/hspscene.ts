@@ -1,6 +1,7 @@
 import { Express, Response } from "express"
 import { HspRequest } from "../authmiddleware"
 import { client, StashApiKeyParameter } from "../client"
+import { ResolutionEnum } from "../criterion_fix"
 import {
 	HeresphereAuthReq,
 	HeresphereLensLinear,
@@ -158,6 +159,42 @@ const dataUpdate = async (sceneId: string, authreq: HeresphereAuthReq) => {
 	}
 }
 
+// Mapping of heights to resolution enum values, excluding numeric values
+const resolutionMapping: { [height: number]: ResolutionEnum } = {
+	144: ResolutionEnum.VERY_LOW,
+	240: ResolutionEnum.LOW,
+	//360: ResolutionEnum.R360P,
+	480: ResolutionEnum.STANDARD,
+	540: ResolutionEnum.WEB_HD,
+	720: ResolutionEnum.STANDARD_HD,
+	1080: ResolutionEnum.FULL_HD,
+	1440: ResolutionEnum.QUAD_HD,
+	2160: ResolutionEnum.FOUR_K, // 4K is 2160p
+	2880: ResolutionEnum.FIVE_K,
+	3240: ResolutionEnum.SIX_K,
+	3840: ResolutionEnum.SEVEN_K,
+	4320: ResolutionEnum.EIGHT_K,
+	4321: ResolutionEnum.HUGE, // Assuming HUGE is anything above 8K
+}
+
+// Reverse mapping from resolution strings to heights
+const reverseMapping: { [resolution: string]: number } = {}
+for (const [height, resolution] of Object.entries(resolutionMapping)) {
+	reverseMapping[resolution] = parseInt(height)
+}
+
+const getResolutionsLessThanOrEqualTo = (maxRes: number): ResolutionEnum[] => {
+	let result: ResolutionEnum[] = []
+
+	for (const [height, resolutions] of Object.entries(resolutionMapping)) {
+		if (parseInt(height) <= maxRes) {
+			result.push(resolutions)
+		}
+	}
+
+	return result
+}
+
 const fetchHeresphereVideoEntry = async (
 	sceneId: string,
 	baseUrl: string,
@@ -244,20 +281,71 @@ const fetchHeresphereVideoEntry = async (
 
 	if ((!authreq || authreq.needsMediaSource) && sceneData.files.length > 0) {
 		processed.media = []
-		var source: HeresphereVideoMediaSource = {
-			resolution: sceneData.files[0].height,
-			height: sceneData.files[0].height,
-			width: sceneData.files[0].width,
-			size: sceneData.files[0].size,
-			url: sceneData.paths.stream,
+		const maxRes = sceneData.files[0].height
+		const maxResWidth = sceneData.files[0].width
+		{
+			const source: HeresphereVideoMediaSource = {
+				resolution: maxRes,
+				height: sceneData.files[0].height,
+				width: sceneData.files[0].width,
+				size: sceneData.files[0].size,
+				url: sceneData.paths.stream,
+			}
+			const entry: HeresphereVideoMedia = {
+				name: "Direct stream",
+				sources: [source],
+			}
+			processed.media.push(entry)
+			processed.duration = sceneData.files[0].duration * 1000
 		}
-		var entry: HeresphereVideoMedia = {
-			name: "Direct stream",
-			sources: [source],
+
+		{
+			const HLSentry: HeresphereVideoMedia = {
+				name: "HLS",
+				sources: [],
+			}
+
+			const DASHentry: HeresphereVideoMedia = {
+				name: "DASH",
+				sources: [],
+			}
+
+			const HLSurl = new URL(sceneData.paths.stream)
+			HLSurl.pathname = `${HLSurl.pathname}.m3u8`
+
+			const DASHurl = new URL(sceneData.paths.stream)
+			DASHurl.pathname = `${DASHurl.pathname}.mpd`
+
+			for (const res of getResolutionsLessThanOrEqualTo(maxRes).toReversed()) {
+				HLSurl.searchParams.set("resolution", res)
+				DASHurl.searchParams.set("resolution", res)
+
+				const resVal = reverseMapping[res]
+				const widthVal = (maxResWidth / maxRes) * resVal
+
+				const HLSsource: HeresphereVideoMediaSource = {
+					resolution: resVal,
+					height: resVal,
+					width: widthVal,
+					size: 0,
+					url: HLSurl.toString(),
+				}
+
+				const DASHsource: HeresphereVideoMediaSource = {
+					resolution: resVal,
+					height: resVal,
+					width: widthVal,
+					size: 0,
+					url: DASHurl.toString(),
+				}
+
+				HLSentry.sources.push(HLSsource)
+				DASHentry.sources.push(DASHsource)
+			}
+
+			processed.media.push(HLSentry)
+			processed.media.push(DASHentry)
 		}
-		processed.media.push(entry)
-		processed.duration = sceneData.files[0].duration * 1000
-		// TODO: HLS and DASH transcoding
 	}
 	if (sceneData.date) {
 		processed.dateReleased = formatDate(sceneData.date)
