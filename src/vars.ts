@@ -1,5 +1,8 @@
 import pLimit from "p-limit"
 import { CONFIG_QUERY } from "./queries/query"
+import { client } from "./client"
+import { ApolloError } from "@apollo/client"
+import { ServerError } from "@apollo/client/link/utils/index.js";
 
 export var VR_TAG = "Virtual Reality"
 
@@ -19,10 +22,34 @@ export const VAR_SCANCACHE_AGE =
 export const slimit = pLimit(Number(VAR_SCALELIMIT))
 export const rlimit = pLimit(Number(VAR_RLIMIT))
 
-export async function getVrTag(client: any) {
-	const uiconfig = await client.query({
-		query: CONFIG_QUERY,
-	})
+export async function getVrTag() {
+	try {
+		const uiconfig = await client.query({
+			query: CONFIG_QUERY,
+		})
 
-	VR_TAG = uiconfig.data.configuration.ui.vrTag
+		VR_TAG = uiconfig.data.configuration.ui.vrTag
+	} catch (error) {
+        if (error instanceof ApolloError) {
+            if (error.networkError) {
+                if ((<ServerError>error.networkError).result) {
+                    // This is an HTTP status code error
+                    console.error('HTTP error:', (<ServerError>error.networkError).result);
+                } else {
+                    // This is a connection error
+                    console.error('Network error:', error.networkError.message);
+                }
+            } else if (error.graphQLErrors.length > 0) {
+                // This is a GraphQL error
+                console.error('GraphQL error:', error.graphQLErrors);
+            } else {
+                // Some other type of error
+                console.error('Unexpected error:', error);
+            }
+        } else {
+            // Some other type of error (e.g., TypeScript error)
+            console.error('Non-Apollo error:', error);
+        }
+		throw error
+	}
 }

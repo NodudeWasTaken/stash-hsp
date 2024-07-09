@@ -14,12 +14,13 @@ import {
 	FIND_SCENES_SLIM_QUERY,
 } from "../queries/query"
 import { getBaseURL } from "../utilities"
+import { videoPath } from "./hspscene"
 
 const hspIndexHandler = async (req: HspRequest, res: Response) => {
 	try {
 		const baseurl = getBaseURL(req)
 		const banner: HeresphereBanner = {
-			image: `${baseurl}/apple-touch-icon.png`, // TODO: .
+			image: `${baseurl}/apple-touch-icon.png`,
 			link: baseurl,
 		}
 
@@ -106,7 +107,7 @@ const hspIndexHandler = async (req: HspRequest, res: Response) => {
 							const entry: HeresphereIndexEntry = {
 								name: filt.name,
 								list: findscenes.data.findScenes.scenes.map(
-									(scene: any) => `${baseurl}/heresphere/video/${scene.id}`
+									(scene: any) => `${baseurl}${videoPath}/${scene.id}`
 								),
 							}
 							library.library.push(entry)

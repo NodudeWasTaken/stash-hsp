@@ -10,6 +10,7 @@ import {
 } from "../heresphere_structs"
 import { FIND_SCENE_SLIM_QUERY, FIND_SCENES_SLIM_QUERY } from "../queries/query"
 import {
+	buildUrl,
 	fetchAndResizeImage,
 	fileExists,
 	formatDate,
@@ -21,13 +22,14 @@ import {
 	maxRes,
 	rlimit,
 	slimit,
+	STASH_APIKEY,
 	STASH_URL,
 	VAR_CACHE_DIR,
 	VAR_SCANCACHE_AGE,
 	VAR_SCANCACHE_CRON,
 	VAR_SCREENSHOT_DIR,
 } from "../vars"
-import { fillTags } from "./hspscene"
+import { fillTags, videoPath } from "./hspscene"
 
 // Stash is too slow to do this live
 // TODO: Add a way to refresh
@@ -61,7 +63,7 @@ const fetchHeresphereVideoEntrySlim = async (
 	const sceneData = sceneQuery.data.findScene
 	//console.debug(sceneData)
 	var processed: HeresphereVideoEntryShort = {
-		link: `${SCANDB_STR}/heresphere/video/${sceneData.id}`,
+		link: `${SCANDB_STR}${videoPath}/${sceneData.id}`,
 		title: sceneData.title,
 		dateAdded: formatDate(sceneData.created_at),
 		favorites: 0,

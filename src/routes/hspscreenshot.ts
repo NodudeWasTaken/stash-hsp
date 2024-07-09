@@ -1,8 +1,8 @@
 import { Express, Response } from "express"
 import fs from "fs"
 import { HspRequest } from "../authmiddleware"
-import { fetchAndResizeImage } from "../utilities"
-import { maxRes, slimit, STASH_URL, VAR_SCREENSHOT_DIR } from "../vars"
+import { buildUrl, fetchAndResizeImage } from "../utilities"
+import { maxRes, slimit, STASH_APIKEY, STASH_URL, VAR_SCREENSHOT_DIR } from "../vars"
 
 const hspScreenshotHandler = async (req: HspRequest, res: Response) => {
 	try {
@@ -36,6 +36,7 @@ const hspScreenshotHandler = async (req: HspRequest, res: Response) => {
 	}
 }
 
+export const screenshotPath = "/heresphere/screenshot"
 export function hspScreenshotRoutes(app: Express) {
-	app.get("/heresphere/video/:sceneId/screenshot", hspScreenshotHandler)
+	app.get(`${screenshotPath}/:sceneId`, hspScreenshotHandler)
 }

@@ -1,6 +1,6 @@
 import { Express, Response } from "express"
 import { HspRequest } from "../authmiddleware"
-import { client } from "../client"
+import { client, StashApiKeyParameter } from "../client"
 import {
 	HeresphereLensLinear,
 	HeresphereMember,
@@ -16,8 +16,10 @@ import {
 } from "../heresphere_structs"
 import { FindProjectionTags } from "../projection"
 import { FIND_SCENE_QUERY } from "../queries/query"
-import { checkUrl, formatDate, getBasename, getBaseURL } from "../utilities"
-import { STASH_URL } from "../vars"
+import { buildUrl, checkUrl, formatDate, getBasename, getBaseURL } from "../utilities"
+import { STASH_APIKEY, STASH_URL } from "../vars"
+import { eventPath } from "./hspevent"
+import { screenshotPath } from "./hspscreenshot"
 
 export function fillTags(
 	scene: any,
@@ -50,8 +52,8 @@ const fetchHeresphereVideoEntry = async (
 		access: HeresphereMember,
 		title: sceneData.title,
 		description: sceneData.details,
-		thumbnailImage: `${baseUrl}/heresphere/video/${sceneData.id}/screenshot`, // TODO: Add apikey
-		thumbnailVideo: `${STASH_URL}/scene/${sceneData.id}/preview`,
+		thumbnailImage: `${baseUrl}${screenshotPath}/${sceneData.id}`, // TODO: Add apikey
+		thumbnailVideo: buildUrl(`${STASH_URL}/scene/${sceneData.id}/preview`, {StashApiKeyParameter: STASH_APIKEY}),
 		dateAdded: formatDate(sceneData.created_at),
 		favorites: 0,
 		isFavorite: false, // TODO: .
@@ -61,7 +63,7 @@ const fetchHeresphereVideoEntry = async (
 		fov: 180,
 		lens: HeresphereLensLinear,
 		cameraIPD: 6.5,
-		eventServer: `${baseUrl}/heresphere/${sceneData.id}/event`,
+		eventServer: `${baseUrl}${eventPath}/${sceneData.id}`,
 		scripts: [],
 		subtitles: [],
 		tags: [],
@@ -78,7 +80,7 @@ const fetchHeresphereVideoEntry = async (
 	{
 		processed.scripts = []
 		try {
-			await checkUrl(sceneData.paths.funscript)
+			await checkUrl(buildUrl(sceneData.paths.funscript, {StashApiKeyParameter: STASH_APIKEY}))
 			var funscript: HeresphereVideoScript = {
 				name: "Default",
 				url: sceneData.paths.funscript, // TODO: Might not exist
@@ -91,7 +93,7 @@ const fetchHeresphereVideoEntry = async (
 	{
 		processed.subtitles = []
 		try {
-			const CAPTION_URL = `${sceneData.paths.caption}?lang=00&type=srt`
+			const CAPTION_URL = buildUrl(sceneData.paths.caption, {lang: "00", type: "srt", StashApiKeyParameter: STASH_APIKEY})
 			await checkUrl(CAPTION_URL)
 			var subs: HeresphereVideoSubtitle = {
 				name: "Default",
@@ -114,7 +116,7 @@ const fetchHeresphereVideoEntry = async (
 			height: sceneData.files[0].height,
 			width: sceneData.files[0].width,
 			size: sceneData.files[0].size,
-			url: sceneData.paths.stream,
+			url: buildUrl(sceneData.paths.stream, {StashApiKeyParameter: STASH_APIKEY}),
 		}
 		var entry: HeresphereVideoMedia = {
 			name: "Direct stream",
@@ -152,7 +154,8 @@ const sceneFetchHandler = async (req: HspRequest, res: Response) => {
 	}
 }
 
+export const videoPath = "/heresphere/video"
 export function hspSceneRoutes(app: Express) {
-	app.get("/heresphere/video/:sceneId", sceneFetchHandler)
-	app.post("/heresphere/video/:sceneId", sceneFetchHandler)
+	app.get(`${videoPath}/:sceneId`, sceneFetchHandler)
+	app.post(`${videoPath}/:sceneId`, sceneFetchHandler)
 }

@@ -1,5 +1,11 @@
 import { NextFunction, Request, Response } from "express"
-import { HeresphereAuthReq, HeresphereJsonVersion } from "./heresphere_structs"
+import {
+	HeresphereAuthHeader,
+	HeresphereAuthReq,
+	HeresphereJsonVersion,
+} from "./heresphere_structs"
+import { authPath } from "./routes/hspauth"
+import { getVrTag, STASH_APIKEY } from "./vars"
 
 export interface HspRequest extends Request {
 	heresphereAuthData?: HeresphereAuthReq
@@ -15,6 +21,21 @@ function isHeresphereAuthReq(data: any): data is HeresphereAuthReq {
 	)
 }
 
+function needsAuth(req: HspRequest) {
+	var authEnabled: boolean = false // TODO: .
+
+	if (!authEnabled) {
+		return false
+	}
+
+	const authHeader = req.headers[HeresphereAuthHeader.toLowerCase()]
+	if (authHeader) {
+		// TODO: Cache store some key
+	}
+
+	return true
+}
+
 export function heresphereAuthMiddleware(
 	req: HspRequest,
 	res: Response,
@@ -23,10 +44,13 @@ export function heresphereAuthMiddleware(
 	res.header("HereSphere-JSON-Version", `${HeresphereJsonVersion}`)
 
 	if (isHeresphereAuthReq(req.body)) {
-		console.log("Received HeresphereAuthReq:", req.body)
 		req.heresphereAuthData = req.body
-	} else {
-		console.log("Request does not match HeresphereAuthReq structure")
 	}
+
+	if (!req.heresphereAuthData && needsAuth(req) && req.path != authPath && req.path != "/") {
+		res.status(401).json({ message: "Unauthorized" })
+		return
+	}
+
 	next()
 }

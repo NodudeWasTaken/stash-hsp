@@ -1,7 +1,6 @@
-import axios from "axios"
+import { axiosInstance as axios } from './client';
 import fs, { constants } from "fs"
 import { access } from "fs/promises"
-import fetch from "node-fetch"
 import path from "path"
 import sharp from "sharp"
 import { HspRequest } from "./authmiddleware"
@@ -18,6 +17,21 @@ export function ensureDirectoryExists(directoryPath: string): void {
 	if (!fs.existsSync(directoryPath)) {
 		fs.mkdirSync(directoryPath, { recursive: true })
 	}
+}
+
+export function buildUrl(baseUrl: string, params: Record<string, string>): string {
+    const url = new URL(baseUrl);
+    const searchParams = new URLSearchParams();
+
+    // Iterate over each key-value pair in params and append to searchParams
+    Object.keys(params).forEach(key => {
+        searchParams.append(key, params[key]);
+    });
+
+    // Append the serialized query parameters to the URL's search
+    url.search = searchParams.toString();
+
+    return url.toString();
 }
 
 export function formatDate(dateString: string): string {
@@ -76,13 +90,13 @@ export async function fetchAndResizeImage(
 	}
 
 	// Fetch the image
-	const response = await fetch(imageUrl)
-	if (!response.ok) {
+	const response = await axios.get(imageUrl)
+	if (response.status !== 200) {
 		throw new Error(`Failed to fetch image from ${imageUrl}`)
 	}
 
 	// Read the image data as a buffer
-	const imageBuffer = await response.buffer()
+	const imageBuffer = Buffer.from(response.data, 'binary'); 
 
 	// Use sharp to resize the image
 	const image = sharp(imageBuffer)

@@ -1,11 +1,26 @@
 import { Express, Response } from "express"
 import { HspRequest } from "../authmiddleware"
+import { HeresphereVideoEvent } from "../heresphere_structs"
 
-const hspEventHandler = async (req: HspRequest, res: Response) => {
-	// TODO: .
-	res.json({ message: "event" })
+function isHeresphereEventReq(data: any): data is HeresphereVideoEvent {
+	return (
+		typeof data === "object" && data !== null && typeof data.id === "string"
+		// TODO: Add any other property checks
+	)
 }
 
+const hspEventHandler = async (req: HspRequest, res: Response) => {
+	if (isHeresphereEventReq(req.body)) {
+		const eventReq: HeresphereVideoEvent = req.body
+		// TODO: .
+		res.json({ message: "OK" })
+		return
+	}
+
+	res.status(400).json({ message: "unrecognized data structure" })
+}
+
+export const eventPath = "/heresphere/event"
 export function hspEventRoutes(app: Express) {
-	app.get("/heresphere/video/:sceneId/event", hspEventHandler)
+	app.post(`${eventPath}/:sceneId`, hspEventHandler)
 }

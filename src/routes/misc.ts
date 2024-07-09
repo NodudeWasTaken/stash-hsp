@@ -18,8 +18,13 @@ const faviconHandler = async (req: HspRequest, res: Response) => {
 	// TODO: .
 	res.status(500).json({ message: "Not implemented yet" })
 }
+const appleiconHandler = async (req: HspRequest, res: Response) => {
+	// TODO: .
+	res.status(500).json({ message: "Not implemented yet" })
+}
 
 export function miscRoutes(app: Express) {
 	app.get("/healthcheck", healthcheckHandler)
 	app.get("/favicon.ico", faviconHandler)
+	app.get("/apple-touch-icon.png", appleiconHandler)
 }
