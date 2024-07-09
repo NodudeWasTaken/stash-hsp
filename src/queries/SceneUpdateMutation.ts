@@ -87,7 +87,6 @@ mutation SceneUpdate($input: SceneUpdateInput!) {
 	  url
 	  mime_type
 	  label
-	  audio_only
 	  __typename
 	}
 	__typename

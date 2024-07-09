@@ -87,7 +87,6 @@ query FindScene($id: ID!, $checksum: String) {
 	  url
 	  mime_type
 	  label
-	  audio_only
 	  __typename
 	}
 	__typename
