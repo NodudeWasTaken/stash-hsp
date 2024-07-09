@@ -14,7 +14,7 @@ COPY . .
 RUN apk add --no-cache vips-dev
 
 # Bundle the project using bun
-RUN bun install --only=production
+RUN bun install --production
 
 # Command to run when the container starts
 CMD ["bun", "start"]

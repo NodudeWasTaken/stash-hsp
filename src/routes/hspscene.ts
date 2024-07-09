@@ -43,7 +43,87 @@ export function fillTags(
 		} as HeresphereVideoTag)
 	}
 
-	// TODO: More tags
+	if (scene.scene_markers) {
+		for (let tag of scene.scene_markers) {
+			const tagName =
+				tag.title.length === 0
+					? tag.primary_tag.Name
+					: `${tag.title} - ${tag.primary_tag.Name}`
+
+			processed.tags.push({
+				name: `Marker:${tagName}`,
+				start: tag.seconds * 1000,
+				end: (tag.seconds + 60) * 1000,
+			} as HeresphereVideoTag)
+		}
+	}
+
+	if (scene.galleries) {
+		for (let gallery of scene.galleries) {
+			const galleryName =
+				gallery.title.length === 0
+					? getBasename(gallery.folder.path)
+					: gallery.title
+
+			processed.tags.push({
+				name: `Gallery:${galleryName}`,
+			} as HeresphereVideoTag)
+		}
+	}
+
+	if (scene.studio) {
+		processed.tags.push({
+			name: `Studio:${scene.studio.name}`,
+		} as HeresphereVideoTag)
+	}
+
+	if (scene.groups) {
+		for (let group of scene.groups) {
+			processed.tags.push({
+				name: `Group:${group.group.name}`,
+			} as HeresphereVideoTag)
+		}
+	}
+
+	if (scene.performers) {
+		var hasFavoritedPerformer: boolean = false
+		for (let perf of scene.performers) {
+			processed.tags.push({
+				name: `Performer:${perf.name}`,
+			} as HeresphereVideoTag)
+			hasFavoritedPerformer = hasFavoritedPerformer || perf.favorite
+		}
+		processed.tags.push({
+			name: `HasFavoritedPerformer:${hasFavoritedPerformer}`,
+		} as HeresphereVideoTag)
+	}
+
+	processed.tags.push({
+		name: `OCount:${scene.o_counter}`,
+	} as HeresphereVideoTag)
+	processed.tags.push({
+		name: `Orgasmed:${scene.o_counter > 0}`,
+	} as HeresphereVideoTag)
+
+	processed.tags.push({
+		name: `PlayCount:${scene.play_count}`,
+	} as HeresphereVideoTag)
+	processed.tags.push({
+		name: `Watched:${scene.play_count > 0}`,
+	} as HeresphereVideoTag)
+
+	processed.tags.push({
+		name: `Rating:${scene.rating100}`,
+	} as HeresphereVideoTag)
+	processed.tags.push({
+		name: `Rated:${scene.rating100 !== null}`,
+	} as HeresphereVideoTag)
+	processed.tags.push({
+		name: `Organized:${scene.organized}`,
+	} as HeresphereVideoTag)
+	processed.tags.push({
+		name: `Director:${scene.director}`,
+	} as HeresphereVideoTag)
 }
 
 const dataUpdate = async (sceneId: string, authreq: HeresphereAuthReq) => {
@@ -59,10 +139,12 @@ const dataUpdate = async (sceneId: string, authreq: HeresphereAuthReq) => {
 		input.rating100 = authreq.rating * 20
 	}
 	if (authreq.isFavorite) {
-		// TODO: .
+		// TODO: VAR_FAVORITE_TAG
 	}
 	if (authreq.tags) {
-		// TODO: .
+		for (let tag of authreq.tags) {
+			console.debug("tag:", tag)
+		}
 	}
 
 	if (Object.keys(input).length > 1) {

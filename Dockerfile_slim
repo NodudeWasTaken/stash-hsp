@@ -24,7 +24,7 @@ COPY --from=build /app/out ./out
 COPY --from=build /app/package*.json ./
 
 # Install production dependencies
-RUN bun install --only=production
+RUN bun install --production
 
 # Add libvips
 RUN apk add --no-cache vips-dev
