@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express"
+import { NextFunction, Request, Response } from "express"
 import { HeresphereAuthReq, HeresphereJsonVersion } from "./heresphere_structs"
 
 export interface HspRequest extends Request {

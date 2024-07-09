@@ -10,6 +10,7 @@ const config = {
 	semi: false,
 	singleQuote: false,
 	bracketSpacing: true,
+	plugins: ["prettier-plugin-organize-imports"],
 };
-  
-  export default config;
+
+export default config;

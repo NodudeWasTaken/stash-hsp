@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express"
+import { Express, Response } from "express"
 import { HspRequest } from "../authmiddleware"
 
 var THEEND = 0

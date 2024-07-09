@@ -1,7 +1,7 @@
-import express, { Express, Request, Response } from "express"
-import { CONFIG_QUERY } from "../queries/query"
-import { client } from "../client"
+import { Express, Response } from "express"
 import { HspRequest } from "../authmiddleware"
+import { client } from "../client"
+import { CONFIG_QUERY } from "../queries/query"
 
 const healthcheckHandler = async (req: HspRequest, res: Response) => {
 	try {

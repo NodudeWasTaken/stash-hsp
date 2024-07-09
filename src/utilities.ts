@@ -1,11 +1,9 @@
-import path from "path"
-import fetch from "node-fetch"
-import sharp from "sharp"
-import { access } from "fs/promises"
-import { constants } from "fs"
-import fs from "fs"
 import axios from "axios"
-import express, { Express, Request, Response } from "express"
+import fs, { constants } from "fs"
+import { access } from "fs/promises"
+import fetch from "node-fetch"
+import path from "path"
+import sharp from "sharp"
 import { HspRequest } from "./authmiddleware"
 
 export function getBasename(filePath: string): string {

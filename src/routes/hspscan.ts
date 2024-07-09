@@ -1,4 +1,22 @@
-import express, { Express, Request, Response } from "express"
+import { Express, Response } from "express"
+import fs from "fs"
+import { writeFile } from "fs/promises"
+import cron from "node-cron"
+import { HspRequest } from "../authmiddleware"
+import { client } from "../client"
+import {
+	HeresphereScanIndex,
+	HeresphereVideoEntryShort,
+} from "../heresphere_structs"
+import { FIND_SCENE_SLIM_QUERY, FIND_SCENES_SLIM_QUERY } from "../queries/query"
+import {
+	fetchAndResizeImage,
+	fileExists,
+	formatDate,
+	getBasename,
+	getBaseURL,
+	getFileAge,
+} from "../utilities"
 import {
 	maxRes,
 	rlimit,
@@ -9,25 +27,7 @@ import {
 	VAR_SCANCACHE_CRON,
 	VAR_SCREENSHOT_DIR,
 } from "../vars"
-import {
-	fetchAndResizeImage,
-	fileExists,
-	formatDate,
-	getBasename,
-	getBaseURL,
-	getFileAge,
-} from "../utilities"
-import fs from "fs"
-import { writeFile } from "fs/promises"
-import { client } from "../client"
-import {
-	HeresphereScanIndex,
-	HeresphereVideoEntryShort,
-} from "../heresphere_structs"
-import { FIND_SCENE_SLIM_QUERY, FIND_SCENES_SLIM_QUERY } from "../queries/query"
 import { fillTags } from "./hspscene"
-import cron from "node-cron"
-import { HspRequest } from "../authmiddleware"
 
 // Stash is too slow to do this live
 // TODO: Add a way to refresh

@@ -1,19 +1,19 @@
-import express, { Express, Request, Response } from "express"
-import { getBaseURL } from "../utilities"
+import { Express, Response } from "express"
+import { HspRequest } from "../authmiddleware"
+import { client } from "../client"
+import { CriterionFixer } from "../criterion_fix"
 import {
 	HeresphereBanner,
 	HeresphereIndex,
 	HeresphereIndexEntry,
 	HeresphereMember,
 } from "../heresphere_structs"
-import { client } from "../client"
 import {
 	CONFIG_QUERY,
 	FIND_SAVED_FILTERS_QUERY,
 	FIND_SCENES_SLIM_QUERY,
 } from "../queries/query"
-import { CriterionFixer } from "../criterion_fix"
-import { HspRequest } from "../authmiddleware"
+import { getBaseURL } from "../utilities"
 
 const hspIndexHandler = async (req: HspRequest, res: Response) => {
 	try {

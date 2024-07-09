@@ -1,8 +1,8 @@
-import express, { Express, Request, Response } from "express"
-import { maxRes, slimit, STASH_URL, VAR_SCREENSHOT_DIR } from "../vars"
-import { fetchAndResizeImage } from "../utilities"
+import { Express, Response } from "express"
 import fs from "fs"
 import { HspRequest } from "../authmiddleware"
+import { fetchAndResizeImage } from "../utilities"
+import { maxRes, slimit, STASH_URL, VAR_SCREENSHOT_DIR } from "../vars"
 
 const hspScreenshotHandler = async (req: HspRequest, res: Response) => {
 	try {

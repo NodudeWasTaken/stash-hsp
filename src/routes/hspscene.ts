@@ -1,4 +1,5 @@
-import express, { Express, Request, Response } from "express"
+import { Express, Response } from "express"
+import { HspRequest } from "../authmiddleware"
 import { client } from "../client"
 import {
 	HeresphereLensLinear,
@@ -17,7 +18,6 @@ import { FindProjectionTags } from "../projection"
 import { FIND_SCENE_QUERY } from "../queries/query"
 import { checkUrl, formatDate, getBasename, getBaseURL } from "../utilities"
 import { STASH_URL } from "../vars"
-import { HspRequest } from "../authmiddleware"
 
 export function fillTags(
 	scene: any,
