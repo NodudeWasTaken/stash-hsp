@@ -4,7 +4,7 @@ import {
 	HttpLink,
 	InMemoryCache,
 	NormalizedCacheObject,
-} from "@apollo/client"
+} from "@apollo/client/core"
 import axios, { AxiosInstance } from "axios"
 import fetch from "cross-fetch" // For making fetch compatible with Node.js
 import { STASH_APIKEY, STASH_URL } from "./vars"

@@ -1,4 +1,4 @@
-import { ApolloError } from "@apollo/client"
+import { ApolloError } from "@apollo/client/core"
 import { ServerError } from "@apollo/client/link/utils/index.js"
 import pLimit from "p-limit"
 import { client } from "./client"
