@@ -1,8 +1,15 @@
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev"
 import compression from "compression"
 import express, { Express } from "express"
-import { heresphereAuthMiddleware } from "./authmiddleware"
-import { initClient } from "./client"
+import { heresphereAuthMiddleware } from "./core/authmiddleware"
+import { initClient } from "./core/client"
+import {
+	DEBUG_MODE,
+	getVrTag,
+	VAR_CACHE_DIR,
+	VAR_PORT,
+	VAR_SCREENSHOT_DIR,
+} from "./core/vars"
 import { indexRoutes } from "./routes"
 import { debugRoutes } from "./routes/debug"
 import { hspEventRoutes } from "./routes/hspevent"
@@ -12,14 +19,7 @@ import { genScanDB, hspScanRoutes } from "./routes/hspscan"
 import { hspSceneRoutes } from "./routes/hspscene"
 import { hspScreenshotRoutes } from "./routes/hspscreenshot"
 import { miscRoutes } from "./routes/misc"
-import { ensureDirectoryExists } from "./utilities"
-import {
-	DEBUG_MODE,
-	getVrTag,
-	VAR_CACHE_DIR,
-	VAR_PORT,
-	VAR_SCREENSHOT_DIR,
-} from "./vars"
+import { ensureDirectoryExists } from "./utils/utilities"
 
 const app: Express = express()
 app.use(express.json())

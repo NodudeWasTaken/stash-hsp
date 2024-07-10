@@ -6,8 +6,8 @@ import {
 	HeresphereBanner,
 	HeresphereGuest,
 	HeresphereIndex,
-} from "../heresphere_structs"
-import { getBaseURL } from "../utilities"
+} from "../structs/heresphere_structs"
+import { getBaseURL } from "../utils/utilities"
 
 const hspAuthHandler = async (req: HspRequest, res: Response) => {
 	// TODO: Check auth and possible return HeresphereAuthResp

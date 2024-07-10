@@ -1,8 +1,8 @@
 import { ApolloError } from "@apollo/client/core"
 import { ServerError } from "@apollo/client/link/utils/index.js"
 import pLimit from "p-limit"
+import { CONFIG_QUERY } from "../queries/query"
 import { client } from "./client"
-import { CONFIG_QUERY } from "./queries/query"
 
 export var VR_TAG = "Virtual Reality"
 

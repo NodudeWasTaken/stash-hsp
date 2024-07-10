@@ -1,4 +1,4 @@
-import { getResolutionEnum } from "./stash_structs"
+import { getResolutionEnum } from "../structs/stash_structs"
 
 /*
 Note

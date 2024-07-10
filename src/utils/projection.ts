@@ -12,9 +12,9 @@ import {
 	HeresphereStereoTB,
 	HeresphereVideoEntry,
 	HeresphereVideoTag,
-} from "./heresphere_structs"
+} from "../structs/heresphere_structs"
+import { VR_TAG } from "../vars"
 import { getBasename } from "./utilities"
-import { VR_TAG } from "./vars"
 
 function findProjectionTagsFromTags(
 	processedScene: HeresphereVideoEntry,

@@ -1,10 +1,11 @@
 import { Express, Response } from "express"
 import fs from "fs"
+import { writeFile } from "fs/promises"
 import path from "path"
-import { HspRequest } from "../authmiddleware"
-import { client } from "../client"
+import { HspRequest } from "../core/authmiddleware"
+import { client } from "../core/client"
 import { FIND_SCENE_SLIM_QUERY } from "../queries/query"
-import { fileExists } from "../utilities"
+import { fileExists } from "../utils/utilities"
 
 // TODO: Can we do this
 // If we run from docker we cant necessarily access said file
@@ -38,6 +39,32 @@ const hspHspHandler = async (req: HspRequest, res: Response) => {
 	} catch (error) {
 		console.error(error)
 		return res.status(500).json(error)
+	}
+}
+
+const decodeB64 = (str: string): string =>
+	Buffer.from(str, "base64").toString("binary")
+const encodeB64 = (str: string): string =>
+	Buffer.from(str, "binary").toString("base64")
+export async function writeHSPFile(sceneId: string, dataB64: string) {
+	try {
+		const data = decodeB64(dataB64)
+		const {
+			data: { findScene: sceneData },
+		} = await client.query({
+			query: FIND_SCENE_SLIM_QUERY,
+			variables: { id: sceneId },
+		})
+
+		if (sceneData.files.length === 0) {
+			throw new Error("scene has no files")
+		}
+
+		const hspPath = getHSPFile(sceneData.files[0].path)
+
+		await writeFile(hspPath, data)
+	} catch (error) {
+		console.error(error)
 	}
 }
 

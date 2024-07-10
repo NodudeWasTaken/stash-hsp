@@ -1,19 +1,19 @@
 import { Express, Response } from "express"
-import { HspRequest } from "../authmiddleware"
-import { client } from "../client"
-import { CriterionFixer } from "../criterion_fix"
-import {
-	HeresphereBanner,
-	HeresphereIndex,
-	HeresphereIndexEntry,
-	HeresphereMember,
-} from "../heresphere_structs"
+import { HspRequest } from "../core/authmiddleware"
+import { client } from "../core/client"
 import {
 	CONFIG_QUERY,
 	FIND_SAVED_FILTERS_QUERY,
 	FIND_SCENES_SLIM_QUERY,
 } from "../queries/query"
-import { getBaseURL } from "../utilities"
+import {
+	HeresphereBanner,
+	HeresphereIndex,
+	HeresphereIndexEntry,
+	HeresphereMember,
+} from "../structs/heresphere_structs"
+import { CriterionFixer } from "../utils/criterion_fix"
+import { getBaseURL } from "../utils/utilities"
 import { videoPath } from "./hspscene"
 
 const hspIndexHandler = async (req: HspRequest, res: Response) => {

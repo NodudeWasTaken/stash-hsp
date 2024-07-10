@@ -1,6 +1,8 @@
 import { Express, Response } from "express"
-import { HspRequest } from "../authmiddleware"
-import { client, StashApiKeyParameter } from "../client"
+import { HspRequest } from "../core/authmiddleware"
+import { client, StashApiKeyParameter } from "../core/client"
+import { STASH_APIKEY } from "../core/vars"
+import { FIND_SCENE_QUERY } from "../queries/query"
 import {
 	HeresphereAuthReq,
 	HeresphereHSPEntry,
@@ -15,15 +17,19 @@ import {
 	HeresphereVideoScript,
 	HeresphereVideoSubtitle,
 	HeresphereVideoTag,
-} from "../heresphere_structs"
-import { FindProjectionTags } from "../projection"
-import { FIND_SCENE_QUERY, SCENE_UPDATE_MUTATION } from "../queries/query"
+} from "../structs/heresphere_structs"
+import { hspDataUpdate } from "../structs/hspdataupdate"
 import {
 	getResolutionsLessThanOrEqualTo,
 	reverseMapping,
-} from "../stash_structs"
-import { buildUrl, formatDate, getBasename, getBaseURL } from "../utilities"
-import { STASH_APIKEY } from "../vars"
+} from "../structs/stash_structs"
+import { FindProjectionTags } from "../utils/projection"
+import {
+	buildUrl,
+	formatDate,
+	getBasename,
+	getBaseURL,
+} from "../utils/utilities"
 import { eventPath } from "./hspevent"
 import { hasHSPFile, hspPath } from "./hspfile"
 import { screenshotPath } from "./hspscreenshot"
@@ -132,50 +138,13 @@ export function fillTags(
 	} as HeresphereVideoTag)
 }
 
-const dataUpdate = async (sceneId: string, authreq: HeresphereAuthReq) => {
-	var input: {
-		id: string
-		rating100?: number
-	} = {
-		id: sceneId,
-	}
-
-	if (authreq.rating) {
-		// TODO: Set null on remove
-		input.rating100 = authreq.rating * 20
-	}
-	if (authreq.isFavorite) {
-		// TODO: VAR_FAVORITE_TAG
-		console.debug("dataUpdate: isFavorite")
-	}
-	if (authreq.tags) {
-		for (let tag of authreq.tags) {
-			console.debug("tag:", tag)
-		}
-		console.debug("dataUpdate: tags")
-	}
-	if (authreq.hspBase64) {
-		console.debug("dataUpdate: hspBase64")
-	}
-
-	if (Object.keys(input).length > 1) {
-		console.debug("dataUpdate:", input)
-		await client.mutate({
-			mutation: SCENE_UPDATE_MUTATION,
-			variables: {
-				input: input,
-			},
-		})
-	}
-}
-
 const fetchHeresphereVideoEntry = async (
 	sceneId: string,
 	baseUrl: string,
 	authreq?: HeresphereAuthReq
 ): Promise<HeresphereVideoEntry> => {
 	if (authreq) {
-		await dataUpdate(sceneId, authreq)
+		await hspDataUpdate(sceneId, authreq)
 	}
 
 	const sceneQuery = await client.query({

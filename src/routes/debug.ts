@@ -1,13 +1,13 @@
 import { Express, Response } from "express"
 import { HspRequest } from "../authmiddleware"
 import { client } from "../client"
-import { CriterionFixer } from "../criterion_fix"
 import {
 	CONFIG_QUERY,
 	FIND_SAVED_FILTERS_QUERY,
 	FIND_SCENE_QUERY,
 	FIND_SCENES_QUERY,
 } from "../queries/query"
+import { CriterionFixer } from "../utils/criterion_fix"
 
 const debugFindFiltersHandler = async (req: HspRequest, res: Response) => {
 	const result = await client.query({

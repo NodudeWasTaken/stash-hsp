@@ -2,21 +2,8 @@ import { Express, Response } from "express"
 import fs from "fs"
 import { writeFile } from "fs/promises"
 import cron from "node-cron"
-import { HspRequest } from "../authmiddleware"
-import { client } from "../client"
-import {
-	HeresphereScanIndex,
-	HeresphereVideoEntryShort,
-} from "../heresphere_structs"
-import { FIND_SCENE_SLIM_QUERY, FIND_SCENES_SLIM_QUERY } from "../queries/query"
-import {
-	fetchAndResizeImage,
-	fileExists,
-	formatDate,
-	getBasename,
-	getBaseURL,
-	getFileAge,
-} from "../utilities"
+import { HspRequest } from "../core/authmiddleware"
+import { client } from "../core/client"
 import {
 	maxRes,
 	rlimit,
@@ -26,7 +13,20 @@ import {
 	VAR_SCANCACHE_AGE,
 	VAR_SCANCACHE_CRON,
 	VAR_SCREENSHOT_DIR,
-} from "../vars"
+} from "../core/vars"
+import { FIND_SCENE_SLIM_QUERY, FIND_SCENES_SLIM_QUERY } from "../queries/query"
+import {
+	HeresphereScanIndex,
+	HeresphereVideoEntryShort,
+} from "../structs/heresphere_structs"
+import {
+	fetchAndResizeImage,
+	fileExists,
+	formatDate,
+	getBasename,
+	getBaseURL,
+	getFileAge,
+} from "../utils/utilities"
 import { fillTags, videoPath } from "./hspscene"
 
 // Stash is too slow to do this live
@@ -61,7 +61,7 @@ const fetchHeresphereVideoEntrySlim = async (
 	const sceneData = sceneQuery.data.findScene
 	//console.debug(sceneData)
 	var processed: HeresphereVideoEntryShort = {
-		link: `${SCANDB_STR}${videoPath}/${sceneData.id}`,
+		link: `${baseUrl}${videoPath}/${sceneData.id}`,
 		title: sceneData.title,
 		dateAdded: formatDate(sceneData.created_at),
 		favorites: 0,

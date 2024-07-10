@@ -2,8 +2,8 @@ import fs, { constants } from "fs"
 import { access } from "fs/promises"
 import path from "path"
 import sharp from "sharp"
-import { HspRequest } from "./authmiddleware"
-import { axiosInstance as axios } from "./client"
+import { HspRequest } from "../authmiddleware"
+import { axiosInstance as axios } from "../client"
 
 export function getBasename(filePath: string): string {
 	return path.basename(filePath)

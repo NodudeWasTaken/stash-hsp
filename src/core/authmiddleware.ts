@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express"
+import { authPath } from "./routes/hspauth"
 import {
 	HeresphereAuthHeader,
 	HeresphereAuthReq,
 	HeresphereJsonVersion,
-} from "./heresphere_structs"
-import { authPath } from "./routes/hspauth"
+} from "./structs/heresphere_structs"
 
 export interface HspRequest extends Request {
 	heresphereAuthData?: HeresphereAuthReq
