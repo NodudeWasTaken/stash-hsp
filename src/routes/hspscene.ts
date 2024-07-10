@@ -146,11 +146,16 @@ const dataUpdate = async (sceneId: string, authreq: HeresphereAuthReq) => {
 	}
 	if (authreq.isFavorite) {
 		// TODO: VAR_FAVORITE_TAG
+		console.debug("dataUpdate: isFavorite")
 	}
 	if (authreq.tags) {
 		for (let tag of authreq.tags) {
 			console.debug("tag:", tag)
 		}
+		console.debug("dataUpdate: tags")
+	}
+	if (authreq.hspBase64) {
+		console.debug("dataUpdate: hspBase64")
 	}
 
 	if (Object.keys(input).length > 1) {
