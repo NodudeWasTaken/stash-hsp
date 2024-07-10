@@ -1,4 +1,4 @@
-import { VR_TAG } from "../core/vars"
+import { VAR_UICFG } from "../core/vars"
 import {
 	HeresphereLensMKX200,
 	HeresphereLensMKX220,
@@ -33,7 +33,7 @@ function findProjectionTagsFromTags(
 		}
 
 		// Has VR tag
-		const vrTag = VR_TAG
+		const vrTag = VAR_UICFG.ui.vrTag
 		if (vrTag && tagPre === vrTag) {
 			if (processedScene.projection === HeresphereProjectionPerspective) {
 				processedScene.projection = HeresphereProjectionEquirectangular

@@ -1,7 +1,7 @@
 import { Express, Response } from "express"
 import { HspRequest } from "../core/authmiddleware"
 import { client, StashApiKeyParameter } from "../core/client"
-import { STASH_APIKEY } from "../core/vars"
+import { STASH_APIKEY, VAR_UICFG } from "../core/vars"
 import { FIND_SCENE_QUERY } from "../queries/query"
 import {
 	HeresphereAuthReq,
@@ -259,10 +259,9 @@ const fetchHeresphereVideoEntry = async (
 			const DASHurl = new URL(sceneData.paths.stream)
 			DASHurl.pathname = `${DASHurl.pathname}.mpd`
 
-			// TODO: Fetch max res from stash (store from ui when VR_TAG maybe)
 			for (const res of getResolutionsLessThanOrEqualTo(
 				maxRes,
-				2160
+				reverseMapping[VAR_UICFG.general.maxStreamingTranscodeSize]
 			).toReversed()) {
 				HLSurl.searchParams.set("resolution", res)
 				DASHurl.searchParams.set("resolution", res)

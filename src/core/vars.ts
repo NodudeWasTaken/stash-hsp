@@ -4,7 +4,7 @@ import pLimit from "p-limit"
 import { CONFIG_QUERY } from "../queries/query"
 import { client } from "./client"
 
-export var VR_TAG = "Virtual Reality"
+export var VAR_UICFG: any
 
 export const maxRes = 480
 
@@ -26,11 +26,13 @@ export const rlimit = pLimit(Number(VAR_RLIMIT))
 
 export async function getVrTag() {
 	try {
-		const uiconfig = await client.query({
+		const {
+			data: { configuration: uicfg },
+		} = await client.query({
 			query: CONFIG_QUERY,
 		})
 
-		VR_TAG = uiconfig.data.configuration.ui.vrTag
+		VAR_UICFG = uicfg
 	} catch (error) {
 		if (error instanceof ApolloError) {
 			if (error.networkError) {
