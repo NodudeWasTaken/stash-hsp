@@ -3,6 +3,7 @@ import { HspRequest } from "../authmiddleware"
 import { client, StashApiKeyParameter } from "../client"
 import {
 	HeresphereAuthReq,
+	HeresphereHSPEntry,
 	HeresphereLensLinear,
 	HeresphereMember,
 	HeresphereProjectionPerspective,
@@ -24,6 +25,7 @@ import {
 import { buildUrl, formatDate, getBasename, getBaseURL } from "../utilities"
 import { STASH_APIKEY } from "../vars"
 import { eventPath } from "./hspevent"
+import { hasHSPFile, hspPath } from "./hspfile"
 import { screenshotPath } from "./hspscreenshot"
 
 export function fillTags(
@@ -328,8 +330,15 @@ const fetchHeresphereVideoEntry = async (
 		processed.favorites++
 	}
 
-	// TODO: hspArray
-	processed.hspArray = undefined
+	processed.hspArray = []
+	if (
+		sceneData.files.length > 0 &&
+		(await hasHSPFile(sceneData.files[0].path))
+	) {
+		processed.hspArray.push({
+			url: `${baseUrl}${hspPath}/${sceneData.id}`,
+		} as HeresphereHSPEntry)
+	}
 
 	FindProjectionTags(sceneData, processed)
 

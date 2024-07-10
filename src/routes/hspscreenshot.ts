@@ -1,7 +1,7 @@
 import { Express, Response } from "express"
 import fs from "fs"
 import { HspRequest } from "../authmiddleware"
-import { fetchAndResizeImage } from "../utilities"
+import { fetchAndResizeImage, fileExists } from "../utilities"
 import { maxRes, slimit, STASH_URL, VAR_SCREENSHOT_DIR } from "../vars"
 
 const hspScreenshotHandler = async (req: HspRequest, res: Response) => {
@@ -18,15 +18,13 @@ const hspScreenshotHandler = async (req: HspRequest, res: Response) => {
 			)
 		)
 
-		if (fs.existsSync(imagePath)) {
-			// Read the image file
-			const image = fs.readFileSync(imagePath)
-
+		if (await fileExists(imagePath)) {
 			// Set content type to image/jpeg or image/png based on your image
 			res.contentType("image/jpeg") // Adjust content type based on your image type
 
-			// Return the image as a response
-			res.send(image)
+			// Create a read stream and pipe it to the response
+			const readStream = fs.createReadStream(imagePath)
+			readStream.pipe(res)
 		} else {
 			throw new Error(`Image not found at ${imagePath}`)
 		}

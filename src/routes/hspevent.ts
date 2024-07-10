@@ -13,6 +13,7 @@ const hspEventHandler = async (req: HspRequest, res: Response) => {
 	if (isHeresphereEventReq(req.body)) {
 		const eventReq: HeresphereVideoEvent = req.body
 		// TODO: See SCENE_UPDATE_QUERY
+		console.debug("Event called:", eventReq)
 		res.json({ message: "OK" })
 		return
 	}
