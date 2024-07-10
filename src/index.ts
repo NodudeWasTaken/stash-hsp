@@ -13,10 +13,15 @@ import { hspSceneRoutes } from "./routes/hspscene"
 import { hspScreenshotRoutes } from "./routes/hspscreenshot"
 import { miscRoutes } from "./routes/misc"
 import { ensureDirectoryExists } from "./utilities"
-import { DEBUG_MODE, getVrTag, VAR_CACHE_DIR, VAR_SCREENSHOT_DIR } from "./vars"
+import {
+	DEBUG_MODE,
+	getVrTag,
+	VAR_CACHE_DIR,
+	VAR_PORT,
+	VAR_SCREENSHOT_DIR,
+} from "./vars"
 
 const app: Express = express()
-const port: number = Number(process.env.PORT) || 3000
 app.use(express.json())
 app.use(
 	express.urlencoded({
@@ -46,7 +51,7 @@ if (DEBUG_MODE) {
 	loadErrorMessages()
 }
 
-const server = app.listen(port, "0.0.0.0", async () => {
+const server = app.listen(VAR_PORT, "0.0.0.0", async () => {
 	ensureDirectoryExists(VAR_SCREENSHOT_DIR)
 	ensureDirectoryExists(VAR_CACHE_DIR)
 	initClient()
@@ -60,7 +65,7 @@ const server = app.listen(port, "0.0.0.0", async () => {
 		})
 	}
 
-	console.log(`Example app listening at http://0.0.0.0:${port}`)
+	console.log(`Example app listening at http://0.0.0.0:${VAR_PORT}`)
 	console.log(`Generating scan.json in 10 seconds`)
 
 	setTimeout(() => {

@@ -9,12 +9,15 @@ services:
     ports:
       - "3000:3000"  # Adjust port as needed
     environment:
-      STASH_URL: "http://192.168.1.123:9999"
-      PORT: 3000
+      PORT: 3000 # The port stash_hsp runs on
+      STASH_URL: "http://192.168.1.123:9999" # Stash's URL
+      STASH_APIKEY: abcd # Stash api key if needed
       SCREENSHOTS_DIR: "/screenshots"
-      VAR_CACHE_DIR: "/cache"
-      SCALE_PROCESS_LIMIT: 8
-      REQUEST_PROCESS_LIMIT: 20
+      CACHE_DIR: "/cache"
+      SCALE_PROCESS_LIMIT: 8 # When downscaling screenshots, how many concurrent processes are allowed
+      REQUEST_PROCESS_LIMIT: 20 # When fetching scenes from stash, how many concurrent requests
+      SCANCACHE_CRON: "0 6 * * *" # How often to regenerate the scan database of all scenes
+      SCANCACHE_AGE: 86400000  # How old is the scan db allowed to be (should match cron, TODO remove)
     volumes:
       - screenshot-storage:/screenshots
       - cache-storage:/cache
