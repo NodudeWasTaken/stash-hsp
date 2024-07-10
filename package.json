@@ -11,14 +11,14 @@
   },
   "scripts": {
     "start": "bun run ./src/index.ts",
-    "bundle": "bun build ./src/index.ts --outdir ./out --target bun",
+    "bundle": "bun build ./src/index.ts --minify --sourcemap --target bun --outdir ./out",
+    "compile": "bun build ./src/index.ts --compile --minify --sourcemap --target bun --outfile stashhsp",
     "dev": "DEBUG=express:* bun --watch run ./src/index.ts",
     "prettier": "prettier ./src --write",
     "prettier-check": "prettier ./src --check"
   },
   "dependencies": {
     "@apollo/client": "^3.10.8",
-    "axios": "^1.7.2",
     "compression": "^1.7.4",
     "express": "^4.19.2",
     "node-cron": "^3.0.3",

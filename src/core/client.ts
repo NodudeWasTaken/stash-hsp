@@ -5,20 +5,27 @@ import {
 	InMemoryCache,
 	NormalizedCacheObject,
 } from "@apollo/client/core"
-import axios, { AxiosInstance } from "axios"
-import fetch from "cross-fetch" // For making fetch compatible with Node.js
+import fetch from "node-fetch"
 import { STASH_APIKEY, STASH_URL } from "./vars"
 
 export const StashApiKeyHeader = "ApiKey"
 export const StashApiKeyParameter = "apikey"
 
 export var client: ApolloClient<NormalizedCacheObject>
-export var axiosInstance: AxiosInstance
+
+export async function fetcher(url: any, options?: any) {
+	const update = { ...options }
+	update.headers = {
+		...update.headers,
+		[StashApiKeyHeader]: STASH_APIKEY,
+	}
+	return fetch(url, update)
+}
 
 export function initClient() {
 	const httpLink = new HttpLink({
 		uri: `${STASH_URL}/graphql`,
-		fetch, // Use cross-fetch for Node.js compatibility
+		fetch: fetch as any,
 	})
 
 	// Add headers to each request
@@ -37,10 +44,5 @@ export function initClient() {
 	client = new ApolloClient({
 		link: authMiddleware.concat(httpLink),
 		cache: new InMemoryCache(),
-	})
-	axiosInstance = axios.create({
-		headers: {
-			[StashApiKeyHeader]: STASH_APIKEY,
-		},
 	})
 }

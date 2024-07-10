@@ -3,7 +3,7 @@ import { access } from "fs/promises"
 import path from "path"
 import sharp from "sharp"
 import { HspRequest } from "../core/authmiddleware"
-import { axiosInstance as axios } from "../core/client"
+import { fetcher } from "../core/client"
 
 export function getBasename(filePath: string): string {
 	return path.basename(filePath)
@@ -57,16 +57,6 @@ export function getFileAgeDays(filePath: string): number {
 	return getFileAge(filePath) / (1000 * 60 * 60 * 24)
 }
 
-export async function checkUrl(url: string) {
-	const response = await axios.get(url)
-	if (response.status !== 200) {
-		throw Error(`URL ${url} returned status ${response.status}.`)
-	}
-	if (response.data.length === 0) {
-		throw Error(`URL ${url} was empty.`)
-	}
-}
-
 export async function fileExists(path: string) {
 	try {
 		await access(path, constants.F_OK)
@@ -89,13 +79,16 @@ export async function fetchAndResizeImage(
 	}
 
 	// Fetch the image
-	const response = await axios.get(imageUrl, { responseType: "arraybuffer" })
-	if (response.status !== 200) {
+	const response = await fetcher(imageUrl)
+	if (!response.ok) {
 		throw new Error(`Failed to fetch image from ${imageUrl}`)
 	}
 
+	// Read the image data as a buffer
+	const imageBuffer = await response.buffer()
+
 	// Use sharp to resize the image
-	const image = sharp(response.data)
+	const image = sharp(imageBuffer)
 	const metadata = await image.metadata()
 
 	// Determine new dimensions while maintaining the aspect ratio
