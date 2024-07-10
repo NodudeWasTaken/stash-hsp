@@ -51,7 +51,7 @@ if (DEBUG_MODE) {
 	loadErrorMessages()
 }
 
-const server = app.listen(VAR_PORT, "0.0.0.0", async () => {
+const server = app.listen(Number(VAR_PORT), "0.0.0.0", async () => {
 	ensureDirectoryExists(VAR_SCREENSHOT_DIR)
 	ensureDirectoryExists(VAR_CACHE_DIR)
 	initClient()
