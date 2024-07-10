@@ -11,7 +11,7 @@
   },
   "scripts": {
     "start": "bun run ./src/index.ts",
-    "bundle": "bun build ./src/index.ts --minify --sourcemap --target bun --outdir ./out",
+    "bundle": "bun build ./src/index.ts --minify --sourcemap --target bun --outdir ./build",
     "compile": "bun build ./src/index.ts --compile --minify --sourcemap --target bun --outfile stashhsp",
     "dev": "DEBUG=express:* bun --watch run ./src/index.ts",
     "prettier": "prettier ./src --write",

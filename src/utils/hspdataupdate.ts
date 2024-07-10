@@ -1,7 +1,7 @@
 import { client } from "../core/client"
 import { SCENE_UPDATE_MUTATION } from "../queries/query"
 import { writeHSPFile } from "../routes/hspfile"
-import { HeresphereAuthReq } from "./heresphere_structs"
+import { HeresphereAuthReq } from "../structs/heresphere_structs"
 
 export const hspDataUpdate = async (
 	sceneId: string,

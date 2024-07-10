@@ -18,11 +18,11 @@ import {
 	HeresphereVideoSubtitle,
 	HeresphereVideoTag,
 } from "../structs/heresphere_structs"
-import { hspDataUpdate } from "../structs/hspdataupdate"
 import {
 	getResolutionsLessThanOrEqualTo,
 	reverseMapping,
 } from "../structs/stash_structs"
+import { hspDataUpdate } from "../utils/hspdataupdate"
 import { FindProjectionTags } from "../utils/projection"
 import {
 	buildUrl,
