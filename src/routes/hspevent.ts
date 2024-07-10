@@ -1,5 +1,5 @@
 import { Express, Response } from "express"
-import { HspRequest } from "../authmiddleware"
+import { HspRequest } from "../core/authmiddleware"
 import { HeresphereVideoEvent } from "../structs/heresphere_structs"
 
 function isHeresphereEventReq(data: any): data is HeresphereVideoEvent {

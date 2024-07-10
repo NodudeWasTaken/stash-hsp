@@ -1,3 +1,4 @@
+import { VR_TAG } from "../core/vars"
 import {
 	HeresphereLensMKX200,
 	HeresphereLensMKX220,
@@ -13,7 +14,6 @@ import {
 	HeresphereVideoEntry,
 	HeresphereVideoTag,
 } from "../structs/heresphere_structs"
-import { VR_TAG } from "../vars"
 import { getBasename } from "./utilities"
 
 function findProjectionTagsFromTags(

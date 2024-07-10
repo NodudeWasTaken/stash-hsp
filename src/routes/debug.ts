@@ -1,6 +1,6 @@
 import { Express, Response } from "express"
-import { HspRequest } from "../authmiddleware"
-import { client } from "../client"
+import { HspRequest } from "../core/authmiddleware"
+import { client } from "../core/client"
 import {
 	CONFIG_QUERY,
 	FIND_SAVED_FILTERS_QUERY,

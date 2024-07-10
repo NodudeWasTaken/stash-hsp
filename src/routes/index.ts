@@ -1,5 +1,5 @@
 import { Express, Response } from "express"
-import { HspRequest } from "../authmiddleware"
+import { HspRequest } from "../core/authmiddleware"
 
 var THEEND = 1
 const indexHandler = async (req: HspRequest, res: Response) => {
