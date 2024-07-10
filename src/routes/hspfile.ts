@@ -14,32 +14,32 @@ import { fileExists } from "../utilities"
 
 const hspHspHandler = async (req: HspRequest, res: Response) => {
 	try {
-		const sceneId = req.params.sceneId
+		const { sceneId } = req.params
 
-		const sceneQuery = await client.query({
+		const {
+			data: { findScene: sceneData },
+		} = await client.query({
 			query: FIND_SCENE_SLIM_QUERY,
-			variables: {
-				id: sceneId,
-			},
+			variables: { id: sceneId },
 		})
 
-		const sceneData = sceneQuery.data.findScene
-		if (sceneData.files.length > 0) {
-			const hspPath = getHSPFile(sceneData.files[0].path)
+		if (sceneData.files.length === 0) {
+			return res.status(400).json({ message: "scene has no files" })
+		}
 
-			if (await fileExists(hspPath)) {
-				res.contentType("application/octet-stream")
+		const hspPath = getHSPFile(sceneData.files[0].path)
 
-				// Create a read stream and pipe it to the response
-				const readStream = fs.createReadStream(hspPath)
-				readStream.pipe(res)
-			} else {
-				throw new Error(`Hsp file not found at ${hspPath}`)
-			}
+		if (await fileExists(hspPath)) {
+			res.contentType("application/octet-stream")
+			fs.createReadStream(hspPath).pipe(res)
+		} else {
+			const error = new Error(`Hsp file not found at ${hspPath}`)
+			console.error(error)
+			res.status(400).json(error)
 		}
 	} catch (error) {
 		console.error(error)
-		res.status(500).json(error)
+		return res.status(500).json(error)
 	}
 }
 
