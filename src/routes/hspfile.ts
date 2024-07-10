@@ -24,7 +24,7 @@ const hspHspHandler = async (req: HspRequest, res: Response) => {
 		})
 
 		if (sceneData.files.length === 0) {
-			return res.status(400).json({ message: "scene has no files" })
+			throw new Error("scene has no files")
 		}
 
 		const hspPath = getHSPFile(sceneData.files[0].path)
@@ -33,9 +33,7 @@ const hspHspHandler = async (req: HspRequest, res: Response) => {
 			res.contentType("application/octet-stream")
 			fs.createReadStream(hspPath).pipe(res)
 		} else {
-			const error = new Error(`Hsp file not found at ${hspPath}`)
-			console.error(error)
-			res.status(400).json(error)
+			throw new Error(`Hsp file not found at ${hspPath}`)
 		}
 	} catch (error) {
 		console.error(error)
