@@ -46,17 +46,6 @@ export function formatDate(dateString: string): string {
 	return `${year}-${month}-${day}`
 }
 
-// Function to get the age of a file in milliseconds
-export function getFileAge(filePath: string): number {
-	const stats = fs.statSync(filePath)
-	const currentTime = new Date().getTime()
-	const fileTime = stats.mtime.getTime()
-	return currentTime - fileTime
-}
-export function getFileAgeDays(filePath: string): number {
-	return getFileAge(filePath) / (1000 * 60 * 60 * 24)
-}
-
 export async function fileExists(path: string) {
 	try {
 		await access(path, constants.F_OK)

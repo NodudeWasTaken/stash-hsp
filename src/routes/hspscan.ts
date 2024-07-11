@@ -10,7 +10,6 @@ import {
 	slimit,
 	STASH_URL,
 	VAR_CACHE_DIR,
-	VAR_SCANCACHE_AGE,
 	VAR_SCANCACHE_CRON,
 	VAR_SCREENSHOT_DIR,
 } from "../core/vars"
@@ -25,7 +24,6 @@ import {
 	formatDate,
 	getBasename,
 	getBaseURL,
-	getFileAge,
 } from "../utils/utilities"
 import { fillTags, videoPath } from "./hspscene"
 
@@ -92,11 +90,7 @@ const fetchHeresphereVideoEntrySlim = async (
 	return processed
 }
 export async function genScanDB(first: boolean) {
-	if (
-		!(await fileExists(SCANDB)) ||
-		getFileAge(SCANDB) >= Number(VAR_SCANCACHE_AGE) - 1 ||
-		!first
-	) {
+	if (!(await fileExists(SCANDB)) || !first) {
 		console.debug("hsp scan")
 		var scenes: HeresphereVideoEntryShort[] = []
 

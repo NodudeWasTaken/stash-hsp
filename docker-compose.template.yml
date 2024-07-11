@@ -17,7 +17,6 @@ services:
       SCALE_PROCESS_LIMIT: 8 # When downscaling screenshots, how many concurrent processes are allowed
       REQUEST_PROCESS_LIMIT: 20 # When fetching scenes from stash, how many concurrent requests
       SCANCACHE_CRON: "0 6 * * *" # How often to regenerate the scan database of all scenes
-      SCANCACHE_AGE: 86400000  # How old is the scan db allowed to be (should match cron, TODO remove)
     volumes:
       - screenshot-storage:/screenshots
       - cache-storage:/cache
