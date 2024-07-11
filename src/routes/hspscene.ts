@@ -147,14 +147,15 @@ const fetchHeresphereVideoEntry = async (
 		await hspDataUpdate(sceneId, authreq)
 	}
 
-	const sceneQuery = await client.query({
+	const {
+		data: { findScene: sceneData },
+	} = await client.query({
 		query: FIND_SCENE_QUERY,
 		variables: {
 			id: sceneId,
 		},
 	})
 
-	const sceneData = sceneQuery.data.findScene
 	//console.debug(sceneData)
 	var processed: HeresphereVideoEntry = {
 		access: HeresphereMember,

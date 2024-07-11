@@ -51,14 +51,15 @@ const fetchHeresphereVideoEntrySlim = async (
 	sceneId: string,
 	baseUrl: string
 ): Promise<HeresphereVideoEntryShort> => {
-	const sceneQuery = await client.query({
+	const {
+		data: { findScene: sceneData },
+	} = await client.query({
 		query: FIND_SCENE_SLIM_QUERY,
 		variables: {
 			id: sceneId,
 		},
 	})
 
-	const sceneData = sceneQuery.data.findScene
 	//console.debug(sceneData)
 	var processed: HeresphereVideoEntryShort = {
 		link: `${baseUrl}${videoPath}/${sceneData.id}`,
