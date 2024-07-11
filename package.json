@@ -2,7 +2,10 @@
   "name": "stash-hsp",
   "type": "module",
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/typescript": "^4.0.9",
     "@types/bun": "latest",
+    "graphql": "^16.9.0",
     "prettier": "^3.3.2",
     "prettier-plugin-organize-imports": "^4.0.0"
   },
@@ -15,7 +18,8 @@
     "compile": "bun build ./src/index.ts --compile --minify --sourcemap --target bun --outfile stashhsp",
     "dev": "DEBUG=express:* bun --watch run ./src/index.ts",
     "prettier": "prettier ./src --write",
-    "prettier-check": "prettier ./src --check"
+    "prettier-check": "prettier ./src --check",
+	"generate-types": "graphql-codegen"
   },
   "dependencies": {
     "@apollo/client": "^3.10.8",

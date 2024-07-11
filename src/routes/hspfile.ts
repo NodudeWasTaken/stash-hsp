@@ -4,6 +4,7 @@ import { writeFile } from "fs/promises"
 import path from "path"
 import { HspRequest } from "../core/authmiddleware"
 import { client } from "../core/client"
+import { Scene } from "../gql/graphql"
 import { FIND_SCENE_SLIM_QUERY } from "../queries/query"
 import { fileExists } from "../utils/utilities"
 
@@ -19,10 +20,10 @@ const hspHspHandler = async (req: HspRequest, res: Response) => {
 
 		const {
 			data: { findScene: sceneData },
-		} = await client.query({
+		} = (await client.query({
 			query: FIND_SCENE_SLIM_QUERY,
 			variables: { id: sceneId },
-		})
+		})) as { data: { findScene: Scene } }
 
 		if (sceneData.files.length === 0) {
 			throw new Error("scene has no files")
@@ -51,10 +52,10 @@ export async function writeHSPFile(sceneId: string, dataB64: string) {
 		const data = decodeB64(dataB64)
 		const {
 			data: { findScene: sceneData },
-		} = await client.query({
+		} = (await client.query({
 			query: FIND_SCENE_SLIM_QUERY,
 			variables: { id: sceneId },
-		})
+		})) as { data: { findScene: Scene } }
 
 		if (sceneData.files.length === 0) {
 			throw new Error("scene has no files")

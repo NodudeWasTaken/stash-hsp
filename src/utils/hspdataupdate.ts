@@ -1,4 +1,5 @@
 import { client } from "../core/client"
+import { SceneUpdateInput, Tag } from "../gql/graphql"
 import { FIND_TAGS_QUERY, SCENE_UPDATE_MUTATION } from "../queries/query"
 import { writeHSPFile } from "../routes/hspfile"
 import { HeresphereAuthReq } from "../structs/heresphere_structs"
@@ -7,11 +8,7 @@ export const hspDataUpdate = async (
 	sceneId: string,
 	authreq: HeresphereAuthReq
 ) => {
-	var input: {
-		id: string
-		rating100?: number
-		tag_ids?: any[]
-	} = {
+	var input: SceneUpdateInput = {
 		id: sceneId,
 	}
 
@@ -44,7 +41,7 @@ export const hspDataUpdate = async (
 					data: {
 						findTags: { tags: tagData },
 					},
-				} = await client.query({
+				} = (await client.query({
 					query: FIND_TAGS_QUERY,
 					variables: {
 						filter: {
@@ -52,14 +49,14 @@ export const hspDataUpdate = async (
 						},
 						tag_filter: orFilter,
 					},
-				})
+				})) as { data: { findTags: { tags: Tag[] } } }
 
 				// All found tags are set as the new tags
 				console.log(
 					"tagUpdate",
-					tagData.map((t: any) => t.id)
+					tagData.map((t) => t.id)
 				)
-				input.tag_ids = tagData.map((t: any) => t.id)
+				input.tag_ids = tagData.map((t) => t.id)
 			}
 		}
 		// TODO: Performers and other vars

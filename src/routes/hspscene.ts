@@ -2,6 +2,7 @@ import { Express, Response } from "express"
 import { HspRequest } from "../core/authmiddleware"
 import { client, StashApiKeyParameter } from "../core/client"
 import { STASH_APIKEY, VAR_UICFG } from "../core/vars"
+import { Scene } from "../gql/graphql"
 import { FIND_SCENE_QUERY } from "../queries/query"
 import {
 	HeresphereAuthReq,
@@ -20,6 +21,7 @@ import {
 } from "../structs/heresphere_structs"
 import {
 	getResolutionsLessThanOrEqualTo,
+	ResolutionEnum,
 	reverseMapping,
 } from "../structs/stash_structs"
 import { hspDataUpdate } from "../utils/hspdataupdate"
@@ -149,20 +151,20 @@ const fetchHeresphereVideoEntry = async (
 
 	const {
 		data: { findScene: sceneData },
-	} = await client.query({
+	} = (await client.query({
 		query: FIND_SCENE_QUERY,
 		variables: {
 			id: sceneId,
 		},
-	})
+	})) as { data: { findScene: Scene } }
 
 	//console.debug(sceneData)
 	var processed: HeresphereVideoEntry = {
 		access: HeresphereMember,
-		title: sceneData.title,
-		description: sceneData.details,
+		title: sceneData.title || "",
+		description: sceneData.details || "",
 		thumbnailImage: `${baseUrl}${screenshotPath}/${sceneData.id}`,
-		thumbnailVideo: buildUrl(sceneData.paths.preview, {
+		thumbnailVideo: buildUrl(sceneData.paths.preview || "", {
 			[StashApiKeyParameter]: STASH_APIKEY,
 		}),
 		dateAdded: formatDate(sceneData.created_at),
@@ -191,7 +193,7 @@ const fetchHeresphereVideoEntry = async (
 	if (sceneData.interactive) {
 		processed.scripts = []
 
-		const SCRIPT_URL = buildUrl(sceneData.paths.funscript, {
+		const SCRIPT_URL = buildUrl(sceneData.paths.funscript || "", {
 			[StashApiKeyParameter]: STASH_APIKEY,
 		})
 
@@ -205,7 +207,7 @@ const fetchHeresphereVideoEntry = async (
 		processed.subtitles = []
 
 		for (let caption of sceneData.captions) {
-			const CAPTION_URL = buildUrl(sceneData.paths.caption, {
+			const CAPTION_URL = buildUrl(sceneData.paths.caption || "", {
 				lang: caption.language_code,
 				type: caption.caption_type,
 				[StashApiKeyParameter]: STASH_APIKEY,
@@ -233,7 +235,7 @@ const fetchHeresphereVideoEntry = async (
 				height: sceneData.files[0].height,
 				width: sceneData.files[0].width,
 				size: sceneData.files[0].size,
-				url: sceneData.paths.stream,
+				url: sceneData.paths.stream || "",
 			}
 			const entry: HeresphereVideoMedia = {
 				name: "Direct stream",
@@ -254,15 +256,17 @@ const fetchHeresphereVideoEntry = async (
 				sources: [],
 			}
 
-			const HLSurl = new URL(sceneData.paths.stream)
+			const HLSurl = new URL(sceneData.paths.stream || "")
 			HLSurl.pathname = `${HLSurl.pathname}.m3u8`
 
-			const DASHurl = new URL(sceneData.paths.stream)
+			const DASHurl = new URL(sceneData.paths.stream || "")
 			DASHurl.pathname = `${DASHurl.pathname}.mpd`
 
 			for (const res of getResolutionsLessThanOrEqualTo(
 				maxRes,
-				reverseMapping[VAR_UICFG.general.maxStreamingTranscodeSize]
+				reverseMapping[
+					VAR_UICFG.general.maxStreamingTranscodeSize || ResolutionEnum.ORIGINAL
+				]
 			).toReversed()) {
 				HLSurl.searchParams.set("resolution", res)
 				DASHurl.searchParams.set("resolution", res)

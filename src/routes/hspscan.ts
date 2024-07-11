@@ -13,6 +13,7 @@ import {
 	VAR_SCANCACHE_CRON,
 	VAR_SCREENSHOT_DIR,
 } from "../core/vars"
+import { Scene } from "../gql/graphql"
 import { FIND_SCENE_SLIM_QUERY, FIND_SCENES_SLIM_QUERY } from "../queries/query"
 import {
 	HeresphereScanIndex,
@@ -51,17 +52,17 @@ const fetchHeresphereVideoEntrySlim = async (
 ): Promise<HeresphereVideoEntryShort> => {
 	const {
 		data: { findScene: sceneData },
-	} = await client.query({
+	} = (await client.query({
 		query: FIND_SCENE_SLIM_QUERY,
 		variables: {
 			id: sceneId,
 		},
-	})
+	})) as { data: { findScene: Scene } }
 
 	//console.debug(sceneData)
 	var processed: HeresphereVideoEntryShort = {
 		link: `${baseUrl}${videoPath}/${sceneData.id}`,
-		title: sceneData.title,
+		title: sceneData.title || "",
 		dateAdded: formatDate(sceneData.created_at),
 		favorites: 0,
 		comments: 0,
@@ -94,7 +95,11 @@ export async function genScanDB(first: boolean) {
 		console.debug("hsp scan")
 		var scenes: HeresphereVideoEntryShort[] = []
 
-		const findscenes = await client.query({
+		const {
+			data: {
+				findScenes: { scenes: videodata },
+			},
+		} = (await client.query({
 			query: FIND_SCENES_SLIM_QUERY,
 			variables: {
 				filter: {
@@ -102,8 +107,7 @@ export async function genScanDB(first: boolean) {
 					per_page: -1,
 				},
 			},
-		})
-		const videodata = findscenes.data.findScenes.scenes
+		})) as { data: { findScenes: { scenes: Scene[] } } }
 
 		// Fetch video data
 		const outof = videodata.length

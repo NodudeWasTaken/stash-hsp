@@ -1,8 +1,9 @@
 import { Express, Response } from "express"
 import { HspRequest } from "../core/authmiddleware"
 import { client } from "../core/client"
+import { VAR_UICFG } from "../core/vars"
+import { FindFilterType, SavedFilter, SceneFilterType } from "../gql/graphql"
 import {
-	CONFIG_QUERY,
 	FIND_SAVED_FILTERS_QUERY,
 	FIND_SCENES_SLIM_QUERY,
 } from "../queries/query"
@@ -33,11 +34,7 @@ const hspIndexHandler = async (req: HspRequest, res: Response) => {
 		var allfilters = []
 
 		{
-			const uiconfig = await client.query({
-				query: CONFIG_QUERY,
-			})
-
-			const defaultfilter = uiconfig.data.configuration.ui.defaultFilters.scenes
+			const defaultfilter = VAR_UICFG.ui.defaultFilters.scenes
 
 			var find_filter = defaultfilter.find_filter
 			var object_filter = defaultfilter.object_filter
@@ -59,18 +56,20 @@ const hspIndexHandler = async (req: HspRequest, res: Response) => {
 		}
 
 		{
-			const filtersq = await client.query({
+			const {
+				data: { findSavedFilters: filtersq },
+			} = (await client.query({
 				query: FIND_SAVED_FILTERS_QUERY,
 				variables: {
 					mode: "SCENES",
 				},
-			})
-			for (let defaultfilter of filtersq.data.findSavedFilters) {
-				var find_filter = defaultfilter.find_filter
-				var object_filter = defaultfilter.object_filter
+			})) as { data: { findSavedFilters: SavedFilter[] } }
+
+			for (let defaultfilter of filtersq) {
+				let object_filter: SceneFilterType = defaultfilter.object_filter
 				object_filter = CriterionFixer(object_filter)
 
-				find_filter = { ...find_filter } // Read-only fix
+				const find_filter = { ...defaultfilter.find_filter } as FindFilterType // Read-only fix
 				find_filter.page = 0
 				find_filter.per_page = -1
 

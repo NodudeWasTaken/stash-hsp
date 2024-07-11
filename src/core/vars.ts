@@ -1,10 +1,11 @@
 import { ApolloError } from "@apollo/client/core"
 import { ServerError } from "@apollo/client/link/utils/index.js"
 import pLimit from "p-limit"
+import { ConfigResult } from "../gql/graphql"
 import { CONFIG_QUERY } from "../queries/query"
 import { client } from "./client"
 
-export var VAR_UICFG: any
+export var VAR_UICFG: ConfigResult
 
 export const maxRes = 480
 
@@ -26,9 +27,9 @@ export async function getVrTag() {
 	try {
 		const {
 			data: { configuration: uicfg },
-		} = await client.query({
+		} = (await client.query({
 			query: CONFIG_QUERY,
-		})
+		})) as { data: { configuration: ConfigResult } }
 
 		VAR_UICFG = uicfg
 	} catch (error) {
