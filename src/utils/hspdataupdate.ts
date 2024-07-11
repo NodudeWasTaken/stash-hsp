@@ -31,12 +31,15 @@ export const hspDataUpdate = async (
 				.filter((tag) => tag.name.startsWith("Tag:"))
 				.map((tag) => tag.name.slice("Tag:".length))
 
+			// If any were found
 			if (tagsToFind) {
+				// Filter creation
 				const orFilter = tagsToFind.reduceRight((acc: any, tag: any) => {
 					const nameFilter = { value: tag, modifier: "EQUALS" }
 					return acc ? { name: nameFilter, OR: acc } : { name: nameFilter }
 				}, null)
 
+				// Query
 				const {
 					data: {
 						findTags: { tags: tagData },
@@ -51,6 +54,7 @@ export const hspDataUpdate = async (
 					},
 				})
 
+				// All found tags are set as the new tags
 				console.log(
 					"tagUpdate",
 					tagData.map((t: any) => t.id)
