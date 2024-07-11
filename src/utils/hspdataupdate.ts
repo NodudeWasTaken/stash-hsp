@@ -1,5 +1,5 @@
 import { client } from "../core/client"
-import { SCENE_UPDATE_MUTATION } from "../queries/query"
+import { FIND_TAGS_QUERY, SCENE_UPDATE_MUTATION } from "../queries/query"
 import { writeHSPFile } from "../routes/hspfile"
 import { HeresphereAuthReq } from "../structs/heresphere_structs"
 
@@ -10,6 +10,7 @@ export const hspDataUpdate = async (
 	var input: {
 		id: string
 		rating100?: number
+		tag_ids?: any[]
 	} = {
 		id: sceneId,
 	}
@@ -23,10 +24,42 @@ export const hspDataUpdate = async (
 		console.debug("dataUpdate: isFavorite")
 	}
 	if (authreq.tags) {
-		for (let tag of authreq.tags) {
-			console.debug("tag:", tag)
+		// For straight tags
+		{
+			// Find tags from heresphere in stash
+			const tagsToFind = authreq.tags
+				.filter((tag) => tag.name.startsWith("Tag:"))
+				.map((tag) => tag.name.slice("Tag:".length))
+
+			if (tagsToFind) {
+				const orFilter = tagsToFind.reduceRight((acc: any, tag: any) => {
+					const nameFilter = { value: tag, modifier: "EQUALS" }
+					return acc ? { name: nameFilter, OR: acc } : { name: nameFilter }
+				}, null)
+
+				const {
+					data: {
+						findTags: { tags: tagData },
+					},
+				} = await client.query({
+					query: FIND_TAGS_QUERY,
+					variables: {
+						filter: {
+							per_page: -1,
+						},
+						tag_filter: orFilter,
+					},
+				})
+
+				console.log(
+					"tagUpdate",
+					tagData.map((t: any) => t.id)
+				)
+				input.tag_ids = tagData.map((t: any) => t.id)
+			}
 		}
-		console.debug("dataUpdate: tags")
+		// TODO: Performers and other vars
+		// PlayCount, OCounter etc.
 	}
 	if (authreq.hspBase64) {
 		await writeHSPFile(sceneId, authreq.hspBase64)
