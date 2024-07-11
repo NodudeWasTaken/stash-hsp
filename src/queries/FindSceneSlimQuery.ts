@@ -3,12 +3,12 @@ import { gql } from '@apollo/client/core';
 const query = gql`
 query FindScene($id: ID!, $checksum: String) {
 	findScene(id: $id, checksum: $checksum) {
-	  ...SceneData
+	  ...SceneDataSlim
 	  __typename
 	}
   }
   
-  fragment SceneData on Scene {
+  fragment SceneDataSlim on Scene {
 	id
 	title
 	code
