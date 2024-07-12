@@ -5,7 +5,7 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 
 // Get the SCHEMA URL from environment variables
-const schemaUrl = process.env.STASH_SCHEMA || 'https://localhost:9999/graphql'
+const schemaUrl = process.env.STASH_URL ? `${process.env.STASH_URL}/graphql` : 'https://localhost:9999/graphql';
 
 const config: CodegenConfig = {
    schema: schemaUrl,

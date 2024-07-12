@@ -121,7 +121,7 @@ export async function genScanDB(first: boolean) {
 					fetchHeresphereVideoEntrySlim(scene.id, SCANDB_STR)
 						.then((hspscene) => {
 							inof++
-							console.debug("hsp:", scene.id, "prog:", inof, "/", outof)
+							console.debug("hsp scan:", scene.id, "prog:", inof, "/", outof)
 							scenes.push(hspscene)
 						})
 						.catch((error) => console.error("fetch stash scene error:", error))
