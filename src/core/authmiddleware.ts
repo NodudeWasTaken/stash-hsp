@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express"
+import NodeCache from "node-cache"
 import { authPath } from "../routes/hspauth"
 import {
 	HeresphereAuthHeader,
@@ -6,9 +7,14 @@ import {
 	HeresphereJsonVersion,
 } from "../structs/heresphere_structs"
 
-declare module "express-serve-static-core" {
-	interface Request {
-		heresphereAuthData?: HeresphereAuthReq
+// Create a new instance of NodeCache with 5 hour TTL
+const login_cache = new NodeCache({ stdTTL: 60 * 60 * 5 })
+
+declare global {
+	namespace Express {
+		interface Request {
+			heresphereAuthData?: HeresphereAuthReq
+		}
 	}
 }
 
@@ -50,12 +56,7 @@ export function heresphereAuthMiddleware(
 		req.heresphereAuthData = req.body
 	}
 
-	if (
-		!req.heresphereAuthData &&
-		needsAuth(req) &&
-		req.path != authPath &&
-		req.path != "/"
-	) {
+	if (!req.heresphereAuthData && needsAuth(req) && req.path != authPath) {
 		res.status(401).json({ message: "Unauthorized" })
 		return
 	}

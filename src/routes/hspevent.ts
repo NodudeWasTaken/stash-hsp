@@ -12,7 +12,7 @@ import {
 } from "../structs/heresphere_structs"
 
 // Create a new instance of NodeCache with 5 hour TTL
-const cache = new NodeCache({ stdTTL: 60 * 60 * 5 })
+const video_event_cache = new NodeCache({ stdTTL: 60 * 60 * 5 })
 
 async function updatePlayCount(
 	scene: Scene,
@@ -71,13 +71,13 @@ const hspEventHandler = async (req: Request, res: Response) => {
 		}
 
 		// If previously updated playcount, dont update again
-		const previousID = cache.get(remoteIP)
+		const previousID = video_event_cache.get(remoteIP)
 		if (previousID != sceneId) {
 			// Video switch, remove old entry
-			cache.del(remoteIP)
+			video_event_cache.del(remoteIP)
 			if (await updatePlayCount(sceneData, eventReq)) {
 				// Dont update playcount again
-				cache.set(remoteIP, sceneId)
+				video_event_cache.set(remoteIP, sceneId)
 			}
 		}
 
