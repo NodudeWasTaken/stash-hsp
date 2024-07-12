@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client/core';
-import { SavedFilter } from '../gql/graphql';
 
 export const FIND_SAVED_FILTERS_QUERY = gql`
 query FindSavedFilters($mode: FilterMode) {

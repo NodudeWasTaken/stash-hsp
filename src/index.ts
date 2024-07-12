@@ -1,6 +1,7 @@
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev"
 import compression from "compression"
 import express, { Express } from "express"
+import requestIp from "request-ip"
 import { heresphereAuthMiddleware } from "./core/authmiddleware"
 import { initClient } from "./core/client"
 import {
@@ -22,14 +23,16 @@ import { miscRoutes } from "./routes/misc"
 import { ensureDirectoryExists } from "./utils/utilities"
 
 const app: Express = express()
-app.use(express.json())
+app.set("trust proxy", true)
+app.use(requestIp.mw())
+app.use(heresphereAuthMiddleware)
+app.use(express.json()) // BUG: json() removes ip address fields, place it later
 app.use(
 	express.urlencoded({
 		extended: true,
 	})
 )
 app.use(compression())
-app.use(heresphereAuthMiddleware)
 
 // TODO: Log errors
 

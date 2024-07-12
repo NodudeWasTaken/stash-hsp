@@ -1,5 +1,4 @@
-import { Express, Response } from "express"
-import { HspRequest } from "../core/authmiddleware"
+import { Express, Request, Response } from "express"
 import { client } from "../core/client"
 import { Query } from "../gql/graphql"
 import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
@@ -8,7 +7,7 @@ import { FIND_SCENE_QUERY } from "../queries/FindSceneQuery"
 import { FIND_SCENES_QUERY } from "../queries/FindScenesQuery"
 import { CriterionFixer } from "../utils/criterion_fix"
 
-const debugFindFiltersHandler = async (req: HspRequest, res: Response) => {
+const debugFindFiltersHandler = async (req: Request, res: Response) => {
 	const result = await client.query<Query>({
 		query: FIND_SAVED_FILTERS_QUERY,
 		variables: {
@@ -19,7 +18,7 @@ const debugFindFiltersHandler = async (req: HspRequest, res: Response) => {
 	res.json(result)
 }
 
-const debugFindDefScenesHandler = async (req: HspRequest, res: Response) => {
+const debugFindDefScenesHandler = async (req: Request, res: Response) => {
 	try {
 		const uiconfig = await client.query<Query>({
 			query: CONFIG_QUERY,
@@ -46,7 +45,7 @@ const debugFindDefScenesHandler = async (req: HspRequest, res: Response) => {
 	}
 }
 
-const debugFindSceneHandler = async (req: HspRequest, res: Response) => {
+const debugFindSceneHandler = async (req: Request, res: Response) => {
 	try {
 		const sceneId = req.params.sceneId
 

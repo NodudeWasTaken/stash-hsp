@@ -1,10 +1,9 @@
-import { Express, Response } from "express"
+import { Express, Request, Response } from "express"
 import fs from "fs"
-import { HspRequest } from "../core/authmiddleware"
 import { maxRes, slimit, STASH_URL, VAR_SCREENSHOT_DIR } from "../core/vars"
 import { fetchAndResizeImage, fileExists } from "../utils/utilities"
 
-const hspScreenshotHandler = async (req: HspRequest, res: Response) => {
+const hspScreenshotHandler = async (req: Request, res: Response) => {
 	try {
 		const sceneId = Number(req.params.sceneId)
 

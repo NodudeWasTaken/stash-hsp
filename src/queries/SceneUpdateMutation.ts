@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client/core';
-import { Maybe, Scene } from '../gql/graphql';
 
 export const SCENE_UPDATE_MUTATION = gql`
 mutation SceneUpdate($input: SceneUpdateInput!) {

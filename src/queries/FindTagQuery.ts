@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client/core';
-import { Maybe, Tag } from '../gql/graphql';
 
 export const FIND_TAG_QUERY = gql`
 query FindTag($id: ID!) {

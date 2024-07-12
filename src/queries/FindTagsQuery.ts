@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client/core';
-import { FindTagsResultType } from '../gql/graphql';
 
 export const FIND_TAGS_QUERY = gql`
 query FindTags($filter: FindFilterType, $tag_filter: TagFilterType) {

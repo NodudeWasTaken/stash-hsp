@@ -1,8 +1,7 @@
-import { Express, Response } from "express"
-import { HspRequest } from "../core/authmiddleware"
+import { Express, Request, Response } from "express"
 
 var THEEND = 1
-const indexHandler = async (req: HspRequest, res: Response) => {
+const indexHandler = async (req: Request, res: Response) => {
 	THEEND += 1 / 3
 	res.json({ message: "the end" + " is never the end".repeat(THEEND) })
 }

@@ -1,5 +1,4 @@
-import { Express, Response } from "express"
-import { HspRequest } from "../core/authmiddleware"
+import { Express, Request, Response } from "express"
 import { client } from "../core/client"
 import { VAR_UICFG } from "../core/vars"
 import { FindFilterType, Query, SceneFilterType } from "../gql/graphql"
@@ -15,7 +14,7 @@ import { CriterionFixer } from "../utils/criterion_fix"
 import { getBaseURL } from "../utils/utilities"
 import { videoPath } from "./hspscene"
 
-const hspIndexHandler = async (req: HspRequest, res: Response) => {
+const hspIndexHandler = async (req: Request, res: Response) => {
 	try {
 		const baseurl = getBaseURL(req)
 		const banner: HeresphereBanner = {

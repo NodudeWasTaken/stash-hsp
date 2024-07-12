@@ -1,5 +1,4 @@
-import { Express, Response } from "express"
-import { HspRequest } from "../core/authmiddleware"
+import { Express, Request, Response } from "express"
 import { client, StashApiKeyParameter } from "../core/client"
 import { STASH_APIKEY, VAR_UICFG } from "../core/vars"
 import { Query, Scene } from "../gql/graphql"
@@ -225,7 +224,7 @@ const fetchHeresphereVideoEntry = async (
 	return processed
 }
 
-const sceneFetchHandler = async (req: HspRequest, res: Response) => {
+const sceneFetchHandler = async (req: Request, res: Response) => {
 	try {
 		const sceneId = req.params.sceneId
 		res.json(

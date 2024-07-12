@@ -6,8 +6,10 @@ import {
 	HeresphereJsonVersion,
 } from "../structs/heresphere_structs"
 
-export interface HspRequest extends Request {
-	heresphereAuthData?: HeresphereAuthReq
+declare module "express-serve-static-core" {
+	interface Request {
+		heresphereAuthData?: HeresphereAuthReq
+	}
 }
 
 function isHeresphereAuthReq(data: any): data is HeresphereAuthReq {
@@ -20,7 +22,7 @@ function isHeresphereAuthReq(data: any): data is HeresphereAuthReq {
 	)
 }
 
-function needsAuth(req: HspRequest) {
+function needsAuth(req: Request) {
 	var authEnabled: boolean = false // TODO: .
 
 	if (!authEnabled) {
@@ -36,11 +38,13 @@ function needsAuth(req: HspRequest) {
 }
 
 export function heresphereAuthMiddleware(
-	req: HspRequest,
+	req: Request,
 	res: Response,
 	next: NextFunction
 ) {
 	res.header("HereSphere-JSON-Version", `${HeresphereJsonVersion}`)
+
+	console.log("Remote IP (req.clientIp):", req.clientIp)
 
 	if (isHeresphereAuthReq(req.body)) {
 		req.heresphereAuthData = req.body

@@ -1,8 +1,7 @@
-import { Express, Response } from "express"
+import { Express, Request, Response } from "express"
 import fs from "fs"
 import { writeFile } from "fs/promises"
 import path from "path"
-import { HspRequest } from "../core/authmiddleware"
 import { client } from "../core/client"
 import { Query } from "../gql/graphql"
 import { FIND_SCENE_SLIM_QUERY } from "../queries/FindSceneSlimQuery"
@@ -14,7 +13,7 @@ import { fileExists } from "../utils/utilities"
 // But if we want to be compatible with stashplugins we need to do it like this
 // Stash doesnt have an arbitrary read endpoint
 
-const hspHspHandler = async (req: HspRequest, res: Response) => {
+const hspHspHandler = async (req: Request, res: Response) => {
 	try {
 		const { sceneId } = req.params
 

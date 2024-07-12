@@ -1,10 +1,9 @@
-import { Express, Response } from "express"
-import { HspRequest } from "../core/authmiddleware"
+import { Express, Request, Response } from "express"
 import { client } from "../core/client"
 import { Query } from "../gql/graphql"
 import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
 
-const healthcheckHandler = async (req: HspRequest, res: Response) => {
+const healthcheckHandler = async (req: Request, res: Response) => {
 	try {
 		await client.query<Query>({
 			query: CONFIG_QUERY,
@@ -15,11 +14,11 @@ const healthcheckHandler = async (req: HspRequest, res: Response) => {
 	}
 }
 
-const faviconHandler = async (req: HspRequest, res: Response) => {
+const faviconHandler = async (req: Request, res: Response) => {
 	// TODO: .
 	res.status(500).json({ message: "Not implemented yet" })
 }
-const appleiconHandler = async (req: HspRequest, res: Response) => {
+const appleiconHandler = async (req: Request, res: Response) => {
 	// TODO: .
 	res.status(500).json({ message: "Not implemented yet" })
 }

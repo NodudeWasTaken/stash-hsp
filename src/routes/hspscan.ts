@@ -1,8 +1,7 @@
-import { Express, Response } from "express"
+import { Express, Request, Response } from "express"
 import fs from "fs"
 import { writeFile } from "fs/promises"
 import cron from "node-cron"
-import { HspRequest } from "../core/authmiddleware"
 import { client } from "../core/client"
 import {
 	maxRes,
@@ -35,7 +34,7 @@ import { videoPath } from "./hspscene"
 const SCANDB = `${VAR_CACHE_DIR}/scan.json`
 const SCANDB_STR = "REPLACE_ME_XXX_FUCKER_DONT_FIND_SECRET_STRING"
 
-const hspscanfetchHandler = async (req: HspRequest, res: Response) => {
+const hspscanfetchHandler = async (req: Request, res: Response) => {
 	if (await fileExists(SCANDB)) {
 		var scandb = fs
 			.readFileSync(SCANDB)

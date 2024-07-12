@@ -1,5 +1,4 @@
-import { Express, Response } from "express"
-import { HspRequest } from "../core/authmiddleware"
+import { Express, Request, Response } from "express"
 import {
 	HeresphereAuthResp,
 	HeresphereBadLogin,
@@ -9,7 +8,7 @@ import {
 } from "../structs/heresphere_structs"
 import { getBaseURL } from "../utils/utilities"
 
-const hspAuthHandler = async (req: HspRequest, res: Response) => {
+const hspAuthHandler = async (req: Request, res: Response) => {
 	// TODO: Check auth and possible return HeresphereAuthResp
 	if (!req.heresphereAuthData) {
 		const baseurl = getBaseURL(req)

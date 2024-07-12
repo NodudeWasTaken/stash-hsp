@@ -1,15 +1,15 @@
+import { Request } from "express"
 import fs, { constants } from "fs"
 import { access } from "fs/promises"
 import path from "path"
 import sharp from "sharp"
-import { HspRequest } from "../core/authmiddleware"
 import { fetcher } from "../core/client"
 
 export function getBasename(filePath: string): string {
 	return path.basename(filePath)
 }
 
-export function getBaseURL(req: HspRequest) {
+export function getBaseURL(req: Request) {
 	return `${req.protocol}://${req.get("host")}`
 }
 
