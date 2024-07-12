@@ -41,8 +41,7 @@ const fetchHeresphereVideoEntry = async (
 	var sceneData: Scene | undefined
 
 	if (authreq) {
-		const dataResult = await hspDataUpdate(sceneId, authreq)
-		sceneData = dataResult || undefined
+		sceneData = await hspDataUpdate(sceneId, authreq)
 	}
 
 	if (!sceneData) {
@@ -130,13 +129,13 @@ const fetchHeresphereVideoEntry = async (
 
 	if ((!authreq || authreq.needsMediaSource) && sceneData.files.length > 0) {
 		processed.media = []
-		const maxRes = sceneData.files[0].height
+		const maxResHeight = sceneData.files[0].height
 		const maxResWidth = sceneData.files[0].width
 		{
 			const source: HeresphereVideoMediaSource = {
-				resolution: maxRes,
-				height: sceneData.files[0].height,
-				width: sceneData.files[0].width,
+				resolution: maxResHeight,
+				height: maxResHeight,
+				width: maxResWidth,
 				size: sceneData.files[0].size,
 				url: sceneData.paths.stream || "",
 			}
@@ -166,7 +165,7 @@ const fetchHeresphereVideoEntry = async (
 			DASHurl.pathname = `${DASHurl.pathname}.mpd`
 
 			for (const res of getResolutionsLessThanOrEqualTo(
-				maxRes,
+				maxResHeight,
 				reverseMapping[
 					VAR_UICFG.general.maxStreamingTranscodeSize || ResolutionEnum.ORIGINAL
 				]
@@ -175,7 +174,7 @@ const fetchHeresphereVideoEntry = async (
 				DASHurl.searchParams.set("resolution", res)
 
 				const resVal = reverseMapping[res]
-				const widthVal = (maxResWidth / maxRes) * resVal
+				const widthVal = (maxResWidth / maxResHeight) * resVal
 
 				const HLSsource: HeresphereVideoMediaSource = {
 					resolution: resVal,

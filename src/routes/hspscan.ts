@@ -4,8 +4,8 @@ import { writeFile } from "fs/promises"
 import cron from "node-cron"
 import { client } from "../core/client"
 import {
-	maxRes,
 	rlimit,
+	SCREENSHOT_MAXRES,
 	slimit,
 	STASH_URL,
 	VAR_CACHE_DIR,
@@ -138,7 +138,7 @@ export async function genScanDB(first: boolean) {
 					fetchAndResizeImage(
 						`${STASH_URL}/scene/${scene.id}/screenshot`,
 						`${VAR_SCREENSHOT_DIR}/${scene.id}.jpg`,
-						maxRes
+						SCREENSHOT_MAXRES
 					).catch((error) =>
 						console.error("generating screenshot error:", error)
 					)

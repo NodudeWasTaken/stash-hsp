@@ -9,7 +9,7 @@ import { client } from "./client"
 export var VAR_UICFG: ConfigResult
 export var VAR_FAVTAG: Tag | undefined
 
-export const maxRes = 480
+export const SCREENSHOT_MAXRES = 480
 
 export const DEBUG_MODE = process.env.DEBUG
 export const VAR_PORT = process.env.PORT || 3000

@@ -94,7 +94,7 @@ for (const [height, resolution] of Object.entries(resolutionMapping)) {
 
 export const getResolutionsLessThanOrEqualTo = (
 	vidRes: number,
-	maxRes: number
+	maxResIn: number
 ): ResolutionEnum[] => {
 	let result: ResolutionEnum[] = []
 
@@ -102,7 +102,7 @@ export const getResolutionsLessThanOrEqualTo = (
 		const _height =
 			resolutions == ResolutionEnum.ORIGINAL ? vidRes : parseInt(height)
 
-		if (_height <= maxRes) {
+		if (_height <= maxResIn) {
 			result.push(resolutions)
 		}
 	}

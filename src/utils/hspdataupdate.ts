@@ -1,6 +1,6 @@
 import { client } from "../core/client"
 import { VAR_FAVTAG } from "../core/vars"
-import { Maybe, Mutation, Query, Scene, SceneUpdateInput } from "../gql/graphql"
+import { Mutation, Query, Scene, SceneUpdateInput } from "../gql/graphql"
 import { FIND_SCENE_QUERY } from "../queries/FindSceneQuery"
 import { FIND_TAGS_QUERY } from "../queries/FindTagsQuery"
 import { SCENE_UPDATE_MUTATION } from "../queries/SceneUpdateMutation"
@@ -54,7 +54,7 @@ function manageFavoriteTag(
 export const hspDataUpdate = async (
 	sceneId: string,
 	authreq: HeresphereAuthReq
-): Promise<Maybe<Scene> | undefined> => {
+): Promise<Scene | undefined> => {
 	// Initialize the input object with the sceneId
 	var input: SceneUpdateInput = {
 		id: sceneId,
@@ -140,7 +140,7 @@ export const hspDataUpdate = async (
 			},
 		})
 
-		return queryResult.data?.sceneUpdate
+		return queryResult.data?.sceneUpdate || undefined
 	}
 }
 

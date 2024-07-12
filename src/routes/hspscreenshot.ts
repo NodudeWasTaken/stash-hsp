@@ -1,6 +1,11 @@
 import { Express, Request, Response } from "express"
 import fs from "fs"
-import { maxRes, slimit, STASH_URL, VAR_SCREENSHOT_DIR } from "../core/vars"
+import {
+	SCREENSHOT_MAXRES,
+	slimit,
+	STASH_URL,
+	VAR_SCREENSHOT_DIR,
+} from "../core/vars"
 import { fetchAndResizeImage, fileExists } from "../utils/utilities"
 
 const hspScreenshotHandler = async (req: Request, res: Response) => {
@@ -13,7 +18,7 @@ const hspScreenshotHandler = async (req: Request, res: Response) => {
 			fetchAndResizeImage(
 				`${STASH_URL}/scene/${sceneId}/screenshot`,
 				imagePath,
-				maxRes
+				SCREENSHOT_MAXRES
 			)
 		)
 
