@@ -1,6 +1,7 @@
 import { client } from "../core/client"
-import { VAR_FAVORITE_TAG } from "../core/vars"
+import { VAR_FAVTAG } from "../core/vars"
 import { Maybe, Mutation, Query, Scene, SceneUpdateInput } from "../gql/graphql"
+import { FIND_SCENE_QUERY } from "../queries/FindSceneQuery"
 import { FIND_TAGS_QUERY } from "../queries/FindTagsQuery"
 import { SCENE_UPDATE_MUTATION } from "../queries/SceneUpdateMutation"
 import { writeHSPFile } from "../routes/hspfile"
@@ -16,14 +17,18 @@ export const hspDataUpdate = async (
 	sceneId: string,
 	authreq: HeresphereAuthReq
 ): Promise<Maybe<Scene> | undefined> => {
+	// Initialize the input object with the sceneId
 	var input: SceneUpdateInput = {
 		id: sceneId,
 	}
 
+	// Handle rating update
 	if (authreq.rating) {
 		// TODO: Set null on remove
 		input.rating100 = authreq.rating * 20
 	}
+
+	// Handle tag updates
 	if (authreq.tags) {
 		// For straight tags
 		{
@@ -34,13 +39,13 @@ export const hspDataUpdate = async (
 
 			// If any were found
 			if (tagsToFind) {
-				// Filter creation
+				// Construct the filter for the tags
 				const orFilter = tagsToFind.reduceRight((acc: any, tag: any) => {
 					const nameFilter = { value: tag, modifier: "EQUALS" }
 					return acc ? { name: nameFilter, OR: acc } : { name: nameFilter }
 				}, null)
 
-				// Query
+				// Query to find tags in stash
 				const queryResult = await client.query<Query>({
 					query: FIND_TAGS_QUERY,
 					variables: {
@@ -50,32 +55,53 @@ export const hspDataUpdate = async (
 						tag_filter: orFilter,
 					},
 				})
-				var tagData = queryResult.data.findTags.tags
 
-				if (authreq.isFavorite && VAR_FAVORITE_TAG) {
-					// TODO: .
+				// Set the tag_ids in the input
+				input.tag_ids = queryResult.data.findTags.tags.map((t) => t.id)
+
+				// Add favorite tag if applicable
+				if (
+					authreq.isFavorite &&
+					VAR_FAVTAG !== undefined &&
+					!input.tag_ids.includes(VAR_FAVTAG?.id)
+				) {
+					input.tag_ids.push(VAR_FAVTAG.id)
 				}
-
-				// All found tags are set as the new tags
-				console.log(
-					"tagUpdate",
-					tagData.map((t) => t.id)
-				)
-				input.tag_ids = tagData.map((t) => t.id)
 			}
 		}
+
 		// TODO: Performers and other vars (see fillTags)
 		// PlayCount, OCounter etc.
 		// Markers
-	} else if (authreq.isFavorite && VAR_FAVORITE_TAG) {
-		// TODO: .
-		console.debug("dataUpdate: isFavorite")
+	} else if (authreq.isFavorite && VAR_FAVTAG !== undefined) {
+		// Query to find the scene if tags are not provided but favorite flag is set
+		const queryResult = await client.query<Query>({
+			query: FIND_SCENE_QUERY,
+			variables: {
+				id: sceneId,
+			},
+		})
+
+		// Throw error if scene is not found
+		if (!queryResult.data.findScene) {
+			throw new Error("scene not found")
+		}
+
+		// Set the tag_ids in the input
+		input.tag_ids = queryResult.data.findScene.tags.map((t) => t.id)
+
+		// Add favorite tag if not already present
+		if (!input.tag_ids.includes(VAR_FAVTAG?.id)) {
+			input.tag_ids.push(VAR_FAVTAG.id)
+		}
 	}
 
+	// Handle HSP base64 data update
 	if (authreq.hspBase64) {
 		await writeHSPFile(sceneId, authreq.hspBase64)
 	}
 
+	// Update the scene if there are changes in the input
 	if (Object.keys(input).length > 1) {
 		console.debug("dataUpdate:", input)
 		const queryResult = await client.mutate<Mutation>({

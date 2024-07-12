@@ -7,7 +7,7 @@ import { FIND_TAGS_QUERY } from "../queries/FindTagsQuery"
 import { client } from "./client"
 
 export var VAR_UICFG: ConfigResult
-export var VAR_FAVTAG: Tag
+export var VAR_FAVTAG: Tag | undefined
 
 export const maxRes = 480
 
