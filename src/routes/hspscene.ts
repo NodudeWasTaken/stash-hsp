@@ -2,11 +2,8 @@ import { Express, Response } from "express"
 import { HspRequest } from "../core/authmiddleware"
 import { client, StashApiKeyParameter } from "../core/client"
 import { STASH_APIKEY, VAR_UICFG } from "../core/vars"
-import { Scene } from "../gql/graphql"
-import {
-	FIND_SCENE_QUERY,
-	FIND_SCENE_QUERY_TYPE,
-} from "../queries/FindSceneQuery"
+import { Query, Scene } from "../gql/graphql"
+import { FIND_SCENE_QUERY } from "../queries/FindSceneQuery"
 import {
 	HeresphereAuthReq,
 	HeresphereHSPEntry,
@@ -50,13 +47,17 @@ const fetchHeresphereVideoEntry = async (
 	}
 
 	if (!sceneData) {
-		const queryResult = await client.query<FIND_SCENE_QUERY_TYPE>({
+		const queryResult = await client.query<Query>({
 			query: FIND_SCENE_QUERY,
 			variables: {
 				id: sceneId,
 			},
 		})
-		sceneData = queryResult.data.findScene
+		sceneData = queryResult.data.findScene || undefined
+	}
+
+	if (!sceneData) {
+		throw new Error("scene not found")
 	}
 
 	//console.debug(sceneData)

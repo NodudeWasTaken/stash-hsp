@@ -1,11 +1,12 @@
 import { Express, Response } from "express"
 import { HspRequest } from "../core/authmiddleware"
 import { client } from "../core/client"
-import { CONFIG_QUERY, CONFIG_QUERY_TYPE } from "../queries/ConfigurationQuery"
+import { Query } from "../gql/graphql"
+import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
 
 const healthcheckHandler = async (req: HspRequest, res: Response) => {
 	try {
-		await client.query<CONFIG_QUERY_TYPE>({
+		await client.query<Query>({
 			query: CONFIG_QUERY,
 		})
 		res.json({ message: "OK" })

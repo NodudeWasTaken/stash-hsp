@@ -1,7 +1,6 @@
 import { gql } from '@apollo/client/core';
-import { Scene } from '../gql/graphql';
+import { Maybe, Scene } from '../gql/graphql';
 
-export interface FIND_SCENE_QUERY_TYPE { findScene: Scene }
 export const FIND_SCENE_QUERY = gql`
 query FindScene($id: ID!, $checksum: String) {
 	findScene(id: $id, checksum: $checksum) {

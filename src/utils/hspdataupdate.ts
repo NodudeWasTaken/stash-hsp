@@ -1,11 +1,8 @@
 import { client } from "../core/client"
 import { VAR_FAVORITE_TAG } from "../core/vars"
-import { Scene, SceneUpdateInput } from "../gql/graphql"
-import { FIND_TAGS_QUERY, FIND_TAGS_QUERY_TYPE } from "../queries/FindTagsQuery"
-import {
-	SCENE_UPDATE_MUTATION,
-	SCENE_UPDATE_MUTATION_TYPE,
-} from "../queries/SceneUpdateMutation"
+import { Maybe, Mutation, Query, Scene, SceneUpdateInput } from "../gql/graphql"
+import { FIND_TAGS_QUERY } from "../queries/FindTagsQuery"
+import { SCENE_UPDATE_MUTATION } from "../queries/SceneUpdateMutation"
 import { writeHSPFile } from "../routes/hspfile"
 import {
 	HeresphereAuthReq,
@@ -18,7 +15,7 @@ import { getBasename } from "./utilities"
 export const hspDataUpdate = async (
 	sceneId: string,
 	authreq: HeresphereAuthReq
-): Promise<Scene | void> => {
+): Promise<Maybe<Scene> | undefined> => {
 	var input: SceneUpdateInput = {
 		id: sceneId,
 	}
@@ -44,7 +41,7 @@ export const hspDataUpdate = async (
 				}, null)
 
 				// Query
-				const queryResult = await client.query<FIND_TAGS_QUERY_TYPE>({
+				const queryResult = await client.query<Query>({
 					query: FIND_TAGS_QUERY,
 					variables: {
 						filter: {
@@ -81,7 +78,7 @@ export const hspDataUpdate = async (
 
 	if (Object.keys(input).length > 1) {
 		console.debug("dataUpdate:", input)
-		const queryResult = await client.mutate<SCENE_UPDATE_MUTATION_TYPE>({
+		const queryResult = await client.mutate<Mutation>({
 			mutation: SCENE_UPDATE_MUTATION,
 			variables: {
 				input: input,

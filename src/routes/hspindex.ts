@@ -2,12 +2,8 @@ import { Express, Response } from "express"
 import { HspRequest } from "../core/authmiddleware"
 import { client } from "../core/client"
 import { VAR_UICFG } from "../core/vars"
-import { FindFilterType, SceneFilterType } from "../gql/graphql"
-import {
-	FIND_SAVED_FILTERS_QUERY,
-	FIND_SAVED_FILTERS_QUERY_TYPE,
-} from "../queries/FindSavedFiltersQuery"
-import { FIND_SCENES_QUERY_TYPE } from "../queries/FindScenesQuery"
+import { FindFilterType, Query, SceneFilterType } from "../gql/graphql"
+import { FIND_SAVED_FILTERS_QUERY } from "../queries/FindSavedFiltersQuery"
 import { FIND_SCENES_SLIM_QUERY } from "../queries/FindScenesSlimQuery"
 import {
 	HeresphereBanner,
@@ -58,7 +54,7 @@ const hspIndexHandler = async (req: HspRequest, res: Response) => {
 		}
 
 		{
-			const queryResult = await client.query<FIND_SAVED_FILTERS_QUERY_TYPE>({
+			const queryResult = await client.query<Query>({
 				query: FIND_SAVED_FILTERS_QUERY,
 				variables: {
 					mode: "SCENES",
@@ -95,7 +91,7 @@ const hspIndexHandler = async (req: HspRequest, res: Response) => {
 				// Push each query promise into the array without awaiting them
 				fetchPromises.push(
 					client
-						.query<FIND_SCENES_QUERY_TYPE>({
+						.query<Query>({
 							query: FIND_SCENES_SLIM_QUERY,
 							variables: {
 								filter: filt.find_filter,

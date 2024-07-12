@@ -1,7 +1,6 @@
 import { gql } from '@apollo/client/core';
 import { ConfigResult } from '../gql/graphql';
 
-export interface CONFIG_QUERY_TYPE { configuration: ConfigResult }
 export const CONFIG_QUERY = gql`
 query Configuration {
   configuration {
