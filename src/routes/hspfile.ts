@@ -67,6 +67,7 @@ export async function writeHSPFile(sceneId: string, dataB64: string) {
 		}
 
 		const hspPath = getHSPFile(sceneData.files[0].path)
+		console.log("write hsp file:", hspPath)
 
 		await writeFile(hspPath, data)
 	} catch (error) {
