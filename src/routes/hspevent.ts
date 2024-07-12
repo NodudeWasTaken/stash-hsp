@@ -85,6 +85,7 @@ const hspEventHandler = async (req: Request, res: Response) => {
 				playDuration: newDuration,
 			},
 		})
+		// TODO: Check error
 
 		res.json({ message: "OK" })
 	} catch (error) {
