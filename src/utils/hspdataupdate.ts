@@ -13,6 +13,31 @@ import {
 } from "../structs/heresphere_structs"
 import { getBasename } from "./utilities"
 
+// Function to add or remove a favorite tag from input.tag_ids
+function manageFavoriteTag(
+	input: SceneUpdateInput,
+	authreq: HeresphereAuthReq
+) {
+	if (!VAR_FAVTAG) {
+		throw new Error("VAR_FAVTAG is undefined")
+	}
+
+	// Find the index of VAR_FAVTAG.id in input.tag_ids
+	const favTagIndex: number = input.tag_ids?.indexOf(VAR_FAVTAG.id) || -1
+
+	if (authreq.isFavorite) {
+		// Add favorite tag if not already present
+		if (favTagIndex === -1) {
+			input.tag_ids?.push(VAR_FAVTAG.id)
+		}
+	} else {
+		// Remove favorite tag if present
+		if (favTagIndex !== -1) {
+			input.tag_ids?.splice(favTagIndex, 1)
+		}
+	}
+}
+
 export const hspDataUpdate = async (
 	sceneId: string,
 	authreq: HeresphereAuthReq
@@ -24,7 +49,6 @@ export const hspDataUpdate = async (
 
 	// Handle rating update
 	if (authreq.rating) {
-		// TODO: Set null on remove
 		input.rating100 = authreq.rating * 20
 	}
 
@@ -59,21 +83,15 @@ export const hspDataUpdate = async (
 				// Set the tag_ids in the input
 				input.tag_ids = queryResult.data.findTags.tags.map((t) => t.id)
 
-				// Add favorite tag if applicable
-				if (
-					authreq.isFavorite &&
-					VAR_FAVTAG !== undefined &&
-					!input.tag_ids.includes(VAR_FAVTAG?.id)
-				) {
-					input.tag_ids.push(VAR_FAVTAG.id)
-				}
+				// Add or remove favorite tag if applicable
+				manageFavoriteTag(input, authreq)
 			}
 		}
 
 		// TODO: Performers and other vars (see fillTags)
 		// PlayCount, OCounter etc.
 		// Markers
-	} else if (authreq.isFavorite && VAR_FAVTAG !== undefined) {
+	} else if (authreq.isFavorite !== undefined && VAR_FAVTAG !== undefined) {
 		// Query to find the scene if tags are not provided but favorite flag is set
 		const queryResult = await client.query<Query>({
 			query: FIND_SCENE_QUERY,
@@ -90,10 +108,8 @@ export const hspDataUpdate = async (
 		// Set the tag_ids in the input
 		input.tag_ids = queryResult.data.findScene.tags.map((t) => t.id)
 
-		// Add favorite tag if not already present
-		if (!input.tag_ids.includes(VAR_FAVTAG?.id)) {
-			input.tag_ids.push(VAR_FAVTAG.id)
-		}
+		// Add or remove favorite tag if applicable
+		manageFavoriteTag(input, authreq)
 	}
 
 	// Handle HSP base64 data update
