@@ -4,10 +4,12 @@ import pLimit from "p-limit"
 import { ConfigResult, Query, Tag } from "../gql/graphql"
 import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
 import { FIND_TAGS_QUERY } from "../queries/FindTagsQuery"
+import { genScanDB } from "../routes/hspscan"
 import { client } from "./client"
 
 export var VAR_UICFG: ConfigResult
 export var VAR_FAVTAG: Tag | undefined
+export var NEEDS_AUTH: boolean
 
 export const SCREENSHOT_MAXRES = 480
 
@@ -17,6 +19,7 @@ export const STASH_URL = process.env.STASH_URL || "http://127.0.0.1:9999"
 export var STASH_APIKEY = process.env.STASH_APIKEY || ""
 export const VAR_SCREENSHOT_DIR = process.env.SCREENSHOTS_DIR || "./screenshots"
 export const VAR_CACHE_DIR = process.env.CACHE_DIR || "./cache"
+export const SCANDB = `${VAR_CACHE_DIR}/scan.json`
 const VAR_FAVORITE_TAG = process.env.FAVORITE_TAG || "Favorites"
 export const VAR_SCALELIMIT = process.env.SCALE_PROCESS_LIMIT || "8"
 export const VAR_RLIMIT = process.env.REQUEST_PROCESS_LIMIT || "20"
@@ -24,6 +27,36 @@ export const VAR_RLIMIT = process.env.REQUEST_PROCESS_LIMIT || "20"
 export const VAR_SCANCACHE_CRON = process.env.SCANCACHE_CRON || "0 6 * * *"
 export const slimit = pLimit(Number(VAR_SCALELIMIT))
 export const rlimit = pLimit(Number(VAR_RLIMIT))
+
+// Type guard to check if the network error is a ServerError
+function isServerError(error: any): error is ServerError {
+	return error && typeof error.statusCode === "number"
+}
+
+export async function tryAuth() {
+	try {
+		await getVrTag()
+		NEEDS_AUTH = false
+
+		console.log(`Generating scan.json in 10 seconds`)
+
+		setTimeout(() => {
+			genScanDB(true)
+		}, 10000)
+	} catch (error) {
+		console.error("failed to contact stash:", error)
+		if (error instanceof ApolloError && isServerError(error.networkError)) {
+			const networkError = error.networkError as ServerError
+			if (networkError.statusCode === 401) {
+				console.warn("Stash needs auth")
+				NEEDS_AUTH = true
+				return
+			}
+		}
+
+		throw error
+	}
+}
 
 export async function getVrTag() {
 	try {

@@ -5,10 +5,10 @@ import cron from "node-cron"
 import { client } from "../core/client"
 import {
 	rlimit,
+	SCANDB,
 	SCREENSHOT_MAXRES,
 	slimit,
 	STASH_URL,
-	VAR_CACHE_DIR,
 	VAR_FAVTAG,
 	VAR_SCANCACHE_CRON,
 	VAR_SCREENSHOT_DIR,
@@ -32,7 +32,6 @@ import { videoPath } from "./hspscene"
 
 // Stash is too slow to do this live
 // TODO: Add a way to refresh
-const SCANDB = `${VAR_CACHE_DIR}/scan.json`
 const SCANDB_STR = "REPLACE_ME_XXX_FUCKER_DONT_FIND_SECRET_STRING"
 
 const hspscanfetchHandler = async (req: Request, res: Response) => {

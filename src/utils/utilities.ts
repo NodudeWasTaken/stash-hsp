@@ -70,7 +70,9 @@ export async function fetchAndResizeImage(
 	// Fetch the image
 	const response = await fetcher(imageUrl)
 	if (!response.ok) {
-		throw new Error(`Failed to fetch image from ${imageUrl}`)
+		throw new Error(
+			`Failed to fetch image from ${imageUrl}: ${response.status}`
+		)
 	}
 
 	// Read the image data as a buffer

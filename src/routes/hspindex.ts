@@ -139,7 +139,8 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 	}
 }
 
+export const hspIndexPath = "/heresphere"
 export function hspIndexRoutes(app: Express) {
-	app.get("/heresphere", hspIndexHandler)
-	app.post("/heresphere", hspIndexHandler)
+	app.get(hspIndexPath, hspIndexHandler)
+	app.post(hspIndexPath, hspIndexHandler)
 }

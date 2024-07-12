@@ -1,10 +1,12 @@
 import { Express, Request, Response } from "express"
+import { tryForAuth } from "../core/authmiddleware"
 import {
 	HeresphereAuthResp,
 	HeresphereBadLogin,
 	HeresphereBanner,
 	HeresphereGuest,
 	HeresphereIndex,
+	HeresphereMember,
 } from "../structs/heresphere_structs"
 import { getBaseURL } from "../utils/utilities"
 
@@ -23,16 +25,29 @@ const hspAuthHandler = async (req: Request, res: Response) => {
 			library: [],
 		}
 
+		// TODO: We should only return this on index, not other endpoints
 		res.json(idx)
 		return
 	}
 
-	const auth: HeresphereAuthResp = {
+	var auth: HeresphereAuthResp = {
 		"auth-token": "",
 		access: HeresphereGuest,
 	}
 
-	// TODO: Set HeresphereAuthHeader if success
+	await tryForAuth(req)
+		.then((sessionval) => {
+			console.log("Response contains session cookie session", sessionval)
+
+			auth = {
+				"auth-token": sessionval,
+				access: HeresphereMember,
+			}
+			// TODO: Fetch stash ui config using that
+		})
+		.catch((error) => {
+			console.error(error)
+		})
 
 	res.json(auth)
 }
