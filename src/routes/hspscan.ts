@@ -9,6 +9,7 @@ import {
 	slimit,
 	STASH_URL,
 	VAR_CACHE_DIR,
+	VAR_FAVTAG,
 	VAR_SCANCACHE_CRON,
 	VAR_SCREENSHOT_DIR,
 } from "../core/vars"
@@ -71,7 +72,9 @@ const fetchHeresphereVideoEntrySlim = async (
 		dateAdded: formatDate(sceneData.created_at),
 		favorites: 0,
 		comments: 0,
-		isFavorite: false, // TODO: .
+		isFavorite:
+			VAR_FAVTAG !== undefined &&
+			sceneData.tags.map((t) => t.id).includes(VAR_FAVTAG.id),
 		tags: [],
 	}
 	if (!processed.title && sceneData.files.length > 0) {

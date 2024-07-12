@@ -35,6 +35,7 @@ app.use(
 app.use(compression())
 
 // TODO: Log errors
+// TODO: Check errors on queries
 
 indexRoutes(app)
 debugRoutes(app)

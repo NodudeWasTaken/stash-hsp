@@ -1,6 +1,6 @@
 import { Express, Request, Response } from "express"
 import { client, StashApiKeyParameter } from "../core/client"
-import { STASH_APIKEY, VAR_UICFG } from "../core/vars"
+import { STASH_APIKEY, VAR_FAVTAG, VAR_UICFG } from "../core/vars"
 import { Query, Scene } from "../gql/graphql"
 import { FIND_SCENE_QUERY } from "../queries/FindSceneQuery"
 import {
@@ -70,7 +70,9 @@ const fetchHeresphereVideoEntry = async (
 		}),
 		dateAdded: formatDate(sceneData.created_at),
 		favorites: 0,
-		isFavorite: false, // TODO: .
+		isFavorite:
+			VAR_FAVTAG !== undefined &&
+			sceneData.tags.map((t) => t.id).includes(VAR_FAVTAG.id),
 		projection: HeresphereProjectionPerspective,
 		stereo: HeresphereStereoMono,
 		isEyeSwapped: false,
@@ -82,10 +84,10 @@ const fetchHeresphereVideoEntry = async (
 		subtitles: [],
 		tags: [],
 		media: [],
-		writeFavorite: true, // TODO: Config
+		writeFavorite: true,
 		writeRating: true,
 		writeTags: true,
-		writeHSP: false,
+		writeHSP: true,
 	}
 	if (!processed.title && sceneData.files.length > 0) {
 		processed.title = getBasename(sceneData.files[0].path)
