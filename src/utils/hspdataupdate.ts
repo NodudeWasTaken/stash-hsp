@@ -14,6 +14,19 @@ import {
 import { getBasename } from "./utilities"
 
 // Function to add or remove a favorite tag from input.tag_ids
+
+/* TODO ERROR when isFavorite == false:
+Cache data may be lost when replacing the tags field of a Scene object.
+
+This could cause additional (usually avoidable) network requests to fetch data that were otherwise cached.
+
+To address this problem (which is not a bug in Apollo Client), define a custom merge function for the Scene.tags field, so InMemoryCache can safely merge these objects:
+
+For more information about these options, please refer to the documentation:
+
+  * Ensuring entity objects have IDs: https://go.apollo.dev/c/generating-unique-identifiers
+  * Defining custom merge functions: https://go.apollo.dev/c/merging-non-normalized-objects
+*/
 function manageFavoriteTag(
 	input: SceneUpdateInput,
 	authreq: HeresphereAuthReq
