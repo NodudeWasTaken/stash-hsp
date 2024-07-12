@@ -24,6 +24,8 @@ COPY --from=build /app/stashhsp ./stashhsp
 COPY --from=build /app/package*.json ./
 
 # Install production dependencies
+# TODO: Note that since we compile it, bun install shouldn't be necessary, but it is
+#		Its also necessary for bun building a js file, dont know why
 RUN apk add --no-cache vips-dev && bun install --production
 
 # Command to run when the container starts

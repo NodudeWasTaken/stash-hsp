@@ -32,7 +32,7 @@ import { videoPath } from "./hspscene"
 
 // Stash is too slow to do this live
 // TODO: Add a way to refresh
-const SCANDB = `./${VAR_CACHE_DIR}/scan.json`
+const SCANDB = `${VAR_CACHE_DIR}/scan.json`
 const SCANDB_STR = "REPLACE_ME_XXX_FUCKER_DONT_FIND_SECRET_STRING"
 
 const hspscanfetchHandler = async (req: HspRequest, res: Response) => {
