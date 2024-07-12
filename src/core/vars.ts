@@ -50,6 +50,7 @@ export async function tryAuth() {
 			if (networkError.statusCode === 401) {
 				console.warn("Stash needs auth")
 				NEEDS_AUTH = true
+				throw error // TODO: Temporary until auth works
 				return
 			}
 		}
