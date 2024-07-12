@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client/core';
 
-const query = gql`
+export const FIND_SCENE_SLIM_QUERY = gql`
 query FindScene($id: ID!, $checksum: String) {
 	findScene(id: $id, checksum: $checksum) {
 	  ...SceneDataSlim
@@ -69,5 +69,3 @@ query FindScene($id: ID!, $checksum: String) {
 	child_count
 	__typename
   }`
-  
-  export { query }

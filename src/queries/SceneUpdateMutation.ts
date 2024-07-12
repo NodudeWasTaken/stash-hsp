@@ -1,6 +1,8 @@
 import { gql } from '@apollo/client/core';
+import { Scene } from '../gql/graphql';
 
-const query = gql`
+export interface SCENE_UPDATE_MUTATION_TYPE { sceneUpdate: Scene }
+export const SCENE_UPDATE_MUTATION = gql`
 mutation SceneUpdate($input: SceneUpdateInput!) {
 	sceneUpdate(input: $input) {
 	  ...SceneData
@@ -434,5 +436,3 @@ mutation SceneUpdate($input: SceneUpdateInput!) {
 	weight
 	__typename
   }`
-  
-  export { query }

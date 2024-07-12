@@ -1,6 +1,8 @@
 import { gql } from '@apollo/client/core';
+import { FindTagsResultType } from '../gql/graphql';
 
-const query = gql`
+export interface FIND_TAGS_QUERY_TYPE { findTags: FindTagsResultType }
+export const FIND_TAGS_QUERY = gql`
 query FindTags($filter: FindFilterType, $tag_filter: TagFilterType) {
 	findTags(filter: $filter, tag_filter: $tag_filter) {
 	  count
@@ -54,5 +56,3 @@ query FindTags($filter: FindFilterType, $tag_filter: TagFilterType) {
 	child_count
 	__typename
   }`
-  
-  export { query }

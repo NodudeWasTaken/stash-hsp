@@ -3,7 +3,10 @@ import { HspRequest } from "../core/authmiddleware"
 import { client, StashApiKeyParameter } from "../core/client"
 import { STASH_APIKEY, VAR_UICFG } from "../core/vars"
 import { Scene } from "../gql/graphql"
-import { FIND_SCENE_QUERY } from "../queries/query"
+import {
+	FIND_SCENE_QUERY,
+	FIND_SCENE_QUERY_TYPE,
+} from "../queries/FindSceneQuery"
 import {
 	HeresphereAuthReq,
 	HeresphereHSPEntry,
@@ -12,19 +15,17 @@ import {
 	HeresphereProjectionPerspective,
 	HeresphereStereoMono,
 	HeresphereVideoEntry,
-	HeresphereVideoEntryShort,
 	HeresphereVideoMedia,
 	HeresphereVideoMediaSource,
 	HeresphereVideoScript,
 	HeresphereVideoSubtitle,
-	HeresphereVideoTag,
 } from "../structs/heresphere_structs"
 import {
 	getResolutionsLessThanOrEqualTo,
 	ResolutionEnum,
 	reverseMapping,
 } from "../structs/stash_structs"
-import { hspDataUpdate } from "../utils/hspdataupdate"
+import { fillTags, hspDataUpdate } from "../utils/hspdataupdate"
 import { FindProjectionTags } from "../utils/projection"
 import {
 	buildUrl,
@@ -36,127 +37,27 @@ import { eventPath } from "./hspevent"
 import { hasHSPFile, hspPath } from "./hspfile"
 import { screenshotPath } from "./hspscreenshot"
 
-export function fillTags(
-	scene: any,
-	processed: HeresphereVideoEntry | HeresphereVideoEntryShort
-) {
-	processed.tags = []
-	for (let tag of scene.tags) {
-		processed.tags.push({
-			name: `Tag:${tag.name}`,
-		} as HeresphereVideoTag)
-	}
-
-	processed.tags.push({
-		name: `Interactive:${scene.interactive}`,
-	} as HeresphereVideoTag)
-
-	if (scene.interactive_speed) {
-		processed.tags.push({
-			name: `Funspeed:${scene.interactive_speed}`,
-		} as HeresphereVideoTag)
-	}
-
-	if (scene.scene_markers) {
-		for (let tag of scene.scene_markers) {
-			const tagName =
-				tag.title.length === 0
-					? tag.primary_tag.Name
-					: `${tag.title} - ${tag.primary_tag.Name}`
-
-			processed.tags.push({
-				name: `Marker:${tagName}`,
-				start: tag.seconds * 1000,
-				end: (tag.seconds + 60) * 1000,
-			} as HeresphereVideoTag)
-		}
-	}
-
-	if (scene.galleries) {
-		for (let gallery of scene.galleries) {
-			const galleryName =
-				gallery.title.length === 0
-					? getBasename(gallery.folder.path)
-					: gallery.title
-
-			processed.tags.push({
-				name: `Gallery:${galleryName}`,
-			} as HeresphereVideoTag)
-		}
-	}
-
-	if (scene.studio) {
-		processed.tags.push({
-			name: `Studio:${scene.studio.name}`,
-		} as HeresphereVideoTag)
-	}
-
-	if (scene.groups) {
-		for (let group of scene.groups) {
-			processed.tags.push({
-				name: `Group:${group.group.name}`,
-			} as HeresphereVideoTag)
-		}
-	}
-
-	if (scene.performers) {
-		var hasFavoritedPerformer: boolean = false
-		for (let perf of scene.performers) {
-			processed.tags.push({
-				name: `Performer:${perf.name}`,
-			} as HeresphereVideoTag)
-			hasFavoritedPerformer = hasFavoritedPerformer || perf.favorite
-		}
-		processed.tags.push({
-			name: `HasFavoritedPerformer:${hasFavoritedPerformer}`,
-		} as HeresphereVideoTag)
-	}
-
-	processed.tags.push({
-		name: `OCount:${scene.o_counter}`,
-	} as HeresphereVideoTag)
-	processed.tags.push({
-		name: `Orgasmed:${scene.o_counter > 0}`,
-	} as HeresphereVideoTag)
-
-	processed.tags.push({
-		name: `PlayCount:${scene.play_count}`,
-	} as HeresphereVideoTag)
-	processed.tags.push({
-		name: `Watched:${scene.play_count > 0}`,
-	} as HeresphereVideoTag)
-
-	processed.tags.push({
-		name: `Rating:${scene.rating100}`,
-	} as HeresphereVideoTag)
-	processed.tags.push({
-		name: `Rated:${scene.rating100 !== null}`,
-	} as HeresphereVideoTag)
-	processed.tags.push({
-		name: `Organized:${scene.organized}`,
-	} as HeresphereVideoTag)
-	processed.tags.push({
-		name: `Director:${scene.director}`,
-	} as HeresphereVideoTag)
-}
-
 const fetchHeresphereVideoEntry = async (
 	sceneId: string,
 	baseUrl: string,
 	authreq?: HeresphereAuthReq
 ): Promise<HeresphereVideoEntry> => {
+	var sceneData: Scene | undefined
+
 	if (authreq) {
-		await hspDataUpdate(sceneId, authreq)
+		const dataResult = await hspDataUpdate(sceneId, authreq)
+		sceneData = dataResult || undefined
 	}
 
-	const {
-		data: { findScene: sceneData },
-	} = (await client.query({
-		query: FIND_SCENE_QUERY,
-		variables: {
-			id: sceneId,
-		},
-	})) as { data: { findScene: Scene } }
+	if (!sceneData) {
+		const queryResult = await client.query<FIND_SCENE_QUERY_TYPE>({
+			query: FIND_SCENE_QUERY,
+			variables: {
+				id: sceneId,
+			},
+		})
+		sceneData = queryResult.data.findScene
+	}
 
 	//console.debug(sceneData)
 	var processed: HeresphereVideoEntry = {

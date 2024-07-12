@@ -1,12 +1,10 @@
 import { Express, Response } from "express"
 import { HspRequest } from "../core/authmiddleware"
 import { client } from "../core/client"
-import {
-	CONFIG_QUERY,
-	FIND_SAVED_FILTERS_QUERY,
-	FIND_SCENE_QUERY,
-	FIND_SCENES_QUERY,
-} from "../queries/query"
+import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
+import { FIND_SAVED_FILTERS_QUERY } from "../queries/FindSavedFiltersQuery"
+import { FIND_SCENE_QUERY } from "../queries/FindSceneQuery"
+import { FIND_SCENES_QUERY } from "../queries/FindScenesQuery"
 import { CriterionFixer } from "../utils/criterion_fix"
 
 const debugFindFiltersHandler = async (req: HspRequest, res: Response) => {

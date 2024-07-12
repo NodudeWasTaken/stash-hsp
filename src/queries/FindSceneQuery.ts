@@ -1,6 +1,8 @@
 import { gql } from '@apollo/client/core';
+import { Scene } from '../gql/graphql';
 
-const query = gql`
+export interface FIND_SCENE_QUERY_TYPE { findScene: Scene }
+export const FIND_SCENE_QUERY = gql`
 query FindScene($id: ID!, $checksum: String) {
 	findScene(id: $id, checksum: $checksum) {
 	  ...SceneData
@@ -434,5 +436,3 @@ query FindScene($id: ID!, $checksum: String) {
 	weight
 	__typename
   }`
-  
-  export { query }

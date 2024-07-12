@@ -13,12 +13,15 @@ import {
 	VAR_SCANCACHE_CRON,
 	VAR_SCREENSHOT_DIR,
 } from "../core/vars"
-import { Scene } from "../gql/graphql"
-import { FIND_SCENE_SLIM_QUERY, FIND_SCENES_SLIM_QUERY } from "../queries/query"
+import { FIND_SCENE_QUERY_TYPE } from "../queries/FindSceneQuery"
+import { FIND_SCENE_SLIM_QUERY } from "../queries/FindSceneSlimQuery"
+import { FIND_SCENES_QUERY_TYPE } from "../queries/FindScenesQuery"
+import { FIND_SCENES_SLIM_QUERY } from "../queries/FindScenesSlimQuery"
 import {
 	HeresphereScanIndex,
 	HeresphereVideoEntryShort,
 } from "../structs/heresphere_structs"
+import { fillTags } from "../utils/hspdataupdate"
 import {
 	fetchAndResizeImage,
 	fileExists,
@@ -26,7 +29,7 @@ import {
 	getBasename,
 	getBaseURL,
 } from "../utils/utilities"
-import { fillTags, videoPath } from "./hspscene"
+import { videoPath } from "./hspscene"
 
 // Stash is too slow to do this live
 // TODO: Add a way to refresh
@@ -50,14 +53,13 @@ const fetchHeresphereVideoEntrySlim = async (
 	sceneId: string,
 	baseUrl: string
 ): Promise<HeresphereVideoEntryShort> => {
-	const {
-		data: { findScene: sceneData },
-	} = (await client.query({
+	const queryResult = await client.query<FIND_SCENE_QUERY_TYPE>({
 		query: FIND_SCENE_SLIM_QUERY,
 		variables: {
 			id: sceneId,
 		},
-	})) as { data: { findScene: Scene } }
+	})
+	const sceneData = queryResult.data.findScene
 
 	//console.debug(sceneData)
 	var processed: HeresphereVideoEntryShort = {
@@ -95,11 +97,7 @@ export async function genScanDB(first: boolean) {
 		console.debug("hsp scan")
 		var scenes: HeresphereVideoEntryShort[] = []
 
-		const {
-			data: {
-				findScenes: { scenes: videodata },
-			},
-		} = (await client.query({
+		const queryResult = await client.query<FIND_SCENES_QUERY_TYPE>({
 			query: FIND_SCENES_SLIM_QUERY,
 			variables: {
 				filter: {
@@ -107,7 +105,8 @@ export async function genScanDB(first: boolean) {
 					per_page: -1,
 				},
 			},
-		})) as { data: { findScenes: { scenes: Scene[] } } }
+		})
+		const videodata = queryResult.data.findScenes.scenes
 
 		// Fetch video data
 		const outof = videodata.length

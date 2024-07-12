@@ -5,7 +5,8 @@ import path from "path"
 import { HspRequest } from "../core/authmiddleware"
 import { client } from "../core/client"
 import { Scene } from "../gql/graphql"
-import { FIND_SCENE_SLIM_QUERY } from "../queries/query"
+import { FIND_SCENE_QUERY_TYPE } from "../queries/FindSceneQuery"
+import { FIND_SCENE_SLIM_QUERY } from "../queries/FindSceneSlimQuery"
 import { fileExists } from "../utils/utilities"
 
 // TODO: Can we do this
@@ -18,12 +19,11 @@ const hspHspHandler = async (req: HspRequest, res: Response) => {
 	try {
 		const { sceneId } = req.params
 
-		const {
-			data: { findScene: sceneData },
-		} = (await client.query({
+		const queryResult = await client.query<FIND_SCENE_QUERY_TYPE>({
 			query: FIND_SCENE_SLIM_QUERY,
 			variables: { id: sceneId },
-		})) as { data: { findScene: Scene } }
+		})
+		const sceneData = queryResult.data.findScene
 
 		if (sceneData.files.length === 0) {
 			throw new Error("scene has no files")

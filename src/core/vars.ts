@@ -2,7 +2,7 @@ import { ApolloError } from "@apollo/client/core"
 import { ServerError } from "@apollo/client/link/utils/index.js"
 import pLimit from "p-limit"
 import { ConfigResult } from "../gql/graphql"
-import { CONFIG_QUERY } from "../queries/query"
+import { CONFIG_QUERY, CONFIG_QUERY_TYPE } from "../queries/ConfigurationQuery"
 import { client } from "./client"
 
 export var VAR_UICFG: ConfigResult
@@ -25,13 +25,11 @@ export const rlimit = pLimit(Number(VAR_RLIMIT))
 
 export async function getVrTag() {
 	try {
-		const {
-			data: { configuration: uicfg },
-		} = (await client.query({
+		const queryResult = await client.query<CONFIG_QUERY_TYPE>({
 			query: CONFIG_QUERY,
-		})) as { data: { configuration: ConfigResult } }
+		})
 
-		VAR_UICFG = uicfg
+		VAR_UICFG = queryResult.data.configuration
 	} catch (error) {
 		if (error instanceof ApolloError) {
 			if (error.networkError) {

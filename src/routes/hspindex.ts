@@ -2,11 +2,13 @@ import { Express, Response } from "express"
 import { HspRequest } from "../core/authmiddleware"
 import { client } from "../core/client"
 import { VAR_UICFG } from "../core/vars"
-import { FindFilterType, SavedFilter, SceneFilterType } from "../gql/graphql"
+import { FindFilterType, SceneFilterType } from "../gql/graphql"
 import {
 	FIND_SAVED_FILTERS_QUERY,
-	FIND_SCENES_SLIM_QUERY,
-} from "../queries/query"
+	FIND_SAVED_FILTERS_QUERY_TYPE,
+} from "../queries/FindSavedFiltersQuery"
+import { FIND_SCENES_QUERY_TYPE } from "../queries/FindScenesQuery"
+import { FIND_SCENES_SLIM_QUERY } from "../queries/FindScenesSlimQuery"
 import {
 	HeresphereBanner,
 	HeresphereIndex,
@@ -56,16 +58,14 @@ const hspIndexHandler = async (req: HspRequest, res: Response) => {
 		}
 
 		{
-			const {
-				data: { findSavedFilters: filtersq },
-			} = (await client.query({
+			const queryResult = await client.query<FIND_SAVED_FILTERS_QUERY_TYPE>({
 				query: FIND_SAVED_FILTERS_QUERY,
 				variables: {
 					mode: "SCENES",
 				},
-			})) as { data: { findSavedFilters: SavedFilter[] } }
+			})
 
-			for (let defaultfilter of filtersq) {
+			for (let defaultfilter of queryResult.data.findSavedFilters) {
 				let object_filter: SceneFilterType = defaultfilter.object_filter
 				object_filter = CriterionFixer(object_filter)
 
@@ -95,7 +95,7 @@ const hspIndexHandler = async (req: HspRequest, res: Response) => {
 				// Push each query promise into the array without awaiting them
 				fetchPromises.push(
 					client
-						.query({
+						.query<FIND_SCENES_QUERY_TYPE>({
 							query: FIND_SCENES_SLIM_QUERY,
 							variables: {
 								filter: filt.find_filter,
@@ -106,7 +106,7 @@ const hspIndexHandler = async (req: HspRequest, res: Response) => {
 							const entry: HeresphereIndexEntry = {
 								name: filt.name,
 								list: findscenes.data.findScenes.scenes.map(
-									(scene: any) => `${baseurl}${videoPath}/${scene.id}`
+									(scene) => `${baseurl}${videoPath}/${scene.id}`
 								),
 							}
 							library.library.push(entry)

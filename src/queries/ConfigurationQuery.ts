@@ -1,6 +1,8 @@
 import { gql } from '@apollo/client/core';
+import { ConfigResult } from '../gql/graphql';
 
-const query = gql`
+export interface CONFIG_QUERY_TYPE { configuration: ConfigResult }
+export const CONFIG_QUERY = gql`
 query Configuration {
   configuration {
     ...ConfigData
@@ -261,5 +263,3 @@ fragment IdentifyFieldOptionsData on IdentifyFieldOptions {
   __typename
 }
 `
-
-export { query }
