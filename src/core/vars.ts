@@ -9,7 +9,11 @@ import { client } from "./client"
 
 export var VAR_UICFG: ConfigResult
 export var VAR_FAVTAG: Tag | undefined
+
+// We should require user-auth (no APIKEY supplied)
 export var NEEDS_AUTH: boolean
+// We have fetched initial data like apikey, tags, etc.
+export var INITIAL_FETCH: boolean
 
 export const SCREENSHOT_MAXRES = 480
 
@@ -36,7 +40,7 @@ function isServerError(error: any): error is ServerError {
 export async function tryAuth() {
 	try {
 		await getVrTag()
-		NEEDS_AUTH = false
+		INITIAL_FETCH = false
 
 		console.log(`Generating scan.json in 10 seconds`)
 
@@ -44,12 +48,13 @@ export async function tryAuth() {
 			genScanDB(true)
 		}, 10000)
 	} catch (error) {
+		NEEDS_AUTH = true
 		console.error("failed to contact stash:", error)
 		if (error instanceof ApolloError && isServerError(error.networkError)) {
 			const networkError = error.networkError as ServerError
 			if (networkError.statusCode === 401) {
 				console.warn("Stash needs auth")
-				NEEDS_AUTH = true
+				INITIAL_FETCH = true
 				throw error // TODO: Temporary until auth works
 				return
 			}
