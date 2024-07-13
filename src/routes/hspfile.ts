@@ -3,7 +3,8 @@ import fs from "fs"
 import { writeFile } from "fs/promises"
 import path from "path"
 import { client } from "../core/client"
-import { Query } from "../gql/graphql"
+import { VAR_LOCALHSP } from "../core/vars"
+import { Query, Scene } from "../gql/graphql"
 import { FIND_SCENE_SLIM_QUERY } from "../queries/FindSceneSlimQuery"
 import { fileExists } from "../utils/utilities"
 
@@ -31,7 +32,7 @@ const hspHspHandler = async (req: Request, res: Response) => {
 			throw new Error("scene has no files")
 		}
 
-		const hspPath = getHSPFile(sceneData.files[0].path)
+		const hspPath = getHSPFile(sceneData)
 
 		if (await fileExists(hspPath)) {
 			res.contentType("application/octet-stream")
@@ -66,7 +67,7 @@ export async function writeHSPFile(sceneId: string, dataB64: string) {
 			throw new Error("scene has no files")
 		}
 
-		const hspPath = getHSPFile(sceneData.files[0].path)
+		const hspPath = getHSPFile(sceneData)
 		console.log("write hsp file:", hspPath)
 
 		await writeFile(hspPath, data)
@@ -75,13 +76,14 @@ export async function writeHSPFile(sceneId: string, dataB64: string) {
 	}
 }
 
-export function getHSPFile(file: string): string {
-	const pth = path.parse(file)
-	return `${pth.dir}/${pth.name}.hsp`
+export function getHSPFile(scene: Scene): string {
+	const pth = path.parse(scene.files[0].path)
+	const PATH_DIR = VAR_LOCALHSP || pth.dir
+	const PATH_NAME = VAR_LOCALHSP ? scene.id : pth.name
+	return `${PATH_DIR}/${PATH_NAME}.hsp`
 }
-
-export async function hasHSPFile(file: string) {
-	return await fileExists(getHSPFile(file))
+export async function hasHSPFile(scene: Scene) {
+	return await fileExists(getHSPFile(scene))
 }
 
 export const hspPath = "/heresphere/hsp"

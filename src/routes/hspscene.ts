@@ -211,10 +211,7 @@ const fetchHeresphereVideoEntry = async (
 	}
 
 	processed.hspArray = []
-	if (
-		sceneData.files.length > 0 &&
-		(await hasHSPFile(sceneData.files[0].path))
-	) {
+	if (sceneData.files.length > 0 && (await hasHSPFile(sceneData))) {
 		processed.hspArray.push({
 			url: `${baseUrl}${hspPath}/${sceneData.id}`,
 		} as HeresphereHSPEntry)
