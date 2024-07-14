@@ -1,12 +1,10 @@
 import { Express, Request, Response } from "express"
-import { tryForAuth } from "../core/authmiddleware"
 import {
 	HeresphereAuthResp,
 	HeresphereBadLogin,
 	HeresphereBanner,
 	HeresphereGuest,
 	HeresphereIndex,
-	HeresphereMember,
 } from "../structs/heresphere_structs"
 import { getBaseURL } from "../utils/utilities"
 
@@ -35,7 +33,7 @@ const hspAuthHandler = async (req: Request, res: Response) => {
 		access: HeresphereGuest,
 	}
 
-	await tryForAuth(req)
+	/*await tryForAuth(req)
 		.then((sessionval) => {
 			console.log("Response contains session cookie session", sessionval)
 
@@ -47,7 +45,7 @@ const hspAuthHandler = async (req: Request, res: Response) => {
 		})
 		.catch((error) => {
 			console.error(error)
-		})
+		})*/
 
 	res.json(auth)
 }
