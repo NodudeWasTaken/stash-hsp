@@ -15,7 +15,6 @@ import {
 import { getBaseURL } from "../utils/utilities"
 
 const hspAuthHandler = async (req: Request, res: Response) => {
-	// TODO: Check auth and possible return HeresphereAuthResp
 	if (!req.heresphereAuthData) {
 		const baseurl = getBaseURL(req)
 		const banner: HeresphereBanner = {
@@ -29,7 +28,6 @@ const hspAuthHandler = async (req: Request, res: Response) => {
 			library: [],
 		}
 
-		// TODO: We should only return this on index, not other endpoints
 		res.json(idx)
 		return
 	}
