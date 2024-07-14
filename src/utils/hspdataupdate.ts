@@ -217,6 +217,12 @@ export function fillTags(
 		} as HeresphereVideoTag)
 	}
 
+	if (scene.director) {
+		processed.tags.push({
+			name: `Director:${scene.director}`,
+		} as HeresphereVideoTag)
+	}
+
 	processed.tags.push({
 		name: `OCount:${scene.o_counter}`,
 	} as HeresphereVideoTag)
@@ -239,8 +245,5 @@ export function fillTags(
 	} as HeresphereVideoTag)
 	processed.tags.push({
 		name: `Organized:${scene.organized}`,
-	} as HeresphereVideoTag)
-	processed.tags.push({
-		name: `Director:${scene.director}`,
 	} as HeresphereVideoTag)
 }
