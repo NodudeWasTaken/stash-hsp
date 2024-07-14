@@ -148,7 +148,7 @@ export function heresphereAuthMiddleware(
 
 		return
 	}
-	if (!INITIAL_FETCH) {
+	if (!INITIAL_FETCH && !publicPaths.includes(req.path)) {
 		res.json({ message: "Waiting for auth..." })
 		return
 	}
