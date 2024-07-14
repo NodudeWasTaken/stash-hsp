@@ -140,7 +140,6 @@ export function heresphereAuthMiddleware(
 				library: [],
 			}
 
-			// TODO: We should only return this on index, not other endpoints
 			res.json(idx)
 		} else {
 			res.json({ message: "Unauthorized!" })
