@@ -6,6 +6,7 @@ const indexHandler = async (req: Request, res: Response) => {
 	res.json({ message: "the end" + " is never the end".repeat(THEEND) })
 }
 
+export const indexPath = "/"
 export function indexRoutes(app: Express) {
-	app.get("/", indexHandler)
+	app.get(indexPath, indexHandler)
 }

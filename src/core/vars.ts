@@ -33,9 +33,18 @@ export const VAR_LOCALHSP = process.env.LOCALHSP || false
 export const slimit = pLimit(Number(VAR_SCALELIMIT))
 export const rlimit = pLimit(Number(VAR_RLIMIT))
 
+export const ENABLE_EXPERIMENTAL_AUTH = DEBUG_MODE || false
+
 // Type guard to check if the network error is a ServerError
 function isServerError(error: any): error is ServerError {
 	return error && typeof error.statusCode === "number"
+}
+
+export async function _SET_APIKEY(apikey: any) {
+	STASH_APIKEY = apikey
+
+	// Run getVrTag as validator, then run the setter
+	return getVrTag().then(() => tryAuth())
 }
 
 export async function tryAuth() {
@@ -56,7 +65,9 @@ export async function tryAuth() {
 			if (networkError.statusCode === 401) {
 				console.warn("Stash needs auth")
 				INITIAL_FETCH = true
-				throw error // TODO: Temporary until auth works
+				if (!ENABLE_EXPERIMENTAL_AUTH) {
+					throw error // TODO: Temporary until auth works
+				}
 				return
 			}
 		}

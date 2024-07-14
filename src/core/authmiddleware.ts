@@ -1,7 +1,14 @@
 import { NextFunction, Request, Response } from "express"
 import NodeCache from "node-cache"
+import { randomBytes } from "node:crypto"
+import { indexPath } from "../routes"
 import { authPath } from "../routes/hspauth"
 import { hspIndexPath } from "../routes/hspindex"
+import {
+	appletouchiconPath,
+	faviconPath,
+	healthcheckPath,
+} from "../routes/misc"
 import {
 	HeresphereAuthHeader,
 	HeresphereAuthReq,
@@ -12,7 +19,7 @@ import {
 } from "../structs/heresphere_structs"
 import { getBaseURL } from "../utils/utilities"
 import { fetcher } from "./client"
-import { NEEDS_AUTH, STASH_URL } from "./vars"
+import { INITIAL_FETCH, NEEDS_AUTH, STASH_URL } from "./vars"
 
 // Create a new instance of NodeCache with 5 hour TTL
 const login_cache = new NodeCache({ stdTTL: 60 * 60 * 5 })
@@ -46,6 +53,12 @@ function needsAuth(req: Request): boolean {
 	const validAuth =
 		authHeader && typeof authHeader === "string" && login_cache.get(authHeader)
 	return !validAuth
+}
+
+export function _ADD_AUTH() {
+	const sessionval = randomBytes(20).toString("hex")
+	login_cache.set(sessionval, true)
+	return sessionval
 }
 
 var session_regex = new RegExp("session=([^;]*)")
@@ -99,7 +112,18 @@ export function heresphereAuthMiddleware(
 		req.heresphereAuthData = req.body
 	}
 
-	if (!req.heresphereAuthData && needsAuth(req) && req.path != authPath) {
+	const publicPaths = [
+		authPath,
+		healthcheckPath,
+		faviconPath,
+		appletouchiconPath,
+		indexPath,
+	]
+	if (
+		!req.heresphereAuthData &&
+		needsAuth(req) &&
+		publicPaths.includes(req.path)
+	) {
 		console.log("BLOCKED:", req.path)
 		res.status(401)
 
@@ -121,6 +145,10 @@ export function heresphereAuthMiddleware(
 			res.json({ message: "Unauthorized!" })
 		}
 
+		return
+	}
+	if (!INITIAL_FETCH) {
+		res.json({ message: "Waiting for auth..." })
 		return
 	}
 

@@ -34,6 +34,9 @@ const appleiconHandler = async (req: Request, res: Response) => {
 	res.end(img)
 }
 
+export const healthcheckPath = "/healthcheck"
+export const faviconPath = "/favicon.ico"
+export const appletouchiconPath = "/apple-touch-icon.png"
 export function miscRoutes(app: Express) {
 	app.get("/healthcheck", healthcheckHandler)
 	app.get("/favicon.ico", faviconHandler)
