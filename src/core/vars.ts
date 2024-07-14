@@ -50,7 +50,7 @@ export async function _SET_APIKEY(apikey: any) {
 export async function tryAuth() {
 	try {
 		await getVrTag()
-		INITIAL_FETCH = false
+		INITIAL_FETCH = true
 
 		console.log(`Generating scan.json in 10 seconds`)
 
@@ -64,7 +64,7 @@ export async function tryAuth() {
 			const networkError = error.networkError as ServerError
 			if (networkError.statusCode === 401) {
 				console.warn("Stash needs auth")
-				INITIAL_FETCH = true
+				INITIAL_FETCH = false
 				if (!ENABLE_EXPERIMENTAL_AUTH) {
 					throw error // TODO: Temporary until auth works
 				}
