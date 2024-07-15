@@ -5,6 +5,7 @@ import { ConfigResult, Query, Tag } from "../gql/graphql"
 import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
 import { FIND_TAGS_QUERY } from "../queries/FindTagsQuery"
 import { genScanDB } from "../routes/hspscan"
+import { checkForErrors } from "../utils/utilities"
 import { client } from "./client"
 
 export var VAR_UICFG: ConfigResult
@@ -81,6 +82,7 @@ export async function getVrTag() {
 		const queryResult = await client.query<Query>({
 			query: CONFIG_QUERY,
 		})
+		checkForErrors(queryResult.errors)
 
 		VAR_UICFG = queryResult.data.configuration
 
@@ -99,6 +101,7 @@ export async function getVrTag() {
 					},
 				},
 			})
+			checkForErrors(qResult.errors)
 			var tagData = qResult.data.findTags.tags
 
 			if (tagData.length > 0) {

@@ -1,9 +1,17 @@
 import { Request } from "express"
 import fs, { constants } from "fs"
 import { access } from "fs/promises"
+import { GraphQLError } from "graphql/error"
 import path from "path"
 import sharp from "sharp"
 import { fetcher } from "../core/client"
+
+export const checkForErrors = (errors?: readonly GraphQLError[]): void => {
+	if (errors && errors.length > 0) {
+		console.error("GraphQL Errors:", errors)
+		console.error(new Error().stack)
+	}
+}
 
 export function getBasename(filePath: string): string {
 	return path.basename(filePath)

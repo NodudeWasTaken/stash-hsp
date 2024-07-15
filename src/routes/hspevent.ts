@@ -10,6 +10,7 @@ import {
 	HeresphereEventPlay,
 	HeresphereVideoEvent,
 } from "../structs/heresphere_structs"
+import { checkForErrors } from "../utils/utilities"
 
 // Create a new instance of NodeCache with 5 hour TTL
 const video_event_cache = new NodeCache({ stdTTL: 60 * 60 * 5 })
@@ -28,6 +29,7 @@ async function updatePlayCount(
 				id: scene.id,
 			},
 		})
+		checkForErrors(mutationResult.errors)
 
 		return !mutationResult.errors
 	}
@@ -44,6 +46,7 @@ const hspEventHandler = async (req: Request, res: Response) => {
 				id: sceneId,
 			},
 		})
+		checkForErrors(queryResult.errors)
 		const sceneData = queryResult.data.findScene || undefined
 
 		if (!sceneData) {
@@ -89,6 +92,7 @@ const hspEventHandler = async (req: Request, res: Response) => {
 				playDuration: newDuration,
 			},
 		})
+		checkForErrors(mutationResult.errors)
 
 		res.json({ message: "OK" })
 	} catch (error) {

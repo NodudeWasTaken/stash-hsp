@@ -4,12 +4,14 @@ import { Query } from "../gql/graphql"
 import { appleTouchIconBase64 } from "../public/apple-touch-icon"
 import { faviconBase64 } from "../public/favicon"
 import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
+import { checkForErrors } from "../utils/utilities"
 
 const healthcheckHandler = async (req: Request, res: Response) => {
 	try {
-		await client.query<Query>({
+		const queryResult = await client.query<Query>({
 			query: CONFIG_QUERY,
 		})
+		checkForErrors(queryResult.errors)
 		res.json({ message: "OK" })
 	} catch (error) {
 		res.status(500).json(error)

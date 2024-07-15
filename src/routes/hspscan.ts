@@ -22,6 +22,7 @@ import {
 } from "../structs/heresphere_structs"
 import { fillTags } from "../utils/hspdataupdate"
 import {
+	checkForErrors,
 	fetchAndResizeImage,
 	fileExists,
 	formatDate,
@@ -57,6 +58,7 @@ const fetchHeresphereVideoEntrySlim = async (
 			id: sceneId,
 		},
 	})
+	checkForErrors(queryResult.errors)
 
 	const sceneData = queryResult.data.findScene
 
@@ -111,6 +113,7 @@ export async function genScanDB(first: boolean) {
 				},
 			},
 		})
+		checkForErrors(queryResult.errors)
 		const videodata = queryResult.data.findScenes.scenes
 
 		// Fetch video data

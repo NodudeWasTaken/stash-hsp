@@ -11,7 +11,7 @@ import {
 	HeresphereMember,
 } from "../structs/heresphere_structs"
 import { CriterionFixer } from "../utils/criterion_fix"
-import { getBaseURL } from "../utils/utilities"
+import { checkForErrors, getBaseURL } from "../utils/utilities"
 import { videoPath } from "./hspscene"
 
 const hspIndexHandler = async (req: Request, res: Response) => {
@@ -59,6 +59,7 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 					mode: "SCENES",
 				},
 			})
+			checkForErrors(queryResult.errors)
 
 			for (let defaultfilter of queryResult.data.findSavedFilters) {
 				let object_filter: SceneFilterType = defaultfilter.object_filter

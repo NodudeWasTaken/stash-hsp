@@ -11,7 +11,7 @@ import {
 	HeresphereVideoEntryShort,
 	HeresphereVideoTag,
 } from "../structs/heresphere_structs"
-import { getBasename } from "./utilities"
+import { checkForErrors, getBasename } from "./utilities"
 
 // Function to add or remove a favorite tag from input.tag_ids
 
@@ -92,6 +92,7 @@ export const hspDataUpdate = async (
 						tag_filter: orFilter,
 					},
 				})
+				checkForErrors(queryResult.errors)
 
 				// Set the tag_ids in the input
 				input.tag_ids = queryResult.data.findTags.tags.map((t) => t.id)
@@ -112,6 +113,7 @@ export const hspDataUpdate = async (
 				id: sceneId,
 			},
 		})
+		checkForErrors(queryResult.errors)
 
 		// Throw error if scene is not found
 		if (!queryResult.data.findScene) {
@@ -126,21 +128,22 @@ export const hspDataUpdate = async (
 	}
 
 	// Handle HSP base64 data update
-	if (authreq.hspBase64) {
-		await writeHSPFile(sceneId, authreq.hspBase64)
+	if (authreq.hsp) {
+		await writeHSPFile(sceneId, authreq.hsp)
 	}
 
 	// Update the scene if there are changes in the input
 	if (Object.keys(input).length > 1) {
 		console.debug("dataUpdate:", input)
-		const queryResult = await client.mutate<Mutation>({
+		const mutationResult = await client.mutate<Mutation>({
 			mutation: SCENE_UPDATE_MUTATION,
 			variables: {
 				input: input,
 			},
 		})
+		checkForErrors(mutationResult.errors)
 
-		return queryResult.data?.sceneUpdate || undefined
+		return mutationResult.data?.sceneUpdate || undefined
 	}
 }
 

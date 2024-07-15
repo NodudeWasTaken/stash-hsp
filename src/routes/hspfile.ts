@@ -6,7 +6,7 @@ import { client } from "../core/client"
 import { VAR_LOCALHSP } from "../core/vars"
 import { Query, Scene } from "../gql/graphql"
 import { FIND_SCENE_SLIM_QUERY } from "../queries/FindSceneSlimQuery"
-import { fileExists } from "../utils/utilities"
+import { checkForErrors, fileExists } from "../utils/utilities"
 
 // TODO: Can we do this
 // If we run from docker we cant necessarily access said file
@@ -22,6 +22,7 @@ const hspHspHandler = async (req: Request, res: Response) => {
 			query: FIND_SCENE_SLIM_QUERY,
 			variables: { id: sceneId },
 		})
+		checkForErrors(queryResult.errors)
 		const sceneData = queryResult.data.findScene
 
 		if (!sceneData) {
@@ -46,10 +47,7 @@ const hspHspHandler = async (req: Request, res: Response) => {
 	}
 }
 
-const decodeB64 = (str: string): string =>
-	Buffer.from(str, "base64").toString("binary")
-const encodeB64 = (str: string): string =>
-	Buffer.from(str, "binary").toString("base64")
+const decodeB64 = (b64: string) => Buffer.from(b64, "base64")
 export async function writeHSPFile(sceneId: string, dataB64: string) {
 	try {
 		const data = decodeB64(dataB64)
@@ -57,6 +55,7 @@ export async function writeHSPFile(sceneId: string, dataB64: string) {
 			query: FIND_SCENE_SLIM_QUERY,
 			variables: { id: sceneId },
 		})
+		checkForErrors(queryResult.errors)
 		const sceneData = queryResult.data.findScene
 
 		if (!sceneData) {

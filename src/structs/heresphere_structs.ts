@@ -163,7 +163,7 @@ export interface HeresphereAuthReq {
 	isFavorite?: boolean
 	rating?: number
 	tags?: HeresphereVideoTag[]
-	hspBase64?: string
+	hsp?: string
 	deleteFile?: boolean
 }
 

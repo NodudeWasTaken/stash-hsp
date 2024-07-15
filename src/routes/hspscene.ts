@@ -25,6 +25,7 @@ import { fillTags, hspDataUpdate } from "../utils/hspdataupdate"
 import { FindProjectionTags } from "../utils/projection"
 import {
 	buildUrl,
+	checkForErrors,
 	formatDate,
 	getBasename,
 	getBaseURL,
@@ -51,6 +52,7 @@ const fetchHeresphereVideoEntry = async (
 				id: sceneId,
 			},
 		})
+		checkForErrors(queryResult.errors)
 		sceneData = queryResult.data.findScene || undefined
 	}
 
