@@ -36,26 +36,6 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 		var allfilters = []
 
 		{
-			const defaultfilter: SavedFilter = VAR_UICFG.ui.defaultFilters.scenes
-
-			const object_filter: SceneFilterType = CriterionFixer(
-				defaultfilter.object_filter
-			)
-			const find_filter = { ...defaultfilter.find_filter } // Read-only fix
-			find_filter.per_page = -1
-
-			if (DEBUG_MODE) {
-				//console.debug(find_filter)
-				console.debug("Default")
-			}
-			allfilters.push({
-				name: "Default",
-				find_filter: find_filter,
-				object_filter: object_filter,
-			})
-		}
-
-		{
 			const queryResult = await client.query<Query>({
 				query: FIND_SAVED_FILTERS_QUERY,
 				variables: {
@@ -64,20 +44,28 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 			})
 			checkForErrors(queryResult.errors)
 
-			for (let defaultfilter of queryResult.data.findSavedFilters) {
+			const defaultfilter: SavedFilter = {
+				...VAR_UICFG.ui.defaultFilters.scenes,
+			}
+			defaultfilter.name = "Default"
+
+			for (let afilter of [
+				defaultfilter,
+				...queryResult.data.findSavedFilters,
+			]) {
 				const object_filter: SceneFilterType = CriterionFixer(
-					defaultfilter.object_filter
+					afilter.object_filter
 				)
-				const find_filter = { ...defaultfilter.find_filter } as FindFilterType // Read-only fix
+				const find_filter = { ...afilter.find_filter } as FindFilterType // Read-only fix
 				find_filter.per_page = -1
 
 				if (DEBUG_MODE) {
 					//console.debug(find_filter)
-					console.debug(defaultfilter.name)
+					console.debug(afilter.name)
 				}
 
 				allfilters.push({
-					name: defaultfilter.name,
+					name: afilter.name,
 					find_filter: find_filter,
 					object_filter: object_filter,
 				})
