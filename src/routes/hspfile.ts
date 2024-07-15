@@ -6,7 +6,7 @@ import { client } from "../core/client"
 import { VAR_LOCALHSP } from "../core/vars"
 import { Query, Scene } from "../gql/graphql"
 import { FIND_SCENE_SLIM_QUERY } from "../queries/FindSceneSlimQuery"
-import { checkForErrors, fileExists } from "../utils/utilities"
+import { checkForErrors, decodeB64, fileExists } from "../utils/utilities"
 
 // TODO: Can we do this
 // If we run from docker we cant necessarily access said file
@@ -47,7 +47,6 @@ const hspHspHandler = async (req: Request, res: Response) => {
 	}
 }
 
-const decodeB64 = (b64: string) => Buffer.from(b64, "base64")
 export async function writeHSPFile(sceneId: string, dataB64: string) {
 	try {
 		const data = decodeB64(dataB64)

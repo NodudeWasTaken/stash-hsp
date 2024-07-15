@@ -4,7 +4,7 @@ import { Query } from "../gql/graphql"
 import { appleTouchIconBase64 } from "../public/apple-touch-icon"
 import { faviconBase64 } from "../public/favicon"
 import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
-import { checkForErrors } from "../utils/utilities"
+import { checkForErrors, decodeB64 } from "../utils/utilities"
 
 const healthcheckHandler = async (req: Request, res: Response) => {
 	try {
@@ -18,7 +18,6 @@ const healthcheckHandler = async (req: Request, res: Response) => {
 	}
 }
 
-const decodeB64 = (b64: string) => Buffer.from(b64, "base64")
 const faviconHandler = async (req: Request, res: Response) => {
 	const img = decodeB64(faviconBase64)
 	res.writeHead(200, {
