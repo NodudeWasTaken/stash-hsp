@@ -36,16 +36,21 @@ import { videoPath } from "./hspscene"
 const SCANDB_STR = "REPLACE_ME_XXX_FUCKER_DONT_FIND_SECRET_STRING"
 
 const hspscanfetchHandler = async (req: Request, res: Response) => {
-	if (await fileExists(SCANDB)) {
-		var scandb = fs
-			.readFileSync(SCANDB)
-			.toString()
-			.replaceAll(SCANDB_STR, getBaseURL(req))
-		res.contentType("application/json")
-		res.send(scandb)
-		return
+	try {
+		if (await fileExists(SCANDB)) {
+			var scandb = fs
+				.readFileSync(SCANDB)
+				.toString()
+				.replaceAll(SCANDB_STR, getBaseURL(req))
+			res.contentType("application/json")
+			res.send(scandb)
+			return
+		}
+		res.status(404)
+	} catch (err) {
+		console.error(err)
+		res.status(500).send({ error: (err as Error).message })
 	}
-	res.status(404)
 }
 
 const fetchHeresphereVideoEntrySlim = async (

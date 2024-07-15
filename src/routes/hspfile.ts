@@ -41,9 +41,9 @@ const hspHspHandler = async (req: Request, res: Response) => {
 		} else {
 			throw new Error(`Hsp file not found at ${hspPath}`)
 		}
-	} catch (error) {
-		console.error(error)
-		return res.status(500).json(error)
+	} catch (err) {
+		console.error(err)
+		res.status(500).send({ error: (err as Error).message })
 	}
 }
 

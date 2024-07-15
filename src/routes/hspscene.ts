@@ -234,9 +234,9 @@ const sceneFetchHandler = async (req: Request, res: Response) => {
 		)
 
 		res.json(videoEntry)
-	} catch (error) {
-		console.error(error)
-		res.status(500).json(error)
+	} catch (err) {
+		console.error(err)
+		res.status(500).send({ error: (err as Error).message })
 	}
 }
 

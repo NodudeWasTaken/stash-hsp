@@ -45,7 +45,7 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 			find_filter.per_page = -1
 
 			if (DEBUG_MODE) {
-				console.debug(find_filter)
+				//console.debug(find_filter)
 				console.debug("Default")
 			}
 			allfilters.push({
@@ -72,7 +72,7 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 				find_filter.per_page = -1
 
 				if (DEBUG_MODE) {
-					console.debug(find_filter)
+					//console.debug(find_filter)
 					console.debug(defaultfilter.name)
 				}
 
@@ -88,7 +88,7 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 			const fetchPromises: Promise<void>[] = []
 
 			for (let filt of allfilters) {
-				console.debug(filt)
+				//console.debug(filt)
 
 				// Push each query promise into the array without awaiting them
 				fetchPromises.push(
@@ -136,9 +136,9 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 		}
 
 		res.json(library)
-	} catch (error) {
-		console.error(error)
-		res.status(500).json(error)
+	} catch (err) {
+		console.error(err)
+		res.status(500).send({ error: (err as Error).message })
 	}
 }
 
