@@ -1,7 +1,12 @@
 import { Express, Request, Response } from "express"
 import { client } from "../core/client"
-import { VAR_UICFG } from "../core/vars"
-import { FindFilterType, Query, SceneFilterType } from "../gql/graphql"
+import { DEBUG_MODE, VAR_UICFG } from "../core/vars"
+import {
+	FindFilterType,
+	Query,
+	SavedFilter,
+	SceneFilterType,
+} from "../gql/graphql"
 import { FIND_SAVED_FILTERS_QUERY } from "../queries/FindSavedFiltersQuery"
 import { FIND_SCENES_SLIM_QUERY } from "../queries/FindScenesSlimQuery"
 import {
@@ -31,17 +36,17 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 		var allfilters = []
 
 		{
-			const defaultfilter = VAR_UICFG.ui.defaultFilters.scenes
+			const defaultfilter: SavedFilter = VAR_UICFG.ui.defaultFilters.scenes
 
 			var find_filter = defaultfilter.find_filter
-			var object_filter = defaultfilter.object_filter
+			var object_filter: SceneFilterType = defaultfilter.object_filter
 			object_filter = CriterionFixer(object_filter)
 
 			find_filter = { ...find_filter } // Read-only fix
 			find_filter.page = 0
 			find_filter.per_page = -1
 
-			if (process.env.DEBUG) {
+			if (DEBUG_MODE) {
 				console.debug(find_filter)
 				console.debug("Default")
 			}
@@ -69,7 +74,7 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 				find_filter.page = 0
 				find_filter.per_page = -1
 
-				if (process.env.DEBUG) {
+				if (DEBUG_MODE) {
 					console.debug(find_filter)
 					console.debug(defaultfilter.name)
 				}

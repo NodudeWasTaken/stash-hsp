@@ -56,7 +56,7 @@ function needsAuth(req: Request): boolean {
 }
 
 export function _ADD_AUTH() {
-	const sessionval = randomBytes(20).toString("hex")
+	const sessionval = randomBytes(128).toString("hex")
 	login_cache.set(sessionval, true)
 	return sessionval
 }

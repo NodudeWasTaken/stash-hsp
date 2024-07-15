@@ -227,13 +227,13 @@ const fetchHeresphereVideoEntry = async (
 const sceneFetchHandler = async (req: Request, res: Response) => {
 	try {
 		const sceneId = req.params.sceneId
-		res.json(
-			await fetchHeresphereVideoEntry(
-				sceneId,
-				getBaseURL(req),
-				req.heresphereAuthData
-			)
+		const videoEntry = await fetchHeresphereVideoEntry(
+			sceneId,
+			getBaseURL(req),
+			req.heresphereAuthData
 		)
+
+		res.json(videoEntry)
 	} catch (error) {
 		console.error(error)
 		res.status(500).json(error)

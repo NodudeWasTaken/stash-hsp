@@ -1,3 +1,5 @@
+import { DEBUG_MODE } from "../core/vars"
+import { SceneFilterType } from "../gql/graphql"
 import { getResolutionEnum } from "../structs/stash_structs"
 
 /*
@@ -60,8 +62,8 @@ const SCENEMARKERFILTER_TYPE = ["markers_filter"]
 const OPERATOR_TYPE = ["AND", "OR", "NOT"] // Not needed?
 
 // Fix all the stash idiosyncrasies
-function CriterionFixer(obj: any) {
-	if (process.env.DEBUG) {
+function CriterionFixer(obj: any): SceneFilterType {
+	if (DEBUG_MODE) {
 		console.debug(obj)
 	}
 
@@ -141,7 +143,7 @@ function CriterionFixer(obj: any) {
 		}
 	}
 
-	if (process.env.DEBUG) {
+	if (DEBUG_MODE) {
 		console.debug(lst)
 	}
 
