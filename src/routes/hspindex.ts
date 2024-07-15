@@ -56,7 +56,7 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 				const object_filter: SceneFilterType = CriterionFixer(
 					afilter.object_filter
 				)
-				const find_filter = { ...afilter.find_filter } as FindFilterType // Read-only fix
+				const find_filter: FindFilterType = { ...afilter.find_filter } // Read-only fix
 				find_filter.per_page = -1
 
 				if (DEBUG_MODE) {
