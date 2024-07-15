@@ -38,12 +38,10 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 		{
 			const defaultfilter: SavedFilter = VAR_UICFG.ui.defaultFilters.scenes
 
-			var find_filter = defaultfilter.find_filter
-			var object_filter: SceneFilterType = defaultfilter.object_filter
-			object_filter = CriterionFixer(object_filter)
-
-			find_filter = { ...find_filter } // Read-only fix
-			find_filter.page = 0
+			const object_filter: SceneFilterType = CriterionFixer(
+				defaultfilter.object_filter
+			)
+			const find_filter = { ...defaultfilter.find_filter } // Read-only fix
 			find_filter.per_page = -1
 
 			if (DEBUG_MODE) {
@@ -67,11 +65,10 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 			checkForErrors(queryResult.errors)
 
 			for (let defaultfilter of queryResult.data.findSavedFilters) {
-				let object_filter: SceneFilterType = defaultfilter.object_filter
-				object_filter = CriterionFixer(object_filter)
-
+				const object_filter: SceneFilterType = CriterionFixer(
+					defaultfilter.object_filter
+				)
 				const find_filter = { ...defaultfilter.find_filter } as FindFilterType // Read-only fix
-				find_filter.page = 0
 				find_filter.per_page = -1
 
 				if (DEBUG_MODE) {
