@@ -30,5 +30,13 @@
     "p-limit": "^6.1.0",
     "request-ip": "^3.3.0",
     "sharp": "^0.33.4"
+  },
+  "prettier": {
+	"trailingComma": "es5",
+	"useTabs": true,
+	"semi": false,
+	"singleQuote": false,
+	"bracketSpacing": true,
+	"plugins": ["prettier-plugin-organize-imports"]
   }
 }
