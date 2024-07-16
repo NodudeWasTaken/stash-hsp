@@ -87,7 +87,7 @@ export async function tryForAuth(req: Request) {
 		// Check if the 'Set-Cookie' header contains the 'session=' cookie
 		var match = setCookieHeader.match(session_regex)
 
-		if (match) {
+		if (match && match[1]) {
 			const seskey = match[1]
 			login_cache.set(seskey, true)
 			return seskey
