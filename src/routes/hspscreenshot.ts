@@ -10,7 +10,11 @@ import { fetchAndResizeImage, fileExists } from "../utils/utilities"
 
 const hspScreenshotHandler = async (req: Request, res: Response) => {
 	try {
-		const sceneId = Number(req.params.sceneId)
+		// TODO: With the amount of times i do this it should be generalized
+		const { sceneId } = req.params
+		if (!sceneId) {
+			throw new Error("missing sceneId")
+		}
 
 		const imagePath = `${VAR_SCREENSHOT_DIR}/${sceneId}.jpg`
 

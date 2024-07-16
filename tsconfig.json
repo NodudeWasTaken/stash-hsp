@@ -1,3 +1,4 @@
+// See https://www.typescriptlang.org/tsconfig/
 {
 	"compilerOptions": {
 	  // Enable latest features
@@ -18,9 +19,13 @@
 	  "strict": true,
 	  "skipLibCheck": true,
 	  "noFallthroughCasesInSwitch": true,
+	  "exactOptionalPropertyTypes": true,
+	  "noImplicitOverride": true,
+	  "noImplicitReturns": true,
+	  "noUncheckedIndexedAccess": true,
   
 	  // Some stricter flags (disabled by default)
-	  "noUnusedLocals": false,
+	  "noUnusedLocals": true,
 	  "noUnusedParameters": false,
 	  "noPropertyAccessFromIndexSignature": false
 	},

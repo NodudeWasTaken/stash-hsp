@@ -90,7 +90,7 @@ const fetchHeresphereVideoEntry = async (
 		writeTags: true,
 		writeHSP: true,
 	}
-	if (!processed.title && sceneData.files.length > 0) {
+	if (!processed.title && sceneData.files[0]) {
 		processed.title = getBasename(sceneData.files[0].path)
 	}
 
@@ -129,7 +129,7 @@ const fetchHeresphereVideoEntry = async (
 
 	fillTags(sceneData, processed)
 
-	if ((!authreq || authreq.needsMediaSource) && sceneData.files.length > 0) {
+	if ((!authreq || authreq.needsMediaSource) && sceneData.files[0]) {
 		processed.media = []
 		const maxResHeight = sceneData.files[0].height
 		const maxResWidth = sceneData.files[0].width
@@ -169,13 +169,13 @@ const fetchHeresphereVideoEntry = async (
 			for (const res of getResolutionsLessThanOrEqualTo(
 				maxResHeight,
 				reverseMapping[
-					VAR_UICFG.general.maxStreamingTranscodeSize || ResolutionEnum.ORIGINAL
-				]
+					VAR_UICFG.general.maxStreamingTranscodeSize ?? ResolutionEnum.ORIGINAL
+				] ?? 1080
 			).toReversed()) {
 				HLSurl.searchParams.set("resolution", res)
 				DASHurl.searchParams.set("resolution", res)
 
-				const resVal = reverseMapping[res]
+				const resVal = reverseMapping[res] ?? 1080
 				const widthVal = (maxResWidth / maxResHeight) * resVal
 
 				const HLSsource: HeresphereVideoMediaSource = {
@@ -226,7 +226,12 @@ const fetchHeresphereVideoEntry = async (
 
 const sceneFetchHandler = async (req: Request, res: Response) => {
 	try {
-		const sceneId = req.params.sceneId
+		// TODO: With the amount of times i do this it should be generalized
+		const { sceneId } = req.params
+		if (!sceneId) {
+			throw new Error("missing sceneId")
+		}
+
 		const videoEntry = await fetchHeresphereVideoEntry(
 			sceneId,
 			getBaseURL(req),

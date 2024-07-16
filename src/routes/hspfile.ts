@@ -17,6 +17,9 @@ import { checkForErrors, decodeB64, fileExists } from "../utils/utilities"
 const hspHspHandler = async (req: Request, res: Response) => {
 	try {
 		const { sceneId } = req.params
+		if (!sceneId) {
+			throw new Error("missing sceneId")
+		}
 
 		const queryResult = await client.query<Query>({
 			query: FIND_SCENE_SLIM_QUERY,
@@ -75,6 +78,10 @@ export async function writeHSPFile(sceneId: string, dataB64: string) {
 }
 
 export function getHSPFile(scene: Scene): string {
+	if (!scene.files[0]) {
+		throw new Error("no files for scene")
+	}
+
 	const pth = path.parse(scene.files[0].path)
 	const PATH_DIR = VAR_LOCALHSP ?? pth.dir
 	const PATH_NAME = VAR_LOCALHSP ? scene.id : pth.name

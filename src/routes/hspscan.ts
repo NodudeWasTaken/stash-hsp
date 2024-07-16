@@ -83,13 +83,13 @@ const fetchHeresphereVideoEntrySlim = async (
 			sceneData.tags.map((t) => t.id).includes(VAR_FAVTAG.id),
 		tags: [],
 	}
-	if (!processed.title && sceneData.files.length > 0) {
+	if (!processed.title && sceneData.files[0]) {
 		processed.title = getBasename(sceneData.files[0].path)
 	}
 
 	fillTags(sceneData, processed)
 
-	if (sceneData.files.length > 0) {
+	if (sceneData.files[0]) {
 		processed.duration = sceneData.files[0].duration * 1000
 	}
 	if (sceneData.date) {

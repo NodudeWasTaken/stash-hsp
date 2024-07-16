@@ -22,7 +22,7 @@ async function updatePlayCount(
 	const minPlay: number = Number(VAR_UICFG.ui.minimumPlayPercent) / 100
 	const newTime = event.time / 1000
 
-	if (scene.files.length > 0 && newTime / scene.files[0].duration > minPlay) {
+	if (scene.files[0] && newTime / scene.files[0].duration > minPlay) {
 		const mutationResult = await client.mutate<Mutation>({
 			mutation: SCENE_ADD_PLAY_MUTATION,
 			variables: {
@@ -39,7 +39,12 @@ async function updatePlayCount(
 
 const hspEventHandler = async (req: Request, res: Response) => {
 	try {
-		const sceneId = req.params.sceneId
+		// TODO: With the amount of times i do this it should be generalized
+		const { sceneId } = req.params
+		if (!sceneId) {
+			throw new Error("missing sceneId")
+		}
+
 		const queryResult = await client.query<Query>({
 			query: FIND_SCENE_QUERY,
 			variables: {
