@@ -4,6 +4,7 @@ import express, { Express } from "express"
 import requestIp from "request-ip"
 import { heresphereAuthMiddleware } from "./core/authmiddleware"
 import { initClient } from "./core/client"
+import { appendLog } from "./core/logger"
 import {
 	DEBUG_MODE,
 	tryAuth,
@@ -58,6 +59,7 @@ if (DEBUG_MODE) {
 }
 
 const server = app.listen(Number(VAR_PORT), "0.0.0.0", async () => {
+	appendLog("debug", "Initialized")
 	ensureDirectoryExists(VAR_SCREENSHOT_DIR)
 	ensureDirectoryExists(VAR_CACHE_DIR)
 	initClient()

@@ -22,6 +22,7 @@ export const DEBUG_MODE = process.env.DEBUG
 export const VAR_PORT = process.env.PORT || 3000
 export const STASH_URL = process.env.STASH_URL || "http://127.0.0.1:9999"
 export var STASH_APIKEY = process.env.STASH_APIKEY || ""
+export const VAR_LOGS_DIR = process.env.LOGS_DIR || "./"
 export const VAR_SCREENSHOT_DIR = process.env.SCREENSHOTS_DIR || "./screenshots"
 export const VAR_CACHE_DIR = process.env.CACHE_DIR || "./cache"
 export const SCANDB = `${VAR_CACHE_DIR}/scan.json`

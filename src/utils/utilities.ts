@@ -9,8 +9,7 @@ import { fetcher } from "../core/client"
 export const decodeB64 = (b64: string) => Buffer.from(b64, "base64")
 export const checkForErrors = (errors?: readonly GraphQLError[]): void => {
 	if (errors && errors.length > 0) {
-		console.error("GraphQL Errors:", errors)
-		console.error(new Error().stack)
+		throw new Error(`GraphQL Errors:${errors}`)
 	}
 }
 
