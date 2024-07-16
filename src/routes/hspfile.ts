@@ -8,12 +8,6 @@ import { Query, Scene } from "../gql/graphql"
 import { FIND_SCENE_SLIM_QUERY } from "../queries/FindSceneSlimQuery"
 import { checkForErrors, decodeB64, fileExists } from "../utils/utilities"
 
-// TODO: Can we do this
-// If we run from docker we cant necessarily access said file
-
-// But if we want to be compatible with stashplugins we need to do it like this
-// Stash doesnt have an arbitrary read endpoint
-
 const hspHspHandler = async (req: Request, res: Response) => {
 	try {
 		const { sceneId } = req.params
