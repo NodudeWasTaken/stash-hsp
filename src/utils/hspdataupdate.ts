@@ -143,8 +143,10 @@ export const hspDataUpdate = async (
 		})
 		checkForErrors(mutationResult.errors)
 
-		return mutationResult.data?.sceneUpdate || undefined
+		return mutationResult.data?.sceneUpdate ?? undefined
 	}
+
+	return undefined
 }
 
 export function fillTags(

@@ -21,6 +21,11 @@ prettier:
 prettier-check:
 	npx prettier $(SRC_DIR) --check
 
+tsc-check:
+	npx tsc
+
+check: tsc-check prettier-check
+
 generate-types:
 	npx graphql-codegen
 

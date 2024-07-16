@@ -47,7 +47,7 @@ const debugFindDefScenesHandler = async (req: Request, res: Response) => {
 
 const debugFindSceneHandler = async (req: Request, res: Response) => {
 	try {
-		const sceneId = req.params.sceneId
+		const { sceneId } = req.params
 
 		const sceneData = await client.query<Query>({
 			query: FIND_SCENE_QUERY,
