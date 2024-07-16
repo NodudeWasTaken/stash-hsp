@@ -11,7 +11,7 @@ COPY package*.json ./
 COPY . .
 
 # Bundle the project using bun
-RUN bun install --production && make compile
+RUN apk add --no-cache make && bun install --production && make compile
 
 # Stage 2: Production stage
 FROM oven/bun:alpine AS production
