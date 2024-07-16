@@ -22,7 +22,9 @@ export function appendLog(
 		return String(input)
 	}
 
-	const formattedMessage = `[${timestamp}] [${level.toUpperCase()}] ${serialize(message)} ${optionalParams.map(serialize).join(" ")}\n`
+	const formattedMessage = `[${timestamp}] [${level.toUpperCase()}] ${serialize(
+		message
+	)} ${optionalParams.map(serialize).join(" ")}\n`
 	fs.appendFileSync(logFilePath, formattedMessage, { encoding: "utf8" })
 }
 
