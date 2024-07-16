@@ -10,7 +10,7 @@ bundle:
 	bun build $(SRC_INDEX) --minify --sourcemap --target bun --outdir ./build
 
 compile:
-	bun build $(SRC_INDEX) --compile --minify --sourcemap --target bun --outfile stashhsp
+	bun build $(SRC_INDEX) --compile --minify --sourcemap --target=bun-linux-x64-baseline --outfile stashhsp
 
 dev:
 	DEBUG=express:* bun --watch run $(SRC_INDEX)
