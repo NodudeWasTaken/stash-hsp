@@ -110,6 +110,7 @@ const fetchHeresphereVideoEntry = async (
 	if (sceneData.captions) {
 		processed.subtitles = []
 
+		// TODO BUG: Do these work?
 		for (let caption of sceneData.captions) {
 			const CAPTION_URL = buildUrl(sceneData.paths.caption || "", {
 				lang: caption.language_code,
@@ -118,7 +119,7 @@ const fetchHeresphereVideoEntry = async (
 			})
 
 			var subs: HeresphereVideoSubtitle = {
-				name: caption.caption_type,
+				name: processed.title,
 				language: caption.language_code,
 				url: CAPTION_URL,
 			}

@@ -58,10 +58,6 @@ export async function writeHSPFile(sceneId: string, dataB64: string) {
 			throw new Error("scene not found")
 		}
 
-		if (sceneData.files.length === 0) {
-			throw new Error("scene has no files")
-		}
-
 		const hspPath = getHSPFile(sceneData)
 		console.log("write hsp file:", hspPath)
 

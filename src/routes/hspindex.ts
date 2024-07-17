@@ -49,6 +49,7 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 			}
 			defaultfilter.name = "Default"
 
+			// TODO BUG: Cached too long
 			for (let afilter of [
 				defaultfilter,
 				...queryResult.data.findSavedFilters,
