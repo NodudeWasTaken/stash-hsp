@@ -1,6 +1,12 @@
 import { client } from "../core/client"
 import { VAR_FAVTAG, VAR_MULTITRACK_MARKERS } from "../core/vars"
-import { Mutation, Query, Scene, SceneUpdateInput } from "../gql/graphql"
+import {
+	Mutation,
+	Query,
+	Scene,
+	SceneMarker,
+	SceneUpdateInput,
+} from "../gql/graphql"
 import { FIND_SCENE_QUERY } from "../queries/FindSceneQuery"
 import { FIND_TAGS_QUERY } from "../queries/FindTagsQuery"
 import { SCENE_UPDATE_MUTATION } from "../queries/SceneUpdateMutation"
@@ -172,9 +178,12 @@ export function fillTags(
 
 	if (scene.scene_markers) {
 		let trackMapping: { [key: string]: number } = {}
-		let currentTrack = 0
+		let currentTrack = -1000
+		let nextMarker: SceneMarker | undefined
 
-		for (let mark of scene.scene_markers) {
+		// We sort by seconds to find the order
+		// We add - to get reversed
+		for (let mark of scene.scene_markers.toSorted((m) => -m.seconds)) {
 			var tagName = mark.title
 
 			if (tagName.length == 0) {
@@ -193,11 +202,17 @@ export function fillTags(
 				trackNumber = trackMapping[mark.primary_tag.name] || 0
 			}
 
-			processed.tags.push({
+			let marker: HeresphereVideoTag = {
 				name: `Marker:${tagName}`,
 				start: mark.seconds * 1000,
 				track: trackNumber,
-			} as HeresphereVideoTag)
+			}
+			if (nextMarker) {
+				marker.end = nextMarker.seconds * 1000
+			}
+			processed.tags.push(marker)
+
+			nextMarker = mark
 		}
 	}
 
