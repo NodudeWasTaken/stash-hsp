@@ -35,10 +35,9 @@ export function buildUrl(baseUrl: string, params: Record<string, string>): URL {
 	const url = new URL(baseUrl)
 
 	// Iterate over each key-value pair in params and append to searchParams
-	Object.keys(params).forEach((key) => {
-		// @ts-ignore
-		url.searchParams.append(key, params[key])
-	})
+	for (const [key, value] of Object.entries(params)) {
+		url.searchParams.append(key, value)
+	}
 
 	return url
 }
