@@ -73,7 +73,7 @@ export function getHSPFile(scene: Scene): string {
 	}
 
 	const pth = path.parse(scene.files[0].path)
-	const PATH_DIR = VAR_LOCALHSP ?? pth.dir
+	const PATH_DIR = VAR_LOCALHSP || pth.dir
 	const PATH_NAME = VAR_LOCALHSP ? scene.id : pth.name
 
 	return `${PATH_DIR}/${PATH_NAME}.hsp`

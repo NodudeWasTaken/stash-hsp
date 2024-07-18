@@ -15,11 +15,12 @@ compile:
 dev:
 	DEBUG=express:* bun --watch run $(SRC_INDEX)
 
+PRETTIER_CMD = npx prettier $(SRC_DIR)
 prettier:
-	npx prettier $(SRC_DIR) --write
+	$(PRETTIER_CMD) --write
 
 prettier-check:
-	npx prettier $(SRC_DIR) --check
+	$(PRETTIER_CMD) --check
 
 tsc-check:
 	npx tsc

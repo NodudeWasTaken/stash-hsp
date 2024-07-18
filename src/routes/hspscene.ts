@@ -213,8 +213,9 @@ const fetchHeresphereVideoEntry = async (
 		processed.favorites++
 	}
 
+	// TODO BUG: Do these work?
 	processed.hspArray = []
-	if (sceneData.files.length > 0 && (await hasHSPFile(sceneData))) {
+	if (sceneData.files[0] && (await hasHSPFile(sceneData))) {
 		processed.hspArray.push({
 			url: `${baseUrl}${hspPath}/${sceneData.id}`,
 		} as HeresphereHSPEntry)

@@ -26,6 +26,7 @@ import { ensureDirectoryExists } from "./utils/utilities"
 
 const app: Express = express()
 app.set("trust proxy", true)
+app.set("json escape", false)
 app.use(requestIp.mw())
 app.use(express.json()) // BUG: json() removes ip address fields, place it later
 app.use(
