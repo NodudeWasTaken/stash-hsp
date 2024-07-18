@@ -192,7 +192,7 @@ export function fillTags(
 				tagName = `${tagName} - ${mark.primary_tag.name}`
 			}
 
-			var trackNumber = 0
+			var trackNumber = currentTrack
 			if (VAR_MULTITRACK_MARKERS) {
 				// Assign a track number based on the primary tag name
 				if (!(mark.primary_tag.name in trackMapping)) {
