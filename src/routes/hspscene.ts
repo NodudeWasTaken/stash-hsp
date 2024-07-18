@@ -29,6 +29,7 @@ import {
 	formatDate,
 	getBasename,
 	getBaseURL,
+	replaceExt,
 } from "../utils/utilities"
 import { eventPath } from "./hspevent"
 import { hasHSPFile, hspPath } from "./hspfile"
@@ -68,7 +69,7 @@ const fetchHeresphereVideoEntry = async (
 		thumbnailImage: `${baseUrl}${screenshotPath}/${sceneData.id}`,
 		thumbnailVideo: buildUrl(sceneData.paths.preview || "", {
 			[StashApiKeyParameter]: STASH_APIKEY,
-		}),
+		}).toJSON(),
 		dateAdded: formatDate(sceneData.created_at),
 		favorites: 0,
 		isFavorite:
@@ -99,7 +100,7 @@ const fetchHeresphereVideoEntry = async (
 
 		const SCRIPT_URL = buildUrl(sceneData.paths.funscript || "", {
 			[StashApiKeyParameter]: STASH_APIKEY,
-		})
+		}).toJSON()
 
 		var funscript: HeresphereVideoScript = {
 			name: "Default",
@@ -116,10 +117,10 @@ const fetchHeresphereVideoEntry = async (
 				lang: caption.language_code,
 				type: caption.caption_type,
 				[StashApiKeyParameter]: STASH_APIKEY,
-			})
+			}).toJSON()
 
 			var subs: HeresphereVideoSubtitle = {
-				name: processed.title,
+				name: replaceExt(processed.title, `.${caption.caption_type}`),
 				language: caption.language_code,
 				url: CAPTION_URL,
 			}

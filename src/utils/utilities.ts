@@ -17,6 +17,10 @@ export function getBasename(filePath: string): string {
 	return path.basename(filePath)
 }
 
+export function replaceExt(filePath: string, ext: string): string {
+	return path.basename(filePath, path.extname(filePath)) + ext
+}
+
 export function getBaseURL(req: Request) {
 	return `${req.protocol}://${req.get("host")}`
 }
@@ -27,10 +31,7 @@ export function ensureDirectoryExists(directoryPath: string): void {
 	}
 }
 
-export function buildUrl(
-	baseUrl: string,
-	params: Record<string, string>
-): string {
+export function buildUrl(baseUrl: string, params: Record<string, string>): URL {
 	const url = new URL(baseUrl)
 
 	// Iterate over each key-value pair in params and append to searchParams
@@ -39,7 +40,7 @@ export function buildUrl(
 		url.searchParams.append(key, params[key])
 	})
 
-	return url.toString()
+	return url
 }
 
 export function formatDate(dateString: string): string {

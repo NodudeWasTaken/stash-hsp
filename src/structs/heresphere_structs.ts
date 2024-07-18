@@ -106,6 +106,51 @@ export interface HeresphereHSPEntry {
 	version: number
 }
 
+export interface HeresphereHSPAlphaPacked {
+	shiftX?: number
+	shiftY?: number
+	scaleX?: number
+	scaleY?: number
+	opacityMultiplier?: number
+}
+
+export interface HeresphereHSPChromaKey {
+	red1?: number
+	green1?: number
+	blue1?: number
+	cutoff1?: number
+	soften1?: number
+	exponent1?: number
+	spillMask1?: number
+	red2?: number
+	green2?: number
+	blue2?: number
+	cutoff2?: number
+	soften2?: number
+	exponent2?: number
+	spillMask2?: number
+	red3?: number
+	green3?: number
+	blue3?: number
+	cutoff3?: number
+	soften3?: number
+	exponent3?: number
+	spillMask3?: number
+	despillRed?: number
+	despillGreen?: number
+	despillBlue?: number
+	despillCutoff?: number
+	despillSoften?: number
+	despillExponent?: number
+	despillMask?: number
+	despillStrength?: number
+	injectRed?: number
+	injectGreen?: number
+	injectBlue?: number
+	injectStrength?: number
+	opacityMultiplier?: number
+}
+
 export interface HeresphereVideoEntry {
 	access: number
 	title: string
@@ -125,6 +170,8 @@ export interface HeresphereVideoEntry {
 	fov?: number
 	lens: HeresphereLens
 	cameraIPD: number
+	alphaPackedSettings?: HeresphereHSPAlphaPacked
+	chromaKeySettings?: HeresphereHSPChromaKey
 	hspArray?: HeresphereHSPEntry[]
 	eventServer?: string
 	scripts?: HeresphereVideoScript[]

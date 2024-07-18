@@ -8,6 +8,8 @@ import { Query, Scene } from "../gql/graphql"
 import { FIND_SCENE_SLIM_QUERY } from "../queries/FindSceneSlimQuery"
 import { checkForErrors, decodeB64, fileExists } from "../utils/utilities"
 
+// TODO: Fetch from timestamp.trade?
+
 const hspHspHandler = async (req: Request, res: Response) => {
 	try {
 		const { sceneId } = req.params
