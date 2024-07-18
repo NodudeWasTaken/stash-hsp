@@ -33,6 +33,7 @@ export const VAR_RLIMIT = process.env["REQUEST_PROCESS_LIMIT"] || "20"
 // m h dom mon dow
 export const VAR_SCANCACHE_CRON = process.env["SCANCACHE_CRON"] || "0 6 * * *"
 export const VAR_LOCALHSP = process.env["LOCALHSP"] || false
+export const VAR_MULTITRACK_MARKERS = process.env["MULTITRACK_MARKERS"] || false
 export const slimit = pLimit(Number(VAR_SCALELIMIT))
 export const rlimit = pLimit(Number(VAR_RLIMIT))
 

@@ -1,5 +1,5 @@
 import { client } from "../core/client"
-import { VAR_FAVTAG } from "../core/vars"
+import { VAR_FAVTAG, VAR_MULTITRACK_MARKERS } from "../core/vars"
 import { Mutation, Query, Scene, SceneUpdateInput } from "../gql/graphql"
 import { FIND_SCENE_QUERY } from "../queries/FindSceneQuery"
 import { FIND_TAGS_QUERY } from "../queries/FindTagsQuery"
@@ -171,13 +171,32 @@ export function fillTags(
 	}
 
 	if (scene.scene_markers) {
-		for (let tag of scene.scene_markers) {
-			const tagName = tag.primary_tag.name
+		let trackMapping: { [key: string]: number } = {}
+		let currentTrack = 0
+
+		for (let mark of scene.scene_markers) {
+			var tagName = mark.title
+
+			if (tagName.length == 0) {
+				tagName = mark.primary_tag.name
+			} else {
+				tagName = `${tagName} - ${mark.primary_tag.name}`
+			}
+
+			var trackNumber = 0
+			if (VAR_MULTITRACK_MARKERS) {
+				// Assign a track number based on the primary tag name
+				if (!(mark.primary_tag.name in trackMapping)) {
+					trackMapping[mark.primary_tag.name] = currentTrack++
+				}
+
+				trackNumber = trackMapping[mark.primary_tag.name] || 0
+			}
 
 			processed.tags.push({
 				name: `Marker:${tagName}`,
-				start: tag.seconds * 1000,
-				end: (tag.seconds + 60) * 1000,
+				start: mark.seconds * 1000,
+				track: trackNumber,
 			} as HeresphereVideoTag)
 		}
 	}
