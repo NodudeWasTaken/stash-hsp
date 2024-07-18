@@ -31,8 +31,7 @@ const hspScreenshotHandler = async (req: Request, res: Response) => {
 			res.contentType("image/jpeg") // Adjust content type based on your image type
 
 			// Create a read stream and pipe it to the response
-			const readStream = fs.createReadStream(imagePath)
-			readStream.pipe(res)
+			fs.createReadStream(imagePath).pipe(res)
 		} else {
 			throw new Error(`Image not found at ${imagePath}`)
 		}

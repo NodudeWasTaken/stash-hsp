@@ -6,7 +6,12 @@ import { client } from "../core/client"
 import { VAR_LOCALHSP } from "../core/vars"
 import { Query, Scene } from "../gql/graphql"
 import { FIND_SCENE_SLIM_QUERY } from "../queries/FindSceneSlimQuery"
-import { checkForErrors, decodeB64, fileExists } from "../utils/utilities"
+import {
+	checkForErrors,
+	decodeB64,
+	fileExists,
+	getBasename,
+} from "../utils/utilities"
 
 // TODO: Fetch from timestamp.trade?
 
@@ -28,14 +33,15 @@ const hspHspHandler = async (req: Request, res: Response) => {
 			throw new Error("scene not found")
 		}
 
-		if (sceneData.files.length === 0) {
-			throw new Error("scene has no files")
-		}
-
 		const hspPath = getHSPFile(sceneData)
+		console.log("read hsp file:", hspPath)
 
+		// TODO: Test this
 		if (await fileExists(hspPath)) {
-			res.contentType("application/octet-stream")
+			res.setHeader(
+				"Content-Disposition",
+				`attachment; filename=${getBasename(hspPath)}`
+			)
 			fs.createReadStream(hspPath).pipe(res)
 		} else {
 			throw new Error(`Hsp file not found at ${hspPath}`)

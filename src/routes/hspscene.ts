@@ -111,7 +111,6 @@ const fetchHeresphereVideoEntry = async (
 	if (sceneData.captions) {
 		processed.subtitles = []
 
-		// TODO BUG: Do these work?
 		for (let caption of sceneData.captions) {
 			const CAPTION_URL = buildUrl(sceneData.paths.caption || "", {
 				lang: caption.language_code,
@@ -214,12 +213,12 @@ const fetchHeresphereVideoEntry = async (
 		processed.favorites++
 	}
 
-	// TODO BUG: Do these work?
-	processed.hspArray = []
 	if (sceneData.files[0] && (await hasHSPFile(sceneData))) {
-		processed.hspArray.push({
-			url: `${baseUrl}${hspPath}/${sceneData.id}`,
-		} as HeresphereHSPEntry)
+		processed.hspArray = [
+			{
+				url: `${baseUrl}${hspPath}/${sceneData.id}`,
+			} as HeresphereHSPEntry,
+		]
 	}
 
 	FindProjectionTags(sceneData, processed)
