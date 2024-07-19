@@ -10,20 +10,25 @@ import { client } from "./client"
 
 // User vars
 export const DEBUG_MODE = process.env["DEBUG"]
-export const VAR_PORT = process.env["PORT"] || 3000
-export const STASH_URL = process.env["STASH_URL"] || "http://127.0.0.1:9999"
-export var STASH_APIKEY = process.env["STASH_APIKEY"] || ""
-export const VAR_LOGS_DIR = process.env["LOGS_DIR"] || "./logs"
-export const VAR_SCREENSHOT_DIR =
+export const VAR_PORT: string = process.env["PORT"] || "3000"
+export const STASH_URL: string =
+	process.env["STASH_URL"] || "http://127.0.0.1:9999"
+export var STASH_APIKEY: string = process.env["STASH_APIKEY"] || ""
+export const VAR_LOGS_DIR: string = process.env["LOGS_DIR"] || "./logs"
+export const VAR_SCREENSHOT_DIR: string =
 	process.env["SCREENSHOTS_DIR"] || "./screenshots"
-export const VAR_CACHE_DIR = process.env["CACHE_DIR"] || "./cache"
-const VAR_FAVORITE_TAG = process.env["FAVORITE_TAG"] || "Favorites"
-export const VAR_SCALELIMIT = process.env["SCALE_PROCESS_LIMIT"] || "8"
-export const VAR_RLIMIT = process.env["REQUEST_PROCESS_LIMIT"] || "20"
+export const VAR_CACHE_DIR: string = process.env["CACHE_DIR"] || "./cache"
+const VAR_FAVORITE_TAG: string = process.env["FAVORITE_TAG"] || "Favorites"
+export const VAR_SCALELIMIT: string = process.env["SCALE_PROCESS_LIMIT"] || "8"
+export const VAR_RLIMIT: string = process.env["REQUEST_PROCESS_LIMIT"] || "20"
 // m h dom mon dow
-export const VAR_SCANCACHE_CRON = process.env["SCANCACHE_CRON"] || "0 6 * * *"
-export const VAR_LOCALHSP = process.env["LOCALHSP"] || false
-export const VAR_MULTITRACK_MARKERS = process.env["MULTITRACK_MARKERS"] || false
+export const VAR_SCANCACHE_CRON: string =
+	process.env["SCANCACHE_CRON"] || "0 6 * * *"
+export const VAR_LOCALHSP: boolean =
+	process.env["LOCALHSP"] === "true" || process.env["LOCALHSP"] === "1"
+export const VAR_MULTITRACK_MARKERS: boolean =
+	process.env["MULTITRACK_MARKERS"] === "true" ||
+	process.env["MULTITRACK_MARKERS"] === "1"
 
 // System vars
 export var VAR_UICFG: ConfigResult
