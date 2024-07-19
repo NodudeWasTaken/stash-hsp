@@ -111,7 +111,7 @@ export async function getVrTag() {
 				},
 			})
 			checkForErrors(qResult.errors)
-			var tagData = qResult.data.findTags.tags
+			let tagData = qResult.data.findTags.tags
 
 			if (tagData.length > 0) {
 				VAR_FAVTAG = tagData[0]

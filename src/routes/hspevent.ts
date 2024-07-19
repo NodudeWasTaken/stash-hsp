@@ -63,7 +63,7 @@ const hspEventHandler = async (req: Request, res: Response) => {
 		console.debug("Event called:", eventReq)
 
 		const newTime = eventReq.time / 1000
-		var newDuration = 0
+		let newDuration = 0
 
 		if (
 			sceneData.resume_time &&

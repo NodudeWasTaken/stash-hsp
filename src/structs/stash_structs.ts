@@ -98,7 +98,7 @@ export const getResolutionsLessThanOrEqualTo = (
 ): ResolutionEnum[] => {
 	let result: ResolutionEnum[] = []
 
-	for (var [height, resolutions] of Object.entries(resolutionMapping)) {
+	for (let [height, resolutions] of Object.entries(resolutionMapping)) {
 		const _height =
 			resolutions == ResolutionEnum.ORIGINAL ? vidRes : parseInt(height)
 

@@ -40,7 +40,7 @@ const fetchHeresphereVideoEntry = async (
 	baseUrl: string,
 	authreq?: HeresphereAuthReq
 ): Promise<HeresphereVideoEntry> => {
-	var sceneData: Scene | undefined
+	let sceneData: Scene | undefined
 
 	if (authreq) {
 		sceneData = await hspDataUpdate(sceneId, authreq)
@@ -62,7 +62,7 @@ const fetchHeresphereVideoEntry = async (
 	}
 
 	//console.debug(sceneData)
-	var processed: HeresphereVideoEntry = {
+	let processed: HeresphereVideoEntry = {
 		access: HeresphereMember,
 		title: sceneData.title || "",
 		description: sceneData.details || "",
@@ -102,7 +102,7 @@ const fetchHeresphereVideoEntry = async (
 			[StashApiKeyParameter]: STASH_APIKEY,
 		}).toJSON()
 
-		var funscript: HeresphereVideoScript = {
+		let funscript: HeresphereVideoScript = {
 			name: "Default",
 			url: SCRIPT_URL,
 		}
@@ -118,7 +118,7 @@ const fetchHeresphereVideoEntry = async (
 				[StashApiKeyParameter]: STASH_APIKEY,
 			}).toJSON()
 
-			var subs: HeresphereVideoSubtitle = {
+			let subs: HeresphereVideoSubtitle = {
 				name: replaceExt(processed.title, `.${caption.caption_type}`),
 				language: caption.language_code,
 				url: CAPTION_URL,

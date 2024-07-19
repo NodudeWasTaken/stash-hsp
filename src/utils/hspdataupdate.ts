@@ -62,7 +62,7 @@ export const hspDataUpdate = async (
 	authreq: HeresphereAuthReq
 ): Promise<Scene | undefined> => {
 	// Initialize the input object with the sceneId
-	var input: SceneUpdateInput = {
+	let input: SceneUpdateInput = {
 		id: sceneId,
 	}
 
@@ -184,7 +184,7 @@ export function fillTags(
 		// We sort by seconds to find the order
 		// We add - to get reversed
 		for (let mark of scene.scene_markers.toSorted((m) => -m.seconds)) {
-			var tagName = mark.title
+			let tagName = mark.title
 
 			if (tagName.length == 0) {
 				tagName = mark.primary_tag.name
@@ -192,7 +192,7 @@ export function fillTags(
 				tagName = `${tagName} - ${mark.primary_tag.name}`
 			}
 
-			var trackNumber = currentTrack
+			let trackNumber = currentTrack
 			if (VAR_MULTITRACK_MARKERS) {
 				// Assign a track number based on the primary tag name
 				if (!(mark.primary_tag.name in trackMapping)) {
@@ -244,7 +244,7 @@ export function fillTags(
 	}
 
 	if (scene.performers) {
-		var hasFavoritedPerformer: boolean = false
+		let hasFavoritedPerformer: boolean = false
 		for (let perf of scene.performers) {
 			processed.tags.push({
 				name: `Performer:${perf.name}`,

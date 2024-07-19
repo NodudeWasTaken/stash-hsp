@@ -43,7 +43,7 @@ function isHeresphereAuthReq(data: any): data is HeresphereAuthReq {
 }
 
 function needsAuth(req: Request): boolean {
-	var authEnabled: boolean = false // TODO: Config
+	let authEnabled: boolean = false // TODO: Config
 
 	if (!authEnabled && !NEEDS_AUTH) {
 		return false
@@ -61,7 +61,7 @@ export function _ADD_AUTH() {
 	return sessionval
 }
 
-var session_regex = new RegExp("session=([^;]*)")
+const session_regex = new RegExp("session=([^;]*)")
 export async function tryForAuth(req: Request) {
 	let formData = new URLSearchParams()
 	formData.append("username", req.heresphereAuthData?.username || "")
@@ -85,7 +85,7 @@ export async function tryForAuth(req: Request) {
 	const setCookieHeader = response.headers.get("Set-Cookie".toLowerCase())
 	if (setCookieHeader) {
 		// Check if the 'Set-Cookie' header contains the 'session=' cookie
-		var match = setCookieHeader.match(session_regex)
+		let match = setCookieHeader.match(session_regex)
 
 		if (match && match[1]) {
 			const seskey = match[1]

@@ -33,7 +33,7 @@ const hspAuthHandler = async (req: Request, res: Response) => {
 			return
 		}
 
-		var auth: HeresphereAuthResp = {
+		let auth: HeresphereAuthResp = {
 			"auth-token": "",
 			access: HeresphereGuest,
 		}

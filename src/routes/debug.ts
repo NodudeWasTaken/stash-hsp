@@ -26,8 +26,8 @@ const debugFindDefScenesHandler = async (req: Request, res: Response) => {
 
 		const defaultfilter = uiconfig.data.configuration.ui.defaultFilters.scenes
 
-		var find_filter = defaultfilter.find_filter
-		var object_filter = defaultfilter.object_filter
+		let find_filter = defaultfilter.find_filter
+		let object_filter = defaultfilter.object_filter
 		object_filter = CriterionFixer(object_filter)
 
 		const findscenes = await client.query<Query>({

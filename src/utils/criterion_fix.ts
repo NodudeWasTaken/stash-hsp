@@ -67,7 +67,7 @@ function CriterionFixer(obj: any): SceneFilterType {
 		console.debug(obj)
 	}
 
-	var lst: any = {}
+	let lst: any = {}
 	for (let key of Object.keys(obj)) {
 		if (
 			INT_CRITERIONS.includes(key) ||

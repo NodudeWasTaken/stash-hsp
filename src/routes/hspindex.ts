@@ -33,7 +33,7 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 			library: [],
 		}
 
-		var allfilters = []
+		let allfilters = []
 
 		{
 			const queryResult = await client.query<Query>({

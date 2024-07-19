@@ -75,7 +75,7 @@ const fetchHeresphereVideoEntrySlim = async (
 	}
 
 	//console.debug(sceneData)
-	var processed: HeresphereVideoEntryShort = {
+	let processed: HeresphereVideoEntryShort = {
 		link: `${videoPath}/${sceneData.id}`,
 		title: sceneData.title || "",
 		dateAdded: formatDate(sceneData.created_at),
@@ -113,7 +113,7 @@ export async function genScanDB(first: boolean) {
 		ensureDirectoryExists(VAR_SCREENSHOT_DIR)
 
 		console.debug("hsp scan")
-		var scenes: HeresphereVideoEntryShort[] = []
+		let scenes: HeresphereVideoEntryShort[] = []
 
 		const queryResult = await client.query<Query>({
 			query: FIND_SCENES_SLIM_QUERY,
@@ -129,7 +129,7 @@ export async function genScanDB(first: boolean) {
 
 		// Fetch video data
 		const outof = videodata.length
-		var inof = 0
+		let inof = 0
 		const scenePromises: Promise<void[]> = Promise.all(
 			videodata.map((scene: any) =>
 				rlimit(() =>
