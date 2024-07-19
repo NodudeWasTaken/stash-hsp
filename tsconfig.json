@@ -2,9 +2,9 @@
 {
 	"compilerOptions": {
 	  // Enable latest features
-	  "lib": ["es2020", "DOM"],
-	  "target": "es2020",
-	  "module": "es2020",
+	  "lib": ["ESNext", "DOM"],
+	  "target": "ESNext",
+	  "module": "ESNext",
 	  "moduleDetection": "force",
 	  "jsx": "react-jsx",
 	  "allowJs": true,
