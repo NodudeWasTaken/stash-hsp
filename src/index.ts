@@ -5,13 +5,7 @@ import requestIp from "request-ip"
 import { heresphereAuthMiddleware } from "./core/authmiddleware"
 import { initClient } from "./core/client"
 import { appendLog } from "./core/logger"
-import {
-	DEBUG_MODE,
-	tryAuth,
-	VAR_CACHE_DIR,
-	VAR_PORT,
-	VAR_SCREENSHOT_DIR,
-} from "./core/vars"
+import { DEBUG_MODE, tryAuth, VAR_PORT } from "./core/vars"
 import { indexRoutes } from "./routes"
 import { debugRoutes } from "./routes/debug"
 import { hspAuthRoutes } from "./routes/hspauth"
@@ -22,7 +16,6 @@ import { hspScanRoutes } from "./routes/hspscan"
 import { hspSceneRoutes } from "./routes/hspscene"
 import { hspScreenshotRoutes } from "./routes/hspscreenshot"
 import { miscRoutes } from "./routes/misc"
-import { ensureDirectoryExists } from "./utils/utilities"
 
 const app: Express = express()
 app.set("trust proxy", true)
@@ -61,8 +54,6 @@ if (DEBUG_MODE) {
 
 const server = app.listen(Number(VAR_PORT), "0.0.0.0", async () => {
 	appendLog("debug", "Initialized")
-	ensureDirectoryExists(VAR_SCREENSHOT_DIR)
-	ensureDirectoryExists(VAR_CACHE_DIR)
 	initClient()
 	// TODO: Retry this, maybe setTimeout?
 	tryAuth().catch((error) => {

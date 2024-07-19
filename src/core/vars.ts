@@ -8,25 +8,15 @@ import { genScanDB } from "../routes/hspscan"
 import { checkForErrors } from "../utils/utilities"
 import { client } from "./client"
 
-export var VAR_UICFG: ConfigResult
-export var VAR_FAVTAG: Tag | undefined
-
-// We should require user-auth (no APIKEY supplied)
-export var NEEDS_AUTH: boolean
-// We have fetched initial data like apikey, tags, etc.
-export var INITIAL_FETCH: boolean
-
-export const SCREENSHOT_MAXRES = 480
-
+// User vars
 export const DEBUG_MODE = process.env["DEBUG"]
 export const VAR_PORT = process.env["PORT"] || 3000
 export const STASH_URL = process.env["STASH_URL"] || "http://127.0.0.1:9999"
 export var STASH_APIKEY = process.env["STASH_APIKEY"] || ""
-export const VAR_LOGS_DIR = process.env["LOGS_DIR"] || "./"
+export const VAR_LOGS_DIR = process.env["LOGS_DIR"] || "./logs"
 export const VAR_SCREENSHOT_DIR =
 	process.env["SCREENSHOTS_DIR"] || "./screenshots"
 export const VAR_CACHE_DIR = process.env["CACHE_DIR"] || "./cache"
-export const SCANDB = `${VAR_CACHE_DIR}/scan.json`
 const VAR_FAVORITE_TAG = process.env["FAVORITE_TAG"] || "Favorites"
 export const VAR_SCALELIMIT = process.env["SCALE_PROCESS_LIMIT"] || "8"
 export const VAR_RLIMIT = process.env["REQUEST_PROCESS_LIMIT"] || "20"
@@ -34,10 +24,21 @@ export const VAR_RLIMIT = process.env["REQUEST_PROCESS_LIMIT"] || "20"
 export const VAR_SCANCACHE_CRON = process.env["SCANCACHE_CRON"] || "0 6 * * *"
 export const VAR_LOCALHSP = process.env["LOCALHSP"] || false
 export const VAR_MULTITRACK_MARKERS = process.env["MULTITRACK_MARKERS"] || false
+
+// System vars
+export var VAR_UICFG: ConfigResult
+export var VAR_FAVTAG: Tag | undefined
+
+export var NEEDS_AUTH: boolean // We should require user-auth (no APIKEY supplied)
+export var INITIAL_FETCH: boolean // We have fetched initial data like apikey, tags, etc.
+
+export const SCREENSHOT_MAXRES = 480
+
 export const slimit = pLimit(Number(VAR_SCALELIMIT))
 export const rlimit = pLimit(Number(VAR_RLIMIT))
 
 export const ENABLE_EXPERIMENTAL_AUTH = DEBUG_MODE || false
+export const SCANDB = `${VAR_CACHE_DIR}/scan.json`
 
 // Type guard to check if the network error is a ServerError
 function isServerError(error: any): error is ServerError {

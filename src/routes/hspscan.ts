@@ -1,5 +1,4 @@
 import { Express, Request, Response } from "express"
-import fs from "fs"
 import { writeFile } from "fs/promises"
 import cron from "node-cron"
 import { client } from "../core/client"
@@ -9,6 +8,7 @@ import {
 	SCREENSHOT_MAXRES,
 	slimit,
 	STASH_URL,
+	VAR_CACHE_DIR,
 	VAR_FAVTAG,
 	VAR_SCANCACHE_CRON,
 	VAR_SCREENSHOT_DIR,
@@ -23,25 +23,29 @@ import {
 import { fillTags } from "../utils/hspdataupdate"
 import {
 	checkForErrors,
+	ensureDirectoryExists,
 	fetchAndResizeImage,
 	fileExists,
 	formatDate,
 	getBasename,
 	getBaseURL,
+	readJsonFile,
 } from "../utils/utilities"
 import { videoPath } from "./hspscene"
 
 // Stash is too slow to do this live
 // TODO: Add a way to refresh
-const SCANDB_STR = "REPLACE_ME_XXX_FUCKER_DONT_FIND_SECRET_STRING"
-
 const hspscanfetchHandler = async (req: Request, res: Response) => {
 	try {
 		if (await fileExists(SCANDB)) {
-			var scandb = fs
-				.readFileSync(SCANDB)
-				.toString()
-				.replaceAll(SCANDB_STR, getBaseURL(req))
+			const baseUrl = getBaseURL(req)
+
+			let scandb: HeresphereScanIndex = await readJsonFile(SCANDB)
+			scandb.scanData = scandb.scanData.map((scene) => ({
+				...scene,
+				link: `${baseUrl}${scene.link}`,
+			}))
+
 			res.contentType("application/json")
 			res.send(scandb)
 			return
@@ -54,8 +58,7 @@ const hspscanfetchHandler = async (req: Request, res: Response) => {
 }
 
 const fetchHeresphereVideoEntrySlim = async (
-	sceneId: string,
-	baseUrl: string
+	sceneId: string
 ): Promise<HeresphereVideoEntryShort> => {
 	const queryResult = await client.query<Query>({
 		query: FIND_SCENE_SLIM_QUERY,
@@ -73,7 +76,7 @@ const fetchHeresphereVideoEntrySlim = async (
 
 	//console.debug(sceneData)
 	var processed: HeresphereVideoEntryShort = {
-		link: `${baseUrl}${videoPath}/${sceneData.id}`,
+		link: `${videoPath}/${sceneData.id}`,
 		title: sceneData.title || "",
 		dateAdded: formatDate(sceneData.created_at),
 		favorites: 0,
@@ -106,6 +109,9 @@ const fetchHeresphereVideoEntrySlim = async (
 }
 export async function genScanDB(first: boolean) {
 	if (!(await fileExists(SCANDB)) || !first) {
+		ensureDirectoryExists(VAR_CACHE_DIR)
+		ensureDirectoryExists(VAR_SCREENSHOT_DIR)
+
 		console.debug("hsp scan")
 		var scenes: HeresphereVideoEntryShort[] = []
 
@@ -127,7 +133,7 @@ export async function genScanDB(first: boolean) {
 		const scenePromises: Promise<void[]> = Promise.all(
 			videodata.map((scene: any) =>
 				rlimit(() =>
-					fetchHeresphereVideoEntrySlim(scene.id, SCANDB_STR)
+					fetchHeresphereVideoEntrySlim(scene.id)
 						.then((hspscene) => {
 							inof++
 							console.debug("hsp scan:", scene.id, "prog:", inof, "/", outof)

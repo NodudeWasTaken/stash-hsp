@@ -1,6 +1,6 @@
 import { Request } from "express"
 import fs, { constants } from "fs"
-import { access } from "fs/promises"
+import { access, readFile } from "fs/promises"
 import { GraphQLError } from "graphql/error"
 import path from "path"
 import sharp from "sharp"
@@ -53,6 +53,11 @@ export function formatDate(dateString: string): string {
 
 	// Format the date as "year-month-day"
 	return `${year}-${month}-${day}`
+}
+
+export async function readJsonFile(path: string) {
+	const file = await readFile(path, "utf8")
+	return JSON.parse(file)
 }
 
 export async function fileExists(path: string) {

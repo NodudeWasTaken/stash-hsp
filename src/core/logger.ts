@@ -1,9 +1,10 @@
-import * as fs from "fs"
-import * as path from "path"
+import fs from "fs"
+import path from "path"
+import { ensureDirectoryExists } from "../utils/utilities"
 import { VAR_LOGS_DIR } from "./vars"
 
 // Define log file path
-const timestamp = new Date().toISOString()
+const timestamp = new Date().toISOString().replace(/:/g, "-")
 // TODO BUG: These filenames dont work on windows
 const logFilePath = path.join(VAR_LOGS_DIR, `app-${timestamp}.log`)
 
@@ -26,6 +27,8 @@ export function appendLog(
 	const formattedMessage = `[${timestamp}] [${level.toUpperCase()}] ${serialize(
 		message
 	)} ${optionalParams.map(serialize).join(" ")}\n`
+
+	ensureDirectoryExists(VAR_LOGS_DIR)
 	fs.appendFileSync(logFilePath, formattedMessage, { encoding: "utf8" })
 }
 
