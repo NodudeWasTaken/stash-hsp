@@ -122,6 +122,7 @@ function extractTags(
 					...tag,
 					name: tag.name.slice(`${prefix}:`.length),
 				}) as unknown as HeresphereVideoTag
+			// TODO: Remove as unknown
 		)
 }
 
