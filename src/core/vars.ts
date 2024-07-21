@@ -3,7 +3,7 @@ import { ServerError } from "@apollo/client/link/utils/index.js"
 import pLimit from "p-limit"
 import { ConfigResult, Query, Tag } from "../gql/graphql"
 import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
-import { FIND_TAGS_QUERY } from "../queries/FindTagsQuery"
+import { FIND_TAGS_QUERY, FIND_TAGS_VARS } from "../queries/FindTagsQuery"
 import { genScanDB } from "../routes/hspscan"
 import { checkForErrors } from "../utils/utilities"
 import { client } from "./client"
@@ -108,7 +108,7 @@ export async function getVrTag() {
 							modifier: "EQUALS",
 						},
 					},
-				},
+				} as FIND_TAGS_VARS,
 			})
 			checkForErrors(qResult.errors)
 			let tagData = qResult.data.findTags.tags

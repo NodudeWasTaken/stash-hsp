@@ -7,6 +7,7 @@ import sharp from "sharp"
 import { fetcher } from "../core/client"
 
 export const decodeB64 = (b64: string) => Buffer.from(b64, "base64")
+// TODO: add graphql.error for apolloerror
 export const checkForErrors = (errors?: readonly GraphQLError[]): void => {
 	if (errors && errors.length > 0) {
 		throw new Error(`GraphQL Errors:${errors}`)

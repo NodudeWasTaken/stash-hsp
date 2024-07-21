@@ -2,7 +2,7 @@ import { Express, Request, Response } from "express"
 import { client, StashApiKeyParameter } from "../core/client"
 import { STASH_APIKEY, VAR_FAVTAG, VAR_UICFG } from "../core/vars"
 import { Query, Scene } from "../gql/graphql"
-import { FIND_SCENE_QUERY } from "../queries/FindSceneQuery"
+import { FIND_SCENE_QUERY, FIND_SCENE_VARS } from "../queries/FindSceneQuery"
 import {
 	HeresphereAuthReq,
 	HeresphereHSPEntry,
@@ -51,7 +51,7 @@ const fetchHeresphereVideoEntry = async (
 			query: FIND_SCENE_QUERY,
 			variables: {
 				id: sceneId,
-			},
+			} as FIND_SCENE_VARS,
 		})
 		checkForErrors(queryResult.errors)
 		sceneData = queryResult.data.findScene || undefined

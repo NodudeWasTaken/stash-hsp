@@ -3,7 +3,7 @@ import NodeCache from "node-cache"
 import { client } from "../core/client"
 import { VAR_UICFG } from "../core/vars"
 import { Mutation, Query, Scene } from "../gql/graphql"
-import { FIND_SCENE_QUERY } from "../queries/FindSceneQuery"
+import { FIND_SCENE_QUERY, FIND_SCENE_VARS } from "../queries/FindSceneQuery"
 import { SCENE_ADD_PLAY_MUTATION } from "../queries/SceneAddPlayMutation"
 import { SCENE_SAVE_ACTIVITY_MUTATION } from "../queries/SceneSaveActivityMutation"
 import {
@@ -49,7 +49,7 @@ const hspEventHandler = async (req: Request, res: Response) => {
 			query: FIND_SCENE_QUERY,
 			variables: {
 				id: sceneId,
-			},
+			} as FIND_SCENE_VARS,
 		})
 		checkForErrors(queryResult.errors)
 		const sceneData = queryResult.data.findScene || undefined

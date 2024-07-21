@@ -7,7 +7,10 @@ import {
 	SavedFilter,
 	SceneFilterType,
 } from "../gql/graphql"
-import { FIND_SAVED_FILTERS_QUERY } from "../queries/FindSavedFiltersQuery"
+import {
+	FIND_SAVED_FILTERS_QUERY,
+	FIND_SAVED_FILTERS_VARS,
+} from "../queries/FindSavedFiltersQuery"
 import { FIND_SCENES_SLIM_QUERY } from "../queries/FindScenesSlimQuery"
 import {
 	HeresphereBanner,
@@ -40,7 +43,7 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 				query: FIND_SAVED_FILTERS_QUERY,
 				variables: {
 					mode: "SCENES",
-				},
+				} as FIND_SAVED_FILTERS_VARS,
 			})
 			checkForErrors(queryResult.errors)
 

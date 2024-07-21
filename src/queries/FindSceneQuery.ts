@@ -1,5 +1,9 @@
 import { gql } from '@apollo/client/core';
 
+export interface FIND_SCENE_VARS { 
+	id: string, 
+	checksum: String 
+}
 export const FIND_SCENE_QUERY = gql`
 query FindScene($id: ID!, $checksum: String) {
 	findScene(id: $id, checksum: $checksum) {

@@ -1,49 +1,56 @@
 import { gql } from '@apollo/client/core';
-import { FindFilterType, TagFilterType } from '../gql/graphql';
 
-export interface FIND_TAGS_VARS { 
-	filter: FindFilterType, 
-	tag_filter: TagFilterType 
-}
-export const FIND_TAGS_QUERY = gql`
-query FindTags($filter: FindFilterType, $tag_filter: TagFilterType) {
-	findTags(filter: $filter, tag_filter: $tag_filter) {
+export const FIND_STUDIOS_QUERY = gql`
+query FindStudios($filter: FindFilterType, $studio_filter: StudioFilterType) {
+	findStudios(filter: $filter, studio_filter: $studio_filter) {
 	  count
-	  tags {
-		...TagData
+	  studios {
+		...StudioData
 		__typename
 	  }
 	  __typename
 	}
   }
   
-  fragment TagData on Tag {
+  fragment StudioData on Studio {
 	id
 	name
-	description
-	aliases
+	url
+	parent_studio {
+	  id
+	  name
+	  url
+	  image_path
+	  __typename
+	}
+	child_studios {
+	  id
+	  name
+	  image_path
+	  __typename
+	}
 	ignore_auto_tag
-	favorite
 	image_path
 	scene_count
 	scene_count_all: scene_count(depth: -1)
-	scene_marker_count
-	scene_marker_count_all: scene_marker_count(depth: -1)
 	image_count
 	image_count_all: image_count(depth: -1)
 	gallery_count
 	gallery_count_all: gallery_count(depth: -1)
 	performer_count
 	performer_count_all: performer_count(depth: -1)
-	studio_count
-	studio_count_all: studio_count(depth: -1)
 	group_count
 	group_count_all: group_count(depth: -1)
-	parents {
-	  ...SlimTagData
+	stash_ids {
+	  stash_id
+	  endpoint
 	  __typename
 	}
-	children {
+	details
+	rating100
+	favorite
+	aliases
+	tags {
 	  ...SlimTagData
 	  __typename
 	}

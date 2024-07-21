@@ -1,3 +1,4 @@
+import { DocumentNode } from "@apollo/client/core"
 import { client } from "../core/client"
 import { VAR_FAVTAG, VAR_MULTITRACK_MARKERS } from "../core/vars"
 import {
@@ -7,8 +8,17 @@ import {
 	SceneMarker,
 	SceneUpdateInput,
 } from "../gql/graphql"
-import { FIND_SCENE_QUERY } from "../queries/FindSceneQuery"
-import { FIND_TAGS_QUERY } from "../queries/FindTagsQuery"
+import { FIND_PERFORMERS_SLIM_QUERY } from "../queries/FindPerformersSlimQuery"
+import {
+	FIND_SCENEMARKERS_QUERY,
+	FIND_SCENEMARKERS_VARS,
+} from "../queries/FindSceneMarkersQuery"
+import { FIND_SCENE_QUERY, FIND_SCENE_VARS } from "../queries/FindSceneQuery"
+import { FIND_STUDIOS_SLIM_QUERY } from "../queries/FindStudiosSlimQuery"
+import { FIND_TAGS_VARS } from "../queries/FindTagsQuery"
+import { FIND_TAGS_SLIM_QUERY } from "../queries/FindTagsSlimQuery"
+import { SCENE_MARKER_CREATE_MUTATION } from "../queries/SceneMarkerCreateMutation"
+import { SCENE_MARKER_DESTROY_MUTATION } from "../queries/SceneMarkerDestroyMutation"
 import { SCENE_UPDATE_MUTATION } from "../queries/SceneUpdateMutation"
 import { writeHSPFile } from "../routes/hspfile"
 import {
@@ -30,8 +40,8 @@ To address this problem (which is not a bug in Apollo Client), define a custom m
 
 For more information about these options, please refer to the documentation:
 
-  * Ensuring entity objects have IDs: https://go.apollo.dev/c/generating-unique-identifiers
-  * Defining custom merge functions: https://go.apollo.dev/c/merging-non-normalized-objects
+	* Ensuring entity objects have IDs: https://go.apollo.dev/c/generating-unique-identifiers
+	* Defining custom merge functions: https://go.apollo.dev/c/merging-non-normalized-objects
 */
 function manageFavoriteTag(
 	input: SceneUpdateInput,
@@ -57,6 +67,85 @@ function manageFavoriteTag(
 	}
 }
 
+type FilterType = "Tag" | "Performer" | "Studio"
+
+async function findIds(
+	authreq: HeresphereAuthReq,
+	filterType: FilterType,
+	FIND_QUERY: DocumentNode
+): Promise<Query | undefined> {
+	if (!authreq.tags) {
+		throw new Error("tags undefined")
+	}
+
+	// Find tags or performers from heresphere in stash
+	const itemsToFind = authreq.tags
+		.filter((tag) => tag.name.startsWith(`${filterType}:`))
+		.map((tag) => tag.name.slice(`${filterType}:`.length))
+
+	// If any were found
+	if (itemsToFind.length) {
+		// Construct the filter for the tags or performers
+		const orFilter = itemsToFind.reduceRight((acc: any, item: any) => {
+			const nameFilter = { value: item, modifier: "EQUALS" }
+			return acc ? { name: nameFilter, OR: acc } : { name: nameFilter }
+		}, null)
+
+		// Query to find tags or performers in stash
+		const queryResult = await client.query<Query>({
+			query: FIND_QUERY,
+			variables: {
+				filter: {
+					per_page: -1,
+				},
+				[`${filterType.toLowerCase()}_filter`]: orFilter,
+			},
+		})
+		checkForErrors(queryResult.errors)
+
+		// Set the _ids in the input
+		return queryResult.data
+	}
+
+	return undefined
+}
+
+function extractTags(
+	tags: HeresphereVideoTag[],
+	prefix: string
+): HeresphereVideoTag[] | undefined {
+	return tags
+		.filter((tag) => tag.name.startsWith(prefix))
+		.map(
+			(tag) =>
+				({
+					...tag,
+					name: tag.name.slice(`${prefix}:`.length),
+				}) as unknown as HeresphereVideoTag
+		)
+}
+
+function extractTagValue(
+	tags: HeresphereVideoTag[],
+	prefix: string
+): string | undefined {
+	return extractTags(tags, prefix)
+		?.map((t) => t.name)
+		.pop()
+}
+
+function markerName(mark: SceneMarker) {
+	/*let tagName = mark.title
+
+	if (tagName.length == 0) {
+		tagName = mark.primary_tag.name
+	} else {
+		tagName = `${tagName} - ${mark.primary_tag.name}`
+	}**/
+
+	return mark.primary_tag.name
+}
+
 export const hspDataUpdate = async (
 	sceneId: string,
 	authreq: HeresphereAuthReq
@@ -76,48 +165,189 @@ export const hspDataUpdate = async (
 		// For straight tags
 		{
 			// Find tags from heresphere in stash
-			const tagsToFind = authreq.tags
-				.filter((tag) => tag.name.startsWith("Tag:"))
-				.map((tag) => tag.name.slice("Tag:".length))
-
-			// If any were found
-			if (tagsToFind) {
-				// Construct the filter for the tags
-				const orFilter = tagsToFind.reduceRight((acc: any, tag: any) => {
-					const nameFilter = { value: tag, modifier: "EQUALS" }
-					return acc ? { name: nameFilter, OR: acc } : { name: nameFilter }
-				}, null)
-
-				// Query to find tags in stash
-				const queryResult = await client.query<Query>({
-					query: FIND_TAGS_QUERY,
-					variables: {
-						filter: {
-							per_page: -1,
-						},
-						tag_filter: orFilter,
-					},
-				})
-				checkForErrors(queryResult.errors)
-
-				// Set the tag_ids in the input
-				input.tag_ids = queryResult.data.findTags.tags.map((t) => t.id)
+			const queryData = await findIds(authreq, "Tag", FIND_TAGS_SLIM_QUERY)
+			if (queryData) {
+				input.tag_ids = queryData.findTags.tags.map((t) => t.id)
 
 				// Add or remove favorite tag if applicable
 				manageFavoriteTag(input, authreq)
 			}
 		}
 
-		// TODO: Performers and other vars (see fillTags)
-		// PlayCount, OCounter etc.
-		// Markers
+		{
+			// Find performers from heresphere in stash
+			const queryData = await findIds(
+				authreq,
+				"Performer",
+				FIND_PERFORMERS_SLIM_QUERY
+			)
+			if (queryData) {
+				input.performer_ids = queryData.findPerformers.performers.map(
+					(t) => t.id
+				)
+			}
+		}
+
+		{
+			// Find studios from heresphere in stash
+			const queryData = await findIds(
+				authreq,
+				"Studio",
+				FIND_STUDIOS_SLIM_QUERY
+			)
+			if (queryData && queryData.findStudios.studios[0]) {
+				input.studio_id = queryData.findStudios.studios[0].id
+			}
+		}
+
+		{
+			// Find groups from heresphere in stash
+			// TODO: Scene index???
+			/*const queryData = await findIds(authreq, "Group", FIND_GROUPS_SLIM_QUERY)
+			if (queryData) {
+				input.groups = queryData.findPerformers.performers.map((t) => t.id)
+			}*/
+		}
+
+		{
+			const director = extractTagValue(authreq.tags, "Director:")
+			if (director) {
+				input.director = director
+			}
+		}
+
+		{
+			const playCount = extractTagValue(authreq.tags, "PlayCount:")
+			if (playCount) {
+				input.play_count = Number(playCount)
+			}
+		}
+
+		{
+			const oCount = extractTagValue(authreq.tags, "OCount:")
+			if (oCount) {
+				input.o_counter = Number(oCount)
+			}
+		}
+
+		{
+			const rating = extractTagValue(authreq.tags, "Rating:")
+			if (rating) {
+				input.rating100 = Number(rating)
+			}
+		}
+
+		{
+			const organized = extractTagValue(authreq.tags, "Organized:")
+			if (organized) {
+				input.organized = Boolean(organized)
+			}
+		}
+
+		{
+			const reqmarkers = extractTags(authreq.tags, "Marker")
+			if (reqmarkers) {
+				const queryResult = await client.query<Query>({
+					query: FIND_SCENEMARKERS_QUERY,
+					variables: {
+						filter: {
+							per_page: -1,
+						},
+						scene_marker_filter: {
+							scene_filter: {
+								id: {
+									value: Number(sceneId),
+									modifier: "EQUALS",
+								},
+							},
+						},
+					} as FIND_SCENEMARKERS_VARS,
+				})
+				checkForErrors(queryResult.errors)
+
+				const allmarkers = queryResult.data.findSceneMarkers.scene_markers
+				let toremove = [...allmarkers]
+
+				for (let marker of reqmarkers) {
+					if (!marker.start) {
+						console.error(`Marker without time ${JSON.stringify(marker)}!`)
+						continue
+					}
+
+					const match = allmarkers.filter(
+						(t) =>
+							markerName(t) == marker.name &&
+							marker.start &&
+							Math.round(marker.start / 1000) == Math.round(t.seconds)
+					)
+
+					// Note unused
+					{
+						const _matches = match.map((_m) => _m.id)
+						toremove = toremove.filter((m) => !_matches.includes(m.id))
+					}
+
+					// If not exists in DB, create
+					if (!match[0]) {
+						console.log(`Create marker: ${JSON.stringify(marker)}`)
+
+						const queryResult = await client.query<Query>({
+							query: FIND_TAGS_SLIM_QUERY,
+							variables: {
+								filter: {
+									per_page: -1,
+								},
+								tag_filter: {
+									name: {
+										value: marker.name,
+										modifier: "EQUALS",
+									},
+								},
+							} as FIND_TAGS_VARS,
+						})
+						checkForErrors(queryResult.errors)
+
+						let tag = queryResult.data.findTags.tags[0]
+						if (!tag) {
+							console.error(`No tag found for ${JSON.stringify(marker)}!`)
+							continue
+						}
+
+						const mutationResult = await client.mutate<Mutation>({
+							mutation: SCENE_MARKER_CREATE_MUTATION,
+							variables: {
+								scene_id: sceneId,
+								seconds: Math.round(marker.start / 1000),
+								primary_tag_id: tag.id,
+							},
+						})
+						checkForErrors(mutationResult.errors)
+					} else {
+						console.debug(`Keep marker: ${JSON.stringify(marker)}`)
+					}
+				}
+
+				// If not exists in req, delete
+				for (let marker of toremove) {
+					console.log(`Remove marker: ${JSON.stringify(marker)}`)
+
+					const mutationResult = await client.mutate<Mutation>({
+						mutation: SCENE_MARKER_DESTROY_MUTATION,
+						variables: {
+							id: marker.id,
+						},
+					})
+					checkForErrors(mutationResult.errors)
+				}
+			}
+		}
 	} else if (authreq.isFavorite !== undefined && VAR_FAVTAG !== undefined) {
 		// Query to find the scene if tags are not provided but favorite flag is set
 		const queryResult = await client.query<Query>({
 			query: FIND_SCENE_QUERY,
 			variables: {
 				id: sceneId,
-			},
+			} as FIND_SCENE_VARS,
 		})
 		checkForErrors(queryResult.errors)
 
@@ -184,13 +414,7 @@ export function fillTags(
 		// We sort by seconds to find the order
 		// We add - to get reversed
 		for (let mark of scene.scene_markers.toSorted((m) => -m.seconds)) {
-			let tagName = mark.title
-
-			if (tagName.length == 0) {
-				tagName = mark.primary_tag.name
-			} else {
-				tagName = `${tagName} - ${mark.primary_tag.name}`
-			}
+			let tagName = markerName(mark)
 
 			let trackNumber = currentTrack
 			if (VAR_MULTITRACK_MARKERS) {

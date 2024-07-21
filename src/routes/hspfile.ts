@@ -5,6 +5,7 @@ import path from "path"
 import { client } from "../core/client"
 import { VAR_LOCALHSP } from "../core/vars"
 import { Query, Scene } from "../gql/graphql"
+import { FIND_SCENE_VARS } from "../queries/FindSceneQuery"
 import { FIND_SCENE_SLIM_QUERY } from "../queries/FindSceneSlimQuery"
 import {
 	checkForErrors,
@@ -24,7 +25,7 @@ const hspHspHandler = async (req: Request, res: Response) => {
 
 		const queryResult = await client.query<Query>({
 			query: FIND_SCENE_SLIM_QUERY,
-			variables: { id: sceneId },
+			variables: { id: sceneId } as FIND_SCENE_VARS,
 		})
 		checkForErrors(queryResult.errors)
 		const sceneData = queryResult.data.findScene
@@ -57,7 +58,7 @@ export async function writeHSPFile(sceneId: string, dataB64: string) {
 		const data = decodeB64(dataB64)
 		const queryResult = await client.query<Query>({
 			query: FIND_SCENE_SLIM_QUERY,
-			variables: { id: sceneId },
+			variables: { id: sceneId } as FIND_SCENE_VARS,
 		})
 		checkForErrors(queryResult.errors)
 		const sceneData = queryResult.data.findScene

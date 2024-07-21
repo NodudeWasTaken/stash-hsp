@@ -14,7 +14,9 @@ import {
 	VAR_SCREENSHOT_DIR,
 } from "../core/vars"
 import { Query } from "../gql/graphql"
+import { FIND_SCENE_VARS } from "../queries/FindSceneQuery"
 import { FIND_SCENE_SLIM_QUERY } from "../queries/FindSceneSlimQuery"
+import { FIND_SCENES_VARS } from "../queries/FindScenesQuery"
 import { FIND_SCENES_SLIM_QUERY } from "../queries/FindScenesSlimQuery"
 import {
 	HeresphereScanIndex,
@@ -64,7 +66,7 @@ const fetchHeresphereVideoEntrySlim = async (
 		query: FIND_SCENE_SLIM_QUERY,
 		variables: {
 			id: sceneId,
-		},
+		} as FIND_SCENE_VARS,
 	})
 	checkForErrors(queryResult.errors)
 
@@ -122,7 +124,7 @@ export async function genScanDB(first: boolean) {
 					page: 0,
 					per_page: -1,
 				},
-			},
+			} as FIND_SCENES_VARS,
 		})
 		checkForErrors(queryResult.errors)
 		const videodata = queryResult.data.findScenes.scenes
