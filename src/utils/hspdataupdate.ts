@@ -67,7 +67,17 @@ function manageFavoriteTag(
 	}
 }
 
-type FilterType = "Tag" | "Performer" | "Studio"
+// Restrict myself from making mistakes
+type FilterType =
+	| "Tag"
+	| "Performer"
+	| "Studio"
+	| "Director"
+	| "PlayCount"
+	| "OCount"
+	| "Rating"
+	| "Organized"
+	| "Marker"
 
 async function findIds(
 	authreq: HeresphereAuthReq,
@@ -79,9 +89,10 @@ async function findIds(
 	}
 
 	// Find tags or performers from heresphere in stash
+	const _fType = `${filterType}:`
 	const itemsToFind = authreq.tags
-		.filter((tag) => tag.name.startsWith(`${filterType}:`))
-		.map((tag) => tag.name.slice(`${filterType}:`.length))
+		.filter((tag) => tag.name.startsWith(_fType))
+		.map((tag) => tag.name.slice(_fType.length))
 
 	// If any were found
 	if (itemsToFind.length) {
@@ -112,36 +123,38 @@ async function findIds(
 
 function extractTags(
 	tags: HeresphereVideoTag[],
-	prefix: string
+	filterType: FilterType
 ): HeresphereVideoTag[] | undefined {
+	const _fType = `${filterType}:`
 	return tags
-		.filter((tag) => tag.name.startsWith(prefix))
+		.filter((tag) => tag.name.startsWith(_fType))
 		.map(
 			(tag) =>
 				({
 					...tag,
-					name: tag.name.slice(`${prefix}:`.length),
+					name: tag.name.slice(_fType.length),
 				}) as HeresphereVideoTag
 		)
 }
 
-function extractTagValue(
+function extractTagName(
 	tags: HeresphereVideoTag[],
-	prefix: string
+	filterType: FilterType
 ): string | undefined {
-	return extractTags(tags, prefix)
+	return extractTags(tags, filterType)
 		?.map((t) => t.name)
 		.pop()
 }
 
 function markerName(mark: SceneMarker) {
+	// TODO: I dont know that heresphere allows duplicate names
 	/*let tagName = mark.title
 
 	if (tagName.length == 0) {
 		tagName = mark.primary_tag.name
 	} else {
 		tagName = `${tagName} - ${mark.primary_tag.name}`
-	}**/
+	}*/
 
 	return mark.primary_tag.name
 }
@@ -210,35 +223,35 @@ export const hspDataUpdate = async (
 		}
 
 		{
-			const director = extractTagValue(authreq.tags, "Director:")
+			const director = extractTagName(authreq.tags, "Director")
 			if (director) {
 				input.director = director
 			}
 		}
 
 		{
-			const playCount = extractTagValue(authreq.tags, "PlayCount:")
+			const playCount = extractTagName(authreq.tags, "PlayCount")
 			if (playCount) {
 				input.play_count = Number(playCount)
 			}
 		}
 
 		{
-			const oCount = extractTagValue(authreq.tags, "OCount:")
+			const oCount = extractTagName(authreq.tags, "OCount")
 			if (oCount) {
 				input.o_counter = Number(oCount)
 			}
 		}
 
 		{
-			const rating = extractTagValue(authreq.tags, "Rating:")
+			const rating = extractTagName(authreq.tags, "Rating")
 			if (rating) {
 				input.rating100 = Number(rating)
 			}
 		}
 
 		{
-			const organized = extractTagValue(authreq.tags, "Organized:")
+			const organized = extractTagName(authreq.tags, "Organized")
 			if (organized) {
 				input.organized = Boolean(organized)
 			}
