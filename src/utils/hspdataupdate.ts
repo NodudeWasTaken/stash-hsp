@@ -363,14 +363,15 @@ export const hspDataUpdate = async (
 			} as FIND_SCENE_VARS,
 		})
 		checkForErrors(queryResult.errors)
+		const sceneData = queryResult.data.findScene
 
 		// Throw error if scene is not found
-		if (!queryResult.data.findScene) {
+		if (!sceneData) {
 			throw new Error("scene not found")
 		}
 
 		// Set the tag_ids in the input
-		input.tag_ids = queryResult.data.findScene.tags.map((t) => t.id)
+		input.tag_ids = sceneData.tags.map((t) => t.id)
 
 		// Add or remove favorite tag if applicable
 		manageFavoriteTag(input, authreq)
