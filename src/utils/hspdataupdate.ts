@@ -17,9 +17,18 @@ import { FIND_SCENE_QUERY, FIND_SCENE_VARS } from "../queries/FindSceneQuery"
 import { FIND_STUDIOS_SLIM_QUERY } from "../queries/FindStudiosSlimQuery"
 import { FIND_TAGS_VARS } from "../queries/FindTagsQuery"
 import { FIND_TAGS_SLIM_QUERY } from "../queries/FindTagsSlimQuery"
-import { SCENE_MARKER_CREATE_MUTATION } from "../queries/SceneMarkerCreateMutation"
-import { SCENE_MARKER_DESTROY_MUTATION } from "../queries/SceneMarkerDestroyMutation"
-import { SCENE_UPDATE_MUTATION } from "../queries/SceneUpdateMutation"
+import {
+	SCENE_MARKER_CREATE_MUTATION,
+	SCENE_MARKER_CREATE_VARS,
+} from "../queries/SceneMarkerCreateMutation"
+import {
+	SCENE_MARKER_DESTROY_MUTATION,
+	SCENE_MARKER_DESTROY_VARS,
+} from "../queries/SceneMarkerDestroyMutation"
+import {
+	SCENE_UPDATE_MUTATION,
+	SCENE_UPDATE_VARS,
+} from "../queries/SceneUpdateMutation"
 import { writeHSPFile } from "../routes/hspfile"
 import {
 	HeresphereAuthReq,
@@ -332,7 +341,7 @@ export const hspDataUpdate = async (
 								scene_id: sceneId,
 								seconds: Math.round(marker.start / 1000),
 								primary_tag_id: tag.id,
-							},
+							} as SCENE_MARKER_CREATE_VARS,
 						})
 						checkForErrors(mutationResult.errors)
 					} else {
@@ -348,7 +357,7 @@ export const hspDataUpdate = async (
 						mutation: SCENE_MARKER_DESTROY_MUTATION,
 						variables: {
 							id: marker.id,
-						},
+						} as SCENE_MARKER_DESTROY_VARS,
 					})
 					checkForErrors(mutationResult.errors)
 				}
@@ -389,7 +398,7 @@ export const hspDataUpdate = async (
 			mutation: SCENE_UPDATE_MUTATION,
 			variables: {
 				input: input,
-			},
+			} as SCENE_UPDATE_VARS,
 		})
 		checkForErrors(mutationResult.errors)
 

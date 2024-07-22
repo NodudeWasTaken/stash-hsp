@@ -1,7 +1,8 @@
 import { gql } from '@apollo/client/core';
+import { Scalars } from '../gql/graphql';
 
 export interface FIND_SCENE_VARS { 
-	id: string, 
+	id: Scalars["ID"]["input"], 
 	checksum: String 
 }
 export const FIND_SCENE_QUERY = gql`

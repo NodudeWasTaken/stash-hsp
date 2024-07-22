@@ -1,10 +1,10 @@
 import { gql } from '@apollo/client/core';
-import { FindFilterType, SceneFilterType } from '../gql/graphql';
+import { FindFilterType, Scalars, SceneFilterType } from '../gql/graphql';
 
 export interface FIND_SCENES_VARS { 
 	filter: FindFilterType, 
 	scene_filter: SceneFilterType,
-	scene_ids: Number[],
+	scene_ids: Scalars["Int"]["input"][],
 }
 export const FIND_SCENES_QUERY = gql`
 query FindScenes($filter: FindFilterType, $scene_filter: SceneFilterType, $scene_ids: [Int!]) {

@@ -1,5 +1,13 @@
 import { gql } from '@apollo/client/core';
+import { Scalars } from '../gql/graphql';
 
+export interface SCENE_MARKER_CREATE_VARS { 
+	title: string, 
+	seconds: Scalars["Float"]["input"], 
+	scene_id: Scalars["ID"]["input"], 
+	primary_tag_id: Scalars["ID"]["input"], 
+	tag_ids: Scalars["ID"]["input"][], 
+}
 export const SCENE_MARKER_CREATE_MUTATION = gql`
 mutation SceneMarkerCreate($title: String!, $seconds: Float!, $scene_id: ID!, $primary_tag_id: ID!, $tag_ids: [ID!] = []) {
 	sceneMarkerCreate(

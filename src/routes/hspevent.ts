@@ -4,8 +4,14 @@ import { client } from "../core/client"
 import { VAR_UICFG } from "../core/vars"
 import { Mutation, Query, Scene } from "../gql/graphql"
 import { FIND_SCENE_QUERY, FIND_SCENE_VARS } from "../queries/FindSceneQuery"
-import { SCENE_ADD_PLAY_MUTATION } from "../queries/SceneAddPlayMutation"
-import { SCENE_SAVE_ACTIVITY_MUTATION } from "../queries/SceneSaveActivityMutation"
+import {
+	SCENE_ADD_PLAY_MUTATION,
+	SCENE_ADD_PLAY_VARS,
+} from "../queries/SceneAddPlayMutation"
+import {
+	SCENE_SAVE_ACTIVITY_MUTATION,
+	SCENE_SAVE_ACTIVITY_VARS,
+} from "../queries/SceneSaveActivityMutation"
 import {
 	HeresphereEventPlay,
 	HeresphereVideoEvent,
@@ -27,7 +33,7 @@ async function updatePlayCount(
 			mutation: SCENE_ADD_PLAY_MUTATION,
 			variables: {
 				id: scene.id,
-			},
+			} as SCENE_ADD_PLAY_VARS,
 		})
 		checkForErrors(mutationResult.errors)
 
@@ -95,7 +101,7 @@ const hspEventHandler = async (req: Request, res: Response) => {
 				id: sceneId,
 				resume_time: newTime,
 				playDuration: newDuration,
-			},
+			} as SCENE_SAVE_ACTIVITY_VARS,
 		})
 		checkForErrors(mutationResult.errors)
 
