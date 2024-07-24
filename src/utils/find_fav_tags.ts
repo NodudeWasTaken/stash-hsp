@@ -1,5 +1,10 @@
 import { fetcher } from "../core/client"
-import { STASH_URL } from "../core/vars"
+import {
+	STASH_URL,
+	VAR_FAV_LIMITTAGS,
+	VAR_FAV_MINRATING,
+	VAR_FAV_MINSCENES,
+} from "../core/vars"
 import {
 	CriterionModifier,
 	FilterMode,
@@ -68,20 +73,23 @@ export async function findFavTags(
 	return undefined
 }
 
-export async function generateRecommendedFilter(numScenes: number = 5) {
+export async function generateRecommendedFilter() {
 	const find_filter: FindFilterType = {
 		per_page: -1,
 		sort: "random_65770034",
 	}
 
-	const favTags = await findFavTags()
+	const favTags = await findFavTags(
+		Number(VAR_FAV_MINSCENES),
+		Number(VAR_FAV_MINRATING)
+	)
 	if (!favTags) {
 		throw new Error("Cant find favorite tags")
 	}
 
 	const itemsToFind: string[] = favTags // @ts-ignore
 		.map((i) => i[0].toString())
-		.slice(0, numScenes)
+		.slice(0, Number(VAR_FAV_LIMITTAGS))
 
 	const object_filter: SceneFilterType = {
 		tags: {

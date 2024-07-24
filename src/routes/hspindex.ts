@@ -1,6 +1,6 @@
 import { Express, Request, Response } from "express"
 import { client } from "../core/client"
-import { DEBUG_MODE, VAR_FAVLIM, VAR_UICFG } from "../core/vars"
+import { DEBUG_MODE, VAR_UICFG } from "../core/vars"
 import {
 	FindFilterType,
 	Query,
@@ -55,10 +55,7 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 
 			let myfilters = [defaultfilter, ...queryResult.data.findSavedFilters]
 			try {
-				myfilters = [
-					await generateRecommendedFilter(Number(VAR_FAVLIM)),
-					...myfilters,
-				]
+				myfilters = [await generateRecommendedFilter(), ...myfilters]
 			} catch (error) {
 				console.error("Couldn't find recommended", error)
 			}
