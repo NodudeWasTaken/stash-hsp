@@ -68,16 +68,13 @@ export async function findFavTags(
 	return undefined
 }
 
-export async function generateRecommendedFilter(
-	numScenes: number = 5,
-	avgRatingThreshold: number = 0
-) {
+export async function generateRecommendedFilter(numScenes: number = 5) {
 	const find_filter: FindFilterType = {
 		per_page: -1,
 		sort: "random_65770034",
 	}
 
-	const favTags = await findFavTags(numScenes, avgRatingThreshold)
+	const favTags = await findFavTags()
 	if (!favTags) {
 		throw new Error("Cant find favorite tags")
 	}
