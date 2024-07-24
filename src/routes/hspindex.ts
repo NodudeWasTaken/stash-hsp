@@ -1,6 +1,6 @@
 import { Express, Request, Response } from "express"
 import { client } from "../core/client"
-import { DEBUG_MODE, VAR_UICFG } from "../core/vars"
+import { DEBUG_MODE, VAR_FAVLIM, VAR_UICFG } from "../core/vars"
 import {
 	FindFilterType,
 	Query,
@@ -19,6 +19,7 @@ import {
 	HeresphereMember,
 } from "../structs/heresphere_structs"
 import { CriterionFixer } from "../utils/criterion_fix"
+import { generateRecommendedFilter } from "../utils/find_fav_tags"
 import { checkForErrors, getBaseURL } from "../utils/utilities"
 import { videoPath } from "./hspscene"
 
@@ -52,11 +53,18 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 			}
 			defaultfilter.name = "Default"
 
+			let myfilters = [defaultfilter, ...queryResult.data.findSavedFilters]
+			try {
+				myfilters = [
+					await generateRecommendedFilter(Number(VAR_FAVLIM)),
+					...myfilters,
+				]
+			} catch (error) {
+				console.error("Couldn't find recommended", error)
+			}
+
 			// TODO BUG: Cached too long
-			for (let afilter of [
-				defaultfilter,
-				...queryResult.data.findSavedFilters,
-			]) {
+			for (let afilter of myfilters) {
 				const object_filter: SceneFilterType = CriterionFixer(
 					afilter.object_filter
 				)

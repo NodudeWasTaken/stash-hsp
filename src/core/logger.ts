@@ -5,7 +5,6 @@ import { VAR_LOGS_DIR } from "./vars"
 
 // Define log file path
 const timestamp = new Date().toISOString().replace(/:/g, "-")
-// TODO BUG: These filenames dont work on windows
 const logFilePath = path.join(VAR_LOGS_DIR, `app-${timestamp}.log`)
 
 // Function to append logs to the file

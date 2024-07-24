@@ -21,6 +21,7 @@ export const VAR_CACHE_DIR: string = process.env["CACHE_DIR"] || "./cache"
 const VAR_FAVORITE_TAG: string = process.env["FAVORITE_TAG"] || "Favorites"
 export const VAR_SCALELIMIT: string = process.env["SCALE_PROCESS_LIMIT"] || "8"
 export const VAR_RLIMIT: string = process.env["REQUEST_PROCESS_LIMIT"] || "20"
+export const VAR_FAVLIM: string = process.env["FAVORITES_LIMIT"] || "5"
 // m h dom mon dow
 export const VAR_SCANCACHE_CRON: string =
 	process.env["SCANCACHE_CRON"] || "0 6 * * *"
