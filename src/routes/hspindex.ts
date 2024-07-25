@@ -11,6 +11,7 @@ import {
 	FIND_SAVED_FILTERS_QUERY,
 	FIND_SAVED_FILTERS_VARS,
 } from "../queries/FindSavedFiltersQuery"
+import { FIND_SCENES_VARS } from "../queries/FindScenesQuery"
 import { FIND_SCENES_SLIM_QUERY } from "../queries/FindScenesSlimQuery"
 import {
 	HeresphereBanner,
@@ -19,7 +20,7 @@ import {
 	HeresphereMember,
 } from "../structs/heresphere_structs"
 import { CriterionFixer } from "../utils/criterion_fix"
-import { generateRecommendedFilter } from "../utils/find_fav_tags"
+import { generateRecommendedFilter } from "../utils/find_fav"
 import { checkForErrors, getBaseURL } from "../utils/utilities"
 import { videoPath } from "./hspscene"
 
@@ -37,7 +38,7 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 			library: [],
 		}
 
-		let allfilters = []
+		let allfilters: SavedFilter[] = []
 
 		{
 			const queryResult = await client.query<Query>({
@@ -54,11 +55,6 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 			defaultfilter.name = "Default"
 
 			let myfilters = [defaultfilter, ...queryResult.data.findSavedFilters]
-			try {
-				myfilters.push(await generateRecommendedFilter())
-			} catch (error) {
-				console.error("Couldn't find recommended", error)
-			}
 
 			// TODO BUG: Cached too long
 			for (let afilter of myfilters) {
@@ -77,7 +73,13 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 					name: afilter.name,
 					find_filter: find_filter,
 					object_filter: object_filter,
-				})
+				} as SavedFilter)
+			}
+
+			try {
+				allfilters.push(await generateRecommendedFilter())
+			} catch (error) {
+				console.error("Couldn't find recommended", error)
 			}
 		}
 
@@ -95,7 +97,7 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 							variables: {
 								filter: filt.find_filter,
 								scene_filter: filt.object_filter,
-							},
+							} as FIND_SCENES_VARS,
 						})
 						.then((findscenes) => {
 							const entry: HeresphereIndexEntry = {

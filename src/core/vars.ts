@@ -21,11 +21,12 @@ export const VAR_CACHE_DIR: string = process.env["CACHE_DIR"] || "./cache"
 const VAR_FAVORITE_TAG: string = process.env["FAVORITE_TAG"] || "Favorites"
 export const VAR_SCALELIMIT: string = process.env["SCALE_PROCESS_LIMIT"] || "8"
 export const VAR_RLIMIT: string = process.env["REQUEST_PROCESS_LIMIT"] || "20"
-export const VAR_FAV_LIMITTAGS: string = process.env["FAVORITES_LIMIT"] || "10"
+export const VAR_FAV_LIMITTAGS: string =
+	process.env["RECOMMENDED_LIMIT"] || "20"
 export const VAR_FAV_MINSCENES: string =
-	process.env["FAVORITES_MINSCENES"] || "10"
+	process.env["RECOMMENDED_MINSCENES"] || "8"
 export const VAR_FAV_MINRATING: string =
-	process.env["FAVORITES_MINRATING"] || "0"
+	process.env["RECOMMENDED_MINRATING"] || "70"
 // m h dom mon dow
 export const VAR_SCANCACHE_CRON: string =
 	process.env["SCANCACHE_CRON"] || "0 6 * * *"

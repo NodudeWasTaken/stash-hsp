@@ -14,9 +14,14 @@ import {
 } from "../gql/graphql"
 import { randomizeList } from "./utilities"
 
-const tagsQuerySQL = `
+function niceifySql(str: string): string {
+	return str.replaceAll("\n", " ").replace(/^\s+|\s+$|(\s)+/g, "$1")
+}
+
+const tagsQuerySQL = niceifySql(`
 SELECT 
     tags.id,
+    tags.name,
     AVG(scenes.rating) AS average_rating,
     COUNT(scenes.id) AS num_scenes
 FROM 
@@ -33,11 +38,12 @@ HAVING
     AVG(scenes.rating) > ? AND COUNT(scenes.id) >= ?
 ORDER BY 
     average_rating DESC;
-`.replaceAll("\n", " ")
+`)
 
-const performersQuerySQL = `
+const performersQuerySQL = niceifySql(`
 SELECT 
     performers.id,
+    performers.name,
     AVG(scenes.rating) AS average_rating,
     COUNT(scenes.id) AS num_scenes
 FROM 
@@ -54,11 +60,12 @@ HAVING
     AVG(scenes.rating) > ? AND COUNT(scenes.id) >= ?
 ORDER BY 
     average_rating DESC;
-`.replaceAll("\n", " ")
+`)
 
-const studiosQuerySQL = `
+const studiosQuerySQL = niceifySql(`
 SELECT 
     studios.id,
+    studios.name,
     AVG(scenes.rating) AS average_rating,
     COUNT(scenes.id) AS num_scenes
 FROM 
@@ -73,7 +80,7 @@ HAVING
     AVG(scenes.rating) > ? AND COUNT(scenes.id) >= ?
 ORDER BY 
     average_rating DESC;
-`.replaceAll("\n", " ")
+`)
 
 const queryGQL = `
 mutation {
@@ -100,7 +107,7 @@ export async function findFavAux(
 			body: JSON.stringify({
 				query: queryGQL
 					.replace("$VARS", JSON.stringify([avgRatingThreshold, minScenes]))
-					.replace("$SQL", tagsQuerySQL),
+					.replace("$SQL", SQL),
 				variables: null,
 			}),
 		})
