@@ -56,6 +56,13 @@ export function formatDate(dateString: string): string {
 	return `${year}-${month}-${day}`
 }
 
+export function randomizeList<T>(unshuffled: T[]): T[] {
+	return unshuffled
+		.map((value) => ({ value, sort: Math.random() }))
+		.sort((a, b) => a.sort - b.sort)
+		.map(({ value }) => value)
+}
+
 export async function readJsonFile(path: string) {
 	const file = await readFile(path, "utf8")
 	return JSON.parse(file)

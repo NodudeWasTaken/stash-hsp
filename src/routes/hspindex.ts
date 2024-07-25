@@ -55,7 +55,7 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 
 			let myfilters = [defaultfilter, ...queryResult.data.findSavedFilters]
 			try {
-				myfilters = [await generateRecommendedFilter(), ...myfilters]
+				myfilters.push(await generateRecommendedFilter())
 			} catch (error) {
 				console.error("Couldn't find recommended", error)
 			}
