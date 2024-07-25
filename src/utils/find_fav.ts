@@ -12,7 +12,7 @@ import {
 	SavedFilter,
 	SceneFilterType,
 } from "../gql/graphql"
-import { randomizeList } from "./utilities"
+import { randomUInt, randomizeList } from "./utilities"
 
 function niceifySql(str: string): string {
 	return str.replaceAll("\n", " ").replace(/^\s+|\s+$|(\s)+/g, "$1")
@@ -145,7 +145,7 @@ export async function findFavStudios(
 export async function generateRecommendedFilter() {
 	const find_filter: FindFilterType = {
 		per_page: -1,
-		sort: "random_65770034",
+		sort: `random_${randomUInt()}`,
 	}
 
 	const MINSCENES = Number(VAR_FAV_MINSCENES)

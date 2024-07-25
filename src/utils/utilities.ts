@@ -14,6 +14,10 @@ export const checkForErrors = (errors?: readonly GraphQLError[]): void => {
 	}
 }
 
+export const randomUInt = () => {
+	return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER + 0)
+}
+
 export function getBasename(filePath: string): string {
 	return path.basename(filePath)
 }
