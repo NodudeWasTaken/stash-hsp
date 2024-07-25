@@ -153,8 +153,7 @@ export async function generateRecommendedFilter() {
 			throw new Error("Cant find favorite tags")
 		}
 
-		// @ts-ignore
-		let req: string[] = favTags.map((i) => i[0].toString())
+		let req: string[] = favTags.map((i) => (i[0] || 0).toString())
 
 		tagsToFind = req.slice(0, NUMLIM)
 		tagsToFind.push(...randomizeList(req).slice(0, numToAdd))
@@ -167,8 +166,7 @@ export async function generateRecommendedFilter() {
 			throw new Error("Cant find favorite performers")
 		}
 
-		// @ts-ignore
-		let req: string[] = favPerf.map((i) => i[0].toString())
+		let req: string[] = favPerf.map((i) => (i[0] || 0).toString())
 
 		performersToFind = req.slice(0, NUMLIM)
 		performersToFind.push(...randomizeList(req).slice(0, numToAdd))
@@ -181,8 +179,7 @@ export async function generateRecommendedFilter() {
 			throw new Error("Cant find favorite tags")
 		}
 
-		// @ts-ignore
-		let req: string[] = favStudios.map((i) => i[0].toString())
+		let req: string[] = favStudios.map((i) => (i[0] || 0).toString())
 
 		studiosToFind = req.slice(0, NUMLIM)
 		studiosToFind.push(...randomizeList(req).slice(0, numToAdd))
