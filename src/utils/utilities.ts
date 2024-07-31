@@ -124,3 +124,14 @@ export async function fetchAndResizeImage(
 
 	console.log(`Image saved to ${outputPath}`)
 }
+
+type theDict = { [key: string]: any }
+export function fixSqlReturn(queryResult: any): theDict[] {
+	// Convert rows to array of objects
+	return queryResult.rows.map((row: any) => {
+		return queryResult.columns.reduce((acc: any, column: any, index: any) => {
+			acc[column] = row[index]
+			return acc
+		}, {} as theDict)
+	})
+}

@@ -11,6 +11,7 @@ import {
 	findFavPerformers,
 	findFavStudios,
 	findFavTags,
+	generateRecommendedFilter,
 } from "../utils/find_fav"
 
 const debugFindFiltersHandler = async (req: Request, res: Response) => {
@@ -78,6 +79,7 @@ const debugFindFavoritesHandler = async (req: Request, res: Response) => {
 			tags: await findFavTags(MINSCENES, MINRATING),
 			performers: await findFavPerformers(MINSCENES, MINRATING),
 			studios: await findFavStudios(MINSCENES, MINRATING),
+			filter: await generateRecommendedFilter(),
 		})
 	} catch (error) {
 		console.error(error)

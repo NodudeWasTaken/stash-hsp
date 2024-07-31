@@ -12,7 +12,7 @@ import {
 	SavedFilter,
 	SceneFilterType,
 } from "../gql/graphql"
-import { randomUInt, randomizeList } from "./utilities"
+import { fixSqlReturn, randomUInt, randomizeList } from "./utilities"
 
 function niceifySql(str: string): string {
 	return str.replaceAll("\n", " ").replace(/^\s+|\s+$|(\s)+/g, "$1")
@@ -92,20 +92,6 @@ mutation {
     rows
   }
 }`
-
-type listOfDict = { [key: string]: string | number }[]
-export function fixSqlReturn(queryResult: any): listOfDict {
-	// Convert rows to array of objects
-	return queryResult.rows.map((row: any) => {
-		return queryResult.columns.reduce(
-			(acc: any, column: any, index: any) => {
-				acc[column] = row[index]
-				return acc
-			},
-			{} as { [key: string]: string | number }
-		)
-	})
-}
 
 type listOfFav = {
 	id: number
