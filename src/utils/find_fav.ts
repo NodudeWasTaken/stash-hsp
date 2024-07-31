@@ -1,6 +1,6 @@
-import { fetcher } from "../core/client"
+import { gql } from "@apollo/client/core"
+import { client } from "../core/client"
 import {
-	STASH_URL,
 	VAR_FAV_LIMITTAGS,
 	VAR_FAV_MINRATING,
 	VAR_FAV_MINSCENES,
@@ -9,6 +9,7 @@ import {
 	CriterionModifier,
 	FilterMode,
 	FindFilterType,
+	Mutation,
 	SavedFilter,
 	SceneFilterType,
 } from "../gql/graphql"
@@ -82,16 +83,14 @@ ORDER BY
     average_rating DESC;
 `)
 
-const queryGQL = `
-mutation {
-  querySQL(
-    sql: "$SQL", 
-    args: $VARS
-  ) {
-	columns
-    rows
-  }
-}`
+const QUERY_SQL = gql`
+	mutation QuerySQL($sql: String!, $args: [Any]) {
+		querySQL(sql: $sql, args: $args) {
+			columns
+			rows
+		}
+	}
+`
 
 type listOfFav = {
 	id: number
@@ -108,21 +107,18 @@ export async function findFavAux(
 		// Note: We use SQL because doing this in graphql is VERY slow
 		// using GQL /debug/findfav"  0,01s user 0,00s system 0% cpu 4,349 total
 		// using SQL /debug/findfav"  0,01s user 0,00s system 2% cpu 0,238 total
-		const response = await fetcher(`${STASH_URL}/graphql`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				query: queryGQL
-					.replace("$VARS", JSON.stringify([avgRatingThreshold, minScenes]))
-					.replace("$SQL", SQL),
-				variables: null,
-			}),
+		const mutationResult = await client.mutate<Mutation>({
+			mutation: QUERY_SQL,
+			variables: {
+				sql: SQL.replace("?", avgRatingThreshold.toString()).replace(
+					"?",
+					minScenes.toString()
+				),
+				// TODO BUG: Cant get arg to work
+			}, // as MutationQuerySqlArgs,
 		})
 
-		const data = await response.json()
-		return fixSqlReturn(data.data.querySQL) as listOfFav
+		return fixSqlReturn(mutationResult.data?.querySQL) as listOfFav
 	} catch (error) {
 		console.error(error)
 	}
