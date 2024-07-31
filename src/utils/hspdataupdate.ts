@@ -2,6 +2,7 @@ import { DocumentNode } from "@apollo/client/core"
 import { client } from "../core/client"
 import { VAR_FAVTAG, VAR_MULTITRACK_MARKERS } from "../core/vars"
 import {
+	CriterionModifier,
 	Mutation,
 	Query,
 	Scene,
@@ -279,7 +280,7 @@ export const hspDataUpdate = async (
 							scene_filter: {
 								id: {
 									value: Number(sceneId),
-									modifier: "EQUALS",
+									modifier: CriterionModifier.Equals,
 								},
 							},
 						},
@@ -322,7 +323,7 @@ export const hspDataUpdate = async (
 								tag_filter: {
 									name: {
 										value: marker.name,
-										modifier: "EQUALS",
+										modifier: CriterionModifier.Equals,
 									},
 								},
 							} as FIND_TAGS_VARS,

@@ -88,17 +88,38 @@ mutation {
     sql: "$SQL", 
     args: $VARS
   ) {
+	columns
     rows
   }
 }`
 
+type listOfDict = { [key: string]: string | number }[]
+export function fixSqlReturn(queryResult: any): listOfDict {
+	// Convert rows to array of objects
+	return queryResult.rows.map((row: any) => {
+		return queryResult.columns.reduce(
+			(acc: any, column: any, index: any) => {
+				acc[column] = row[index]
+				return acc
+			},
+			{} as { [key: string]: string | number }
+		)
+	})
+}
+
+type listOfFav = {
+	id: number
+	name: string
+	average_rating: 100
+	num_scenes: number
+}[]
 export async function findFavAux(
 	SQL: string = "",
 	minScenes: number = 5,
 	avgRatingThreshold: number = 0
-): Promise<[number[]] | undefined> {
+): Promise<listOfFav | undefined> {
 	try {
-		// TODO BUG: I tried using ApolloClient and couldn't make it work
+		// Note: We use SQL because doing this in graphql is VERY slow
 		const response = await fetcher(`${STASH_URL}/graphql`, {
 			method: "POST",
 			headers: {
@@ -113,7 +134,7 @@ export async function findFavAux(
 		})
 
 		const data = await response.json()
-		return data.data.querySQL.rows
+		return fixSqlReturn(data.data.querySQL) as listOfFav
 	} catch (error) {
 		console.error(error)
 	}
@@ -124,21 +145,21 @@ export async function findFavAux(
 export async function findFavTags(
 	minScenes: number = 5,
 	avgRatingThreshold: number = 0
-): Promise<[number[]] | undefined> {
+): Promise<listOfFav | undefined> {
 	return findFavAux(tagsQuerySQL, minScenes, avgRatingThreshold)
 }
 
 export async function findFavPerformers(
 	minScenes: number = 5,
 	avgRatingThreshold: number = 0
-): Promise<[number[]] | undefined> {
+): Promise<listOfFav | undefined> {
 	return findFavAux(performersQuerySQL, minScenes, avgRatingThreshold)
 }
 
 export async function findFavStudios(
 	minScenes: number = 5,
 	avgRatingThreshold: number = 0
-): Promise<[number[]] | undefined> {
+): Promise<listOfFav | undefined> {
 	return findFavAux(studiosQuerySQL, minScenes, avgRatingThreshold)
 }
 
@@ -160,7 +181,7 @@ export async function generateRecommendedFilter() {
 			throw new Error("Cant find favorite tags")
 		}
 
-		let req: string[] = favTags.map((i) => (i[0] || 0).toString())
+		let req: string[] = favTags.map((obj) => obj.id.toString())
 
 		tagsToFind = req.slice(0, NUMLIM)
 		tagsToFind.push(...randomizeList(req).slice(0, numToAdd))
@@ -173,7 +194,7 @@ export async function generateRecommendedFilter() {
 			throw new Error("Cant find favorite performers")
 		}
 
-		let req: string[] = favPerf.map((i) => (i[0] || 0).toString())
+		let req: string[] = favPerf.map((obj) => obj.id.toString())
 
 		performersToFind = req.slice(0, NUMLIM)
 		performersToFind.push(...randomizeList(req).slice(0, numToAdd))
@@ -186,7 +207,7 @@ export async function generateRecommendedFilter() {
 			throw new Error("Cant find favorite tags")
 		}
 
-		let req: string[] = favStudios.map((i) => (i[0] || 0).toString())
+		let req: string[] = favStudios.map((obj) => obj.id.toString())
 
 		studiosToFind = req.slice(0, NUMLIM)
 		studiosToFind.push(...randomizeList(req).slice(0, numToAdd))

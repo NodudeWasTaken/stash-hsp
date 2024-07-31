@@ -1,7 +1,7 @@
 import { ApolloError } from "@apollo/client/core"
 import { ServerError } from "@apollo/client/link/utils/index.js"
 import pLimit from "p-limit"
-import { ConfigResult, Query, Tag } from "../gql/graphql"
+import { ConfigResult, CriterionModifier, Query, Tag } from "../gql/graphql"
 import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
 import { FIND_TAGS_QUERY, FIND_TAGS_VARS } from "../queries/FindTagsQuery"
 import { genScanDB } from "../routes/hspscan"
@@ -111,7 +111,7 @@ export async function getVrTag() {
 					tag_filter: {
 						name: {
 							value: VAR_FAVORITE_TAG,
-							modifier: "EQUALS",
+							modifier: CriterionModifier.Equals,
 						},
 					},
 				} as FIND_TAGS_VARS,

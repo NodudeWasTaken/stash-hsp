@@ -1,11 +1,17 @@
 import { Express, Request, Response } from "express"
 import { client } from "../core/client"
+import { VAR_FAV_MINRATING, VAR_FAV_MINSCENES } from "../core/vars"
 import { Query } from "../gql/graphql"
 import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
 import { FIND_SAVED_FILTERS_QUERY } from "../queries/FindSavedFiltersQuery"
 import { FIND_SCENE_QUERY } from "../queries/FindSceneQuery"
 import { FIND_SCENES_QUERY } from "../queries/FindScenesQuery"
 import { CriterionFixer } from "../utils/criterion_fix"
+import {
+	findFavPerformers,
+	findFavStudios,
+	findFavTags,
+} from "../utils/find_fav"
 
 const debugFindFiltersHandler = async (req: Request, res: Response) => {
 	const result = await client.query<Query>({
@@ -63,8 +69,25 @@ const debugFindSceneHandler = async (req: Request, res: Response) => {
 	}
 }
 
+const debugFindFavoritesHandler = async (req: Request, res: Response) => {
+	try {
+		const MINSCENES = Number(VAR_FAV_MINSCENES)
+		const MINRATING = Number(VAR_FAV_MINRATING)
+
+		res.json({
+			tags: await findFavTags(MINSCENES, MINRATING),
+			performers: await findFavPerformers(MINSCENES, MINRATING),
+			studios: await findFavStudios(MINSCENES, MINRATING),
+		})
+	} catch (error) {
+		console.error(error)
+		res.status(500).json(error)
+	}
+}
+
 export function debugRoutes(app: Express) {
 	app.get("/debug/findfilters", debugFindFiltersHandler)
 	app.get("/debug/finddefscenes", debugFindDefScenesHandler)
 	app.get("/debug/findscene/:sceneId", debugFindSceneHandler)
+	app.get("/debug/findfav", debugFindFavoritesHandler)
 }
