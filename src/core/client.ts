@@ -1,6 +1,5 @@
 import {
 	ApolloClient,
-	ApolloLink,
 	HttpLink,
 	InMemoryCache,
 	NormalizedCacheObject,
@@ -25,24 +24,11 @@ export async function fetcher(url: any, options?: any) {
 export function initClient() {
 	const httpLink = new HttpLink({
 		uri: `${STASH_URL}/graphql`,
-		fetch: fetch as any,
-	})
-
-	// Add headers to each request
-	const authMiddleware = new ApolloLink((operation, forward) => {
-		// Modify the operation context with a new header
-		operation.setContext({
-			headers: {
-				[StashApiKeyHeader]: STASH_APIKEY,
-				// Add other headers as needed
-			},
-		})
-
-		return forward(operation)
+		fetch: fetcher as any,
 	})
 
 	client = new ApolloClient({
-		link: authMiddleware.concat(httpLink),
+		link: httpLink,
 		cache: new InMemoryCache(),
 	})
 }
