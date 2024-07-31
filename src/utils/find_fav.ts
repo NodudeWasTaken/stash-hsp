@@ -10,6 +10,7 @@ import {
 	FilterMode,
 	FindFilterType,
 	Mutation,
+	MutationQuerySqlArgs,
 	SavedFilter,
 	SceneFilterType,
 } from "../gql/graphql"
@@ -92,7 +93,7 @@ const QUERY_SQL = gql`
 	}
 `
 
-type listOfFav = {
+type FavoritesList = {
 	id: number
 	name: string
 	average_rating: 100
@@ -102,7 +103,7 @@ export async function findFavAux(
 	SQL: string = "",
 	minScenes: number = 5,
 	avgRatingThreshold: number = 0
-): Promise<listOfFav | undefined> {
+): Promise<FavoritesList | undefined> {
 	try {
 		// Note: We use SQL because doing this in graphql is VERY slow
 		// using GQL /debug/findfav"  0,01s user 0,00s system 0% cpu 4,349 total
@@ -114,11 +115,11 @@ export async function findFavAux(
 					"?",
 					minScenes.toString()
 				),
-				// TODO BUG: Cant get arg to work
-			}, // as MutationQuerySqlArgs,
+				// TODO BUG: Cant get args to work
+			} as MutationQuerySqlArgs,
 		})
 
-		return fixSqlReturn(mutationResult.data?.querySQL) as listOfFav
+		return fixSqlReturn(mutationResult.data?.querySQL!) as FavoritesList
 	} catch (error) {
 		console.error(error)
 	}
@@ -129,21 +130,21 @@ export async function findFavAux(
 export async function findFavTags(
 	minScenes: number = 5,
 	avgRatingThreshold: number = 0
-): Promise<listOfFav | undefined> {
+): Promise<FavoritesList | undefined> {
 	return findFavAux(tagsQuerySQL, minScenes, avgRatingThreshold)
 }
 
 export async function findFavPerformers(
 	minScenes: number = 5,
 	avgRatingThreshold: number = 0
-): Promise<listOfFav | undefined> {
+): Promise<FavoritesList | undefined> {
 	return findFavAux(performersQuerySQL, minScenes, avgRatingThreshold)
 }
 
 export async function findFavStudios(
 	minScenes: number = 5,
 	avgRatingThreshold: number = 0
-): Promise<listOfFav | undefined> {
+): Promise<FavoritesList | undefined> {
 	return findFavAux(studiosQuerySQL, minScenes, avgRatingThreshold)
 }
 

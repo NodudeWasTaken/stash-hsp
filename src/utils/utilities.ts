@@ -5,6 +5,7 @@ import { GraphQLError } from "graphql/error"
 import path from "path"
 import sharp from "sharp"
 import { fetcher } from "../core/client"
+import { SqlQueryResult } from "../gql/graphql"
 
 export const decodeB64 = (b64: string) => Buffer.from(b64, "base64")
 // TODO: add graphql.error for apolloerror
@@ -125,13 +126,13 @@ export async function fetchAndResizeImage(
 	console.log(`Image saved to ${outputPath}`)
 }
 
-type theDict = { [key: string]: any }
-export function fixSqlReturn(queryResult: any): theDict[] {
+type SqlDict = { [key: string]: any }
+export function fixSqlReturn(queryResult: SqlQueryResult): SqlDict[] {
 	// Convert rows to array of objects
 	return queryResult.rows.map((row: any) => {
 		return queryResult.columns.reduce((acc: any, column: any, index: any) => {
 			acc[column] = row[index]
 			return acc
-		}, {} as theDict)
+		}, {} as SqlDict)
 	})
 }
