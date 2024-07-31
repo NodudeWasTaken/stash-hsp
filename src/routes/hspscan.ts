@@ -3,7 +3,6 @@ import { writeFile } from "fs/promises"
 import cron from "node-cron"
 import { client } from "../core/client"
 import {
-	rlimit,
 	SCANDB,
 	SCREENSHOT_MAXRES,
 	slimit,
@@ -13,11 +12,8 @@ import {
 	VAR_SCANCACHE_CRON,
 	VAR_SCREENSHOT_DIR,
 } from "../core/vars"
-import { Query } from "../gql/graphql"
-import { FIND_SCENE_VARS } from "../queries/FindSceneQuery"
-import { FIND_SCENE_SLIM_QUERY } from "../queries/FindSceneSlimQuery"
-import { FIND_SCENES_VARS } from "../queries/FindScenesQuery"
-import { FIND_SCENES_SLIM_QUERY } from "../queries/FindScenesSlimQuery"
+import { Query, Scene } from "../gql/graphql"
+import { FIND_SCENES_QUERY, FIND_SCENES_VARS } from "../queries/FindScenesQuery"
 import {
 	HeresphereScanIndex,
 	HeresphereVideoEntryShort,
@@ -59,19 +55,9 @@ const hspscanfetchHandler = async (req: Request, res: Response) => {
 	}
 }
 
-const fetchHeresphereVideoEntrySlim = async (
-	sceneId: string
+const fetchHeresphereVideoEntry = async (
+	sceneData: Scene
 ): Promise<HeresphereVideoEntryShort> => {
-	const queryResult = await client.query<Query>({
-		query: FIND_SCENE_SLIM_QUERY,
-		variables: {
-			id: sceneId,
-		} as FIND_SCENE_VARS,
-	})
-	checkForErrors(queryResult.errors)
-
-	const sceneData = queryResult.data.findScene
-
 	if (!sceneData) {
 		throw new Error("scene not found")
 	}
@@ -118,10 +104,9 @@ export async function genScanDB(first: boolean) {
 		let scenes: HeresphereVideoEntryShort[] = []
 
 		const queryResult = await client.query<Query>({
-			query: FIND_SCENES_SLIM_QUERY,
+			query: FIND_SCENES_QUERY,
 			variables: {
 				filter: {
-					page: 0,
 					per_page: -1,
 				},
 			} as FIND_SCENES_VARS,
@@ -133,16 +118,14 @@ export async function genScanDB(first: boolean) {
 		const outof = videodata.length
 		let inof = 0
 		const scenePromises: Promise<void[]> = Promise.all(
-			videodata.map((scene: any) =>
-				rlimit(() =>
-					fetchHeresphereVideoEntrySlim(scene.id)
-						.then((hspscene) => {
-							inof++
-							console.debug("hsp scan:", scene.id, "prog:", inof, "/", outof)
-							scenes.push(hspscene)
-						})
-						.catch((error) => console.error("fetch stash scene error:", error))
-				)
+			videodata.map((scene: Scene) =>
+				fetchHeresphereVideoEntry(scene)
+					.then((hspscene) => {
+						inof++
+						console.debug("hsp scan:", scene.id, "prog:", inof, "/", outof)
+						scenes.push(hspscene)
+					})
+					.catch((error) => console.error("fetch stash scene error:", error))
 			)
 		)
 

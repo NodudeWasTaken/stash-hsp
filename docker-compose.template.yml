@@ -16,7 +16,6 @@ services:
       CACHE_DIR: "/cache"
       LOGS_DIR: "./logs"
       SCALE_PROCESS_LIMIT: 8 # When downscaling screenshots, how many concurrent processes are allowed
-      REQUEST_PROCESS_LIMIT: 20 # When fetching scenes from stash, how many concurrent requests
       SCANCACHE_CRON: "0 6 * * *" # How often to regenerate the scan database of all scenes
       LOCALHSP: "" # Set to a directory like /hspfiles if we dont have access to stash, so we store HSP files locally instead of assuming direct access
     volumes:
