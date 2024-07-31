@@ -106,6 +106,8 @@ export async function findFavAux(
 ): Promise<listOfFav | undefined> {
 	try {
 		// Note: We use SQL because doing this in graphql is VERY slow
+		// using GQL /debug/findfav"  0,01s user 0,00s system 0% cpu 4,349 total
+		// using SQL /debug/findfav"  0,01s user 0,00s system 2% cpu 0,238 total
 		const response = await fetcher(`${STASH_URL}/graphql`, {
 			method: "POST",
 			headers: {
