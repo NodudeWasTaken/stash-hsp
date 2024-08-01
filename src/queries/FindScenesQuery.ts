@@ -28,15 +28,17 @@ query FindScenes($filter: FindFilterType, $scene_filter: SceneFilterType, $scene
     director
     urls
     date
-	created_at
     rating100
     o_counter
     organized
     interactive
     interactive_speed
-    resume_time
-    play_duration
-    play_count
+	created_at
+	updated_at
+	resume_time
+	last_played_at
+	play_duration
+	play_count
     files {
       ...VideoFileData
       __typename

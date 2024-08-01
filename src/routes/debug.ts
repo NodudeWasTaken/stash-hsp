@@ -70,6 +70,24 @@ const debugFindSceneHandler = async (req: Request, res: Response) => {
 	}
 }
 
+const debugFindScenesHandler = async (req: Request, res: Response) => {
+	try {
+		const { sceneId } = req.params
+
+		const sceneData = await client.query<Query>({
+			query: FIND_SCENES_QUERY,
+			variables: {
+				id: sceneId,
+			},
+		})
+
+		res.json(sceneData.data.findScenes)
+	} catch (error) {
+		console.error(error)
+		res.status(500).json(error)
+	}
+}
+
 const debugFindFavoritesHandler = async (req: Request, res: Response) => {
 	try {
 		const MINSCENES = Number(VAR_FAV_MINSCENES)
@@ -91,5 +109,6 @@ export function debugRoutes(app: Express) {
 	app.get("/debug/findfilters", debugFindFiltersHandler)
 	app.get("/debug/finddefscenes", debugFindDefScenesHandler)
 	app.get("/debug/findscene/:sceneId", debugFindSceneHandler)
+	app.get("/debug/findscenes", debugFindScenesHandler)
 	app.get("/debug/findfav", debugFindFavoritesHandler)
 }

@@ -20,6 +20,9 @@ export const VAR_SCREENSHOT_DIR: string =
 export const VAR_CACHE_DIR: string = process.env["CACHE_DIR"] || "./cache"
 const VAR_FAVORITE_TAG: string = process.env["FAVORITE_TAG"] || "Favorites"
 export const VAR_SCALELIMIT: string = process.env["SCALE_PROCESS_LIMIT"] || "8"
+export const VAR_GET_RECOMMENDED: boolean =
+	process.env["ENABLE_RECOMMENDED"] === "true" ||
+	process.env["ENABLE_RECOMMENDED"] === "1"
 export const VAR_FAV_LIMITTAGS: string =
 	process.env["RECOMMENDED_LIMIT"] || "20"
 export const VAR_FAV_MINSCENES: string =
@@ -34,6 +37,9 @@ export const VAR_LOCALHSP: boolean =
 export const VAR_MULTITRACK_MARKERS: boolean =
 	process.env["MULTITRACK_MARKERS"] === "true" ||
 	process.env["MULTITRACK_MARKERS"] === "1"
+export const VAR_GET_FILTERS: boolean =
+	process.env["ENABLE_FILTERS"] === "true" ||
+	process.env["ENABLE_FILTERS"] === "1"
 
 // System vars
 export var VAR_UICFG: ConfigResult

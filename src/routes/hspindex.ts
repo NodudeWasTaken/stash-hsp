@@ -1,6 +1,11 @@
 import { Express, Request, Response } from "express"
 import { client } from "../core/client"
-import { DEBUG_MODE, VAR_UICFG } from "../core/vars"
+import {
+	DEBUG_MODE,
+	VAR_GET_FILTERS,
+	VAR_GET_RECOMMENDED,
+	VAR_UICFG,
+} from "../core/vars"
 import {
 	FindFilterType,
 	Query,
@@ -40,7 +45,7 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 
 		let allfilters: SavedFilter[] = []
 
-		{
+		if (VAR_GET_FILTERS) {
 			const queryResult = await client.query<Query>({
 				query: FIND_SAVED_FILTERS_QUERY,
 				variables: {
@@ -75,7 +80,16 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 					object_filter: object_filter,
 				} as SavedFilter)
 			}
+		} else {
+			allfilters.push({
+				name: "No rules",
+				find_filter: {
+					per_page: -1,
+				},
+			} as SavedFilter)
+		}
 
+		if (VAR_GET_RECOMMENDED) {
 			try {
 				allfilters.push(await generateRecommendedFilter())
 			} catch (error) {
@@ -85,7 +99,6 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 
 		{
 			const fetchPromises: Promise<void>[] = []
-
 			for (let filt of allfilters) {
 				//console.debug(filt)
 
