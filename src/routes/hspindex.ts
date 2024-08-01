@@ -11,6 +11,7 @@ import {
 	Query,
 	SavedFilter,
 	SceneFilterType,
+	SortDirectionEnum,
 } from "../gql/graphql"
 import {
 	FIND_SAVED_FILTERS_QUERY,
@@ -84,7 +85,9 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 			allfilters.push({
 				name: "No rules",
 				find_filter: {
+					direction: SortDirectionEnum.Desc,
 					per_page: -1,
+					sort: "created_at",
 				},
 			} as SavedFilter)
 		}
