@@ -24,11 +24,11 @@ export const VAR_GET_RECOMMENDED: boolean =
 	process.env["ENABLE_RECOMMENDED"] === "true" ||
 	process.env["ENABLE_RECOMMENDED"] === "1"
 export const VAR_FAV_LIMITTAGS: string =
-	process.env["RECOMMENDED_LIMIT"] || "20"
+	process.env["RECOMMENDED_LIMIT"] || "30"
 export const VAR_FAV_MINSCENES: string =
 	process.env["RECOMMENDED_MINSCENES"] || "8"
 export const VAR_FAV_MINRATING: string =
-	process.env["RECOMMENDED_MINRATING"] || "70"
+	process.env["RECOMMENDED_MINRATING"] || "80"
 // m h dom mon dow
 export const VAR_SCANCACHE_CRON: string =
 	process.env["SCANCACHE_CRON"] || "0 6 * * *"
