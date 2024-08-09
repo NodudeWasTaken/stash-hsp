@@ -4,6 +4,7 @@ import {
 	VAR_FAV_LIMITTAGS,
 	VAR_FAV_MINRATING,
 	VAR_FAV_MINSCENES,
+	VAR_FAVBOOST,
 } from "../core/vars"
 import {
 	CriterionModifier,
@@ -14,7 +15,7 @@ import {
 	SavedFilter,
 	SceneFilterType,
 } from "../gql/graphql"
-import { fixSqlReturn, randomUInt, randomizeList } from "./utilities"
+import { fixSqlReturn, randomizeList, randomUInt } from "./utilities"
 
 function niceifySql(str: string): string {
 	return str.replaceAll("\n", " ").replace(/^\s+|\s+$|(\s)+/g, "$1")
@@ -24,7 +25,7 @@ const tagsQuerySQL = niceifySql(`
 SELECT 
     tags.id,
     tags.name,
-    AVG(scenes.rating) AS average_rating,
+    AVG(CASE when tags.favorite = 1 then scenes.rating + ${VAR_FAVBOOST} else scenes.rating end) AS average_rating,
     COUNT(scenes.id) AS num_scenes
 FROM 
     tags
@@ -46,7 +47,7 @@ const performersQuerySQL = niceifySql(`
 SELECT 
     performers.id,
     performers.name,
-    AVG(scenes.rating) AS average_rating,
+    AVG(CASE when performers.favorite = 1 then scenes.rating + ${VAR_FAVBOOST} else scenes.rating end) AS average_rating,
     COUNT(scenes.id) AS num_scenes
 FROM 
     performers
@@ -68,7 +69,7 @@ const studiosQuerySQL = niceifySql(`
 SELECT 
     studios.id,
     studios.name,
-    AVG(scenes.rating) AS average_rating,
+    AVG(CASE when studios.favorite = 1 then scenes.rating + ${VAR_FAVBOOST} else scenes.rating end) AS average_rating,
     COUNT(scenes.id) AS num_scenes
 FROM 
     studios
