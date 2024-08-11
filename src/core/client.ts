@@ -1,5 +1,6 @@
 import {
 	ApolloClient,
+	DefaultOptions,
 	HttpLink,
 	InMemoryCache,
 	NormalizedCacheObject,
@@ -21,6 +22,20 @@ export async function fetcher(url: any, options?: any) {
 	return fetch(url, update)
 }
 
+// See: https://www.apollographql.com/docs/react/data/queries/#supported-fetch-policies
+const customOptions: DefaultOptions = {
+	watchQuery: {
+		fetchPolicy: "no-cache",
+		errorPolicy: "ignore",
+	},
+	query: {
+		fetchPolicy: "no-cache",
+		errorPolicy: "all",
+	},
+	mutate: {
+		errorPolicy: "all",
+	},
+}
 export function initClient() {
 	const httpLink = new HttpLink({
 		uri: `${STASH_URL}/graphql`,
@@ -30,5 +45,6 @@ export function initClient() {
 	client = new ApolloClient({
 		link: httpLink,
 		cache: new InMemoryCache(),
+		defaultOptions: customOptions,
 	})
 }

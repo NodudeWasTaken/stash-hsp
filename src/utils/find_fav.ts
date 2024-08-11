@@ -170,7 +170,7 @@ export async function generateRecommendedFilter() {
 		let req: string[] = favTags.map((obj) => obj.id.toString())
 
 		tagsToFind = req.slice(0, NUMLIM)
-		tagsToFind.push(...randomizeList(req).slice(0, numToAdd))
+		tagsToFind.push(...randomizeList(req.slice(NUMLIM)).slice(0, numToAdd))
 	}
 
 	var performersToFind: string[]
@@ -183,7 +183,9 @@ export async function generateRecommendedFilter() {
 		let req: string[] = favPerf.map((obj) => obj.id.toString())
 
 		performersToFind = req.slice(0, NUMLIM)
-		performersToFind.push(...randomizeList(req).slice(0, numToAdd))
+		performersToFind.push(
+			...randomizeList(req.slice(NUMLIM)).slice(0, numToAdd)
+		)
 	}
 
 	var studiosToFind: string[]
@@ -196,7 +198,7 @@ export async function generateRecommendedFilter() {
 		let req: string[] = favStudios.map((obj) => obj.id.toString())
 
 		studiosToFind = req.slice(0, NUMLIM)
-		studiosToFind.push(...randomizeList(req).slice(0, numToAdd))
+		studiosToFind.push(...randomizeList(req.slice(NUMLIM)).slice(0, numToAdd))
 	}
 
 	const object_filter: SceneFilterType = {
