@@ -174,8 +174,7 @@ dist
 # Finder (MacOS) folder config
 .DS_Store
 
-cache*
-screenshots*
+stash-hsp.sqlite*
 docker-compose.yml
 HereSphere_JSON_API_Version_1.txt
 bun.lockb

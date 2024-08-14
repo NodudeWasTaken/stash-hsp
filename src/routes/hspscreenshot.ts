@@ -1,12 +1,5 @@
 import { Express, Request, Response } from "express"
-import fs from "fs"
-import {
-	SCREENSHOT_MAXRES,
-	slimit,
-	STASH_URL,
-	VAR_SCREENSHOT_DIR,
-} from "../core/vars"
-import { fetchAndResizeImage, fileExists } from "../utils/utilities"
+import { dbimgtype, getImgQuery } from "./hspscan"
 
 const hspScreenshotHandler = async (req: Request, res: Response) => {
 	try {
@@ -16,24 +9,17 @@ const hspScreenshotHandler = async (req: Request, res: Response) => {
 			throw new Error("missing sceneId")
 		}
 
-		const imagePath = `${VAR_SCREENSHOT_DIR}/${sceneId}.jpg`
+		// TODO: If not exist return "Not generated yet"
 
-		await slimit(() =>
-			fetchAndResizeImage(
-				`${STASH_URL}/scene/${sceneId}/screenshot`,
-				imagePath,
-				SCREENSHOT_MAXRES
-			)
-		)
-
-		if (await fileExists(imagePath)) {
+		const file = getImgQuery().get(sceneId) as dbimgtype
+		if (file) {
 			// Set content type to image/jpeg or image/png based on your image
 			res.contentType("image/jpeg") // Adjust content type based on your image type
 
 			// Create a read stream and pipe it to the response
-			fs.createReadStream(imagePath).pipe(res)
+			res.send(Buffer.from(file.data, "base64"))
 		} else {
-			throw new Error(`Image not found at ${imagePath}`)
+			throw new Error(`Image not found at ${sceneId}`)
 		}
 	} catch (err) {
 		console.error(err)

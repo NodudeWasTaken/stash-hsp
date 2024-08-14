@@ -12,8 +12,6 @@ services:
       PORT: 3000 # The port stash_hsp runs on
       STASH_URL: "http://192.168.1.123:9999" # Stash's URL
       STASH_APIKEY: abcd # Stash api key if needed
-      SCREENSHOTS_DIR: "/screenshots"
-      CACHE_DIR: "/cache"
       LOGS_DIR: "./logs"
       SCALE_PROCESS_LIMIT: 8 # When downscaling screenshots, how many concurrent processes are allowed
       SCANCACHE_CRON: "0 6 * * *" # How often to regenerate the scan database of all scenes

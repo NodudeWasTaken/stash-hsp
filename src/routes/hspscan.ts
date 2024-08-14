@@ -1,16 +1,14 @@
 import { Express, Request, Response } from "express"
-import { writeFile } from "fs/promises"
 import cron from "node-cron"
+import sharp from "sharp"
 import { client } from "../core/client"
 import {
-	SCANDB,
+	db,
 	SCREENSHOT_MAXRES,
 	slimit,
 	STASH_URL,
-	VAR_CACHE_DIR,
 	VAR_FAVTAG,
 	VAR_SCANCACHE_CRON,
-	VAR_SCREENSHOT_DIR,
 } from "../core/vars"
 import { Query, Scene } from "../gql/graphql"
 import { FIND_SCENES_QUERY, FIND_SCENES_VARS } from "../queries/FindScenesQuery"
@@ -21,24 +19,48 @@ import {
 import { fillTags } from "../utils/hspdataupdate"
 import {
 	checkForErrors,
-	ensureDirectoryExists,
 	fetchAndResizeImage,
-	fileExists,
 	formatDate,
 	getBasename,
 	getBaseURL,
-	readJsonFile,
 } from "../utils/utilities"
 import { videoPath } from "./hspscene"
+
+interface dbscantype {
+	id: Number
+	data: string
+	timestamp: Date
+}
+export interface dbimgtype {
+	id: Number
+	data: string
+	timestamp: Date
+}
+
+export function getImgQuery() {
+	return db.query(`SELECT * FROM images WHERE id = $id`)
+}
+export function getImgTransaction() {
+	return db.query(`INSERT INTO images(id, data) VALUES ($id, $data)`)
+}
+export function getScanTransaction() {
+	return db.prepare(`INSERT INTO scan(id, data) VALUES ($id, $data)`)
+}
+export function getScanQuery() {
+	return db.prepare(`SELECT * FROM scan`)
+}
 
 // Stash is too slow to do this live
 // TODO: Add a way to refresh
 const hspscanfetchHandler = async (req: Request, res: Response) => {
 	try {
-		if (await fileExists(SCANDB)) {
+		const query = db.query(`select * from scan`)
+		const entries = query.all() as dbscantype[]
+
+		if (entries[0]) {
 			const baseUrl = getBaseURL(req)
 
-			let scandb: HeresphereScanIndex = await readJsonFile(SCANDB)
+			let scandb: HeresphereScanIndex = JSON.parse(entries[0].data)
 			scandb.scanData = scandb.scanData.map((scene) => ({
 				...scene,
 				link: `${baseUrl}${scene.link}`,
@@ -48,6 +70,7 @@ const hspscanfetchHandler = async (req: Request, res: Response) => {
 			res.send(scandb)
 			return
 		}
+
 		res.status(404)
 	} catch (err) {
 		console.error(err)
@@ -95,11 +118,9 @@ const fetchHeresphereVideoEntry = async (
 
 	return processed
 }
-export async function genScanDB(first: boolean) {
-	if (!(await fileExists(SCANDB)) || !first) {
-		ensureDirectoryExists(VAR_CACHE_DIR)
-		ensureDirectoryExists(VAR_SCREENSHOT_DIR)
 
+export async function genScanDB(first: boolean) {
+	if (!getScanQuery().get() || !first) {
 		console.debug("hsp scan")
 		let scenes: HeresphereVideoEntryShort[] = []
 
@@ -130,27 +151,41 @@ export async function genScanDB(first: boolean) {
 		)
 
 		// Downscale images
-		const screenshotPromises: Promise<void[]> = Promise.all(
-			videodata.map((scene: any) =>
-				slimit(() =>
-					fetchAndResizeImage(
-						`${STASH_URL}/scene/${scene.id}/screenshot`,
-						`${VAR_SCREENSHOT_DIR}/${scene.id}.jpg`,
-						SCREENSHOT_MAXRES
-					).catch((error) =>
-						console.error("generating screenshot error:", error)
+		const imgQuery = getImgQuery()
+		const imgTransaction = getImgTransaction()
+		const screenshotPromises: Promise<any[]> = Promise.all(
+			videodata
+				.filter((scene) => !imgQuery.get(scene.id))
+				.map((scene) =>
+					slimit(() =>
+						fetchAndResizeImage(
+							`${STASH_URL}/scene/${scene.id}/screenshot`,
+							SCREENSHOT_MAXRES
+						)
+							.catch((error) =>
+								console.error("generating screenshot error:", error)
+							)
+							.then((img) =>
+								(img as sharp.Sharp)
+									.toFormat("jpeg")
+									.toBuffer()
+									.then((buffer) =>
+										imgTransaction.run(scene.id, buffer.toString("base64"))
+									)
+							)
 					)
 				)
-			)
 		)
 
 		await scenePromises
 		const scanidx: HeresphereScanIndex = {
 			scanData: scenes,
 		}
-		await writeFile(SCANDB, JSON.stringify(scanidx))
+		getScanTransaction().run(0, JSON.stringify(scanidx))
+
 		console.debug("wrote hsp scan")
 
+		console.debug("writing screenshots...")
 		await screenshotPromises
 		console.debug("wrote screenshots")
 	} else {

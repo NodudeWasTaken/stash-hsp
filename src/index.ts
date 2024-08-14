@@ -5,7 +5,7 @@ import requestIp from "request-ip"
 import { heresphereAuthMiddleware } from "./core/authmiddleware"
 import { initClient } from "./core/client"
 import { appendLog } from "./core/logger"
-import { DEBUG_MODE, tryAuth, VAR_PORT } from "./core/vars"
+import { db, DEBUG_MODE, tryAuth, VAR_PORT } from "./core/vars"
 import { indexRoutes } from "./routes"
 import { debugRoutes } from "./routes/debug"
 import { hspAuthRoutes } from "./routes/hspauth"
@@ -53,6 +53,22 @@ if (DEBUG_MODE) {
 }
 
 const server = app.listen(Number(VAR_PORT), "0.0.0.0", async () => {
+	db.exec("PRAGMA journal_mode = WAL;")
+
+	const schema = `
+CREATE TABLE IF NOT EXISTS images (
+    id INTEGER PRIMARY KEY,
+    data TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS scan (
+    id INTEGER PRIMARY KEY,
+    data JSONB,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+`
+	db.exec(schema)
+
 	appendLog("debug", "Initialized")
 	initClient()
 	// TODO: Retry this, maybe setTimeout?
@@ -66,3 +82,13 @@ const server = app.listen(Number(VAR_PORT), "0.0.0.0", async () => {
 
 	console.log(`Example app listening at http://0.0.0.0:${VAR_PORT}`)
 })
+
+function doExit() {
+	db.close(false)
+	process.exit(0)
+}
+
+process.on("SIGINT", doExit)
+process.on("SIGQUIT", doExit)
+process.on("SIGTERM", doExit)
+process.on("exit", doExit)

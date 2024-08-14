@@ -1,5 +1,6 @@
 import { ApolloError } from "@apollo/client/core"
 import { ServerError } from "@apollo/client/link/utils/index.js"
+import { Database } from "bun:sqlite"
 import pLimit from "p-limit"
 import { ConfigResult, CriterionModifier, Query, Tag } from "../gql/graphql"
 import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
@@ -15,9 +16,6 @@ export const STASH_URL: string =
 	process.env["STASH_URL"] || "http://127.0.0.1:9999"
 export var STASH_APIKEY: string = process.env["STASH_APIKEY"] || ""
 export const VAR_LOGS_DIR: string = process.env["LOGS_DIR"] || "./logs"
-export const VAR_SCREENSHOT_DIR: string =
-	process.env["SCREENSHOTS_DIR"] || "./screenshots"
-export const VAR_CACHE_DIR: string = process.env["CACHE_DIR"] || "./cache"
 const VAR_FAVORITE_TAG: string = process.env["FAVORITE_TAG"] || "Favorites"
 export const VAR_SCALELIMIT: string = process.env["SCALE_PROCESS_LIMIT"] || "8"
 export const VAR_GET_RECOMMENDED: boolean =
@@ -54,7 +52,8 @@ export const SCREENSHOT_MAXRES = 480
 export const slimit = pLimit(Number(VAR_SCALELIMIT))
 
 export const ENABLE_EXPERIMENTAL_AUTH = DEBUG_MODE || false
-export const SCANDB = `${VAR_CACHE_DIR}/scan.json`
+
+export const db = new Database("stash-hsp.sqlite")
 
 // Type guard to check if the network error is a ServerError
 function isServerError(error: any): error is ServerError {

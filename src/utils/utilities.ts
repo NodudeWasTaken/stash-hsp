@@ -85,15 +85,8 @@ export async function fileExists(path: string) {
 
 export async function fetchAndResizeImage(
 	imageUrl: string,
-	outputPath: string,
 	maxDimension: number
-) {
-	// Check if the output file already exists
-	if (await fileExists(outputPath)) {
-		//console.log(`File ${outputPath} already exists. Skipping download and resize.`);
-		return
-	}
-
+): Promise<sharp.Sharp> {
 	// Fetch the image
 	const response = await fetcher(imageUrl)
 	if (!response.ok) {
@@ -121,9 +114,7 @@ export async function fetchAndResizeImage(
 	}
 
 	// Resize the image and save
-	await image.resize(width, height).toFile(outputPath)
-
-	console.log(`Image saved to ${outputPath}`)
+	return image.resize(width, height)
 }
 
 type SqlDict = { [key: string]: any }
