@@ -130,6 +130,10 @@ const fetchHeresphereVideoEntry = async (
 
 	fillTags(sceneData, processed)
 
+	if (sceneData.files[0]) {
+		processed.duration = sceneData.files[0].duration * 1000
+	}
+
 	if ((!authreq || authreq.needsMediaSource) && sceneData.files[0]) {
 		processed.media = []
 		const maxResHeight = sceneData.files[0].height
@@ -147,7 +151,6 @@ const fetchHeresphereVideoEntry = async (
 				sources: [source],
 			}
 			processed.media.push(entry)
-			processed.duration = sceneData.files[0].duration * 1000
 		}
 
 		{
