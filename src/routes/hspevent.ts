@@ -19,6 +19,7 @@ import {
 import { checkForErrors } from "../utils/utilities"
 
 // Create a new instance of NodeCache with 5 hour TTL
+// TODO: Replace with DB
 const video_event_cache = new NodeCache({ stdTTL: 60 * 60 * 5 })
 
 async function updatePlayCount(

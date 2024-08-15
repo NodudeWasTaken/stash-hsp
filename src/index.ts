@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS scan (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 `
+	// TODO: Use migration instead
 	db.exec(schema)
 
 	appendLog("debug", "Initialized")
@@ -74,18 +75,18 @@ CREATE TABLE IF NOT EXISTS scan (
 	// TODO: Retry this, maybe setTimeout?
 	tryAuth().catch((error) => {
 		console.error("Unknown network error:", error)
-		server.close((err) => {
-			console.log("server closed")
-			process.exit(err ? 1 : 0)
-		})
+		doExit()
 	})
 
 	console.log(`Example app listening at http://0.0.0.0:${VAR_PORT}`)
 })
 
 function doExit() {
-	db.close(false)
-	process.exit(0)
+	server.close((err) => {
+		console.log("server closed")
+		db.close(false)
+		process.exit(err ? 1 : 0)
+	})
 }
 
 process.on("SIGINT", doExit)
