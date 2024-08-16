@@ -1,15 +1,24 @@
 import { Express, Request, Response } from "express"
-import { dbimgtype, getImgQuery } from "./hspscan"
+import { dbimgtype, genImage, getImgQuery, getImgTransaction } from "./hspscan"
 
 const hspScreenshotHandler = async (req: Request, res: Response) => {
 	try {
 		// TODO: With the amount of times i do this it should be generalized
-		const { sceneId } = req.params
-		if (!sceneId) {
+		const { _sceneId } = req.params
+		if (!_sceneId) {
 			throw new Error("missing sceneId")
 		}
+		const sceneId = Number(_sceneId)
 
 		// TODO: If not exist return "Not generated yet"
+
+		// Downscale images
+		const imgQuery = getImgQuery()
+		const imgTransaction = getImgTransaction()
+
+		if (!imgQuery.get(sceneId)) {
+			await genImage(sceneId)
+		}
 
 		const file = getImgQuery().get(sceneId) as dbimgtype
 		if (file) {
@@ -29,5 +38,5 @@ const hspScreenshotHandler = async (req: Request, res: Response) => {
 
 export const screenshotPath = "/heresphere/screenshot"
 export function hspScreenshotRoutes(app: Express) {
-	app.get(`${screenshotPath}/:sceneId`, hspScreenshotHandler)
+	app.get(`${screenshotPath}/:_sceneId`, hspScreenshotHandler)
 }

@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS scan (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 `
+	// TODO: Version table?
 	// TODO: Use migration instead
 	db.exec(schema)
 

@@ -44,10 +44,10 @@ export function getImgTransaction() {
 	return db.query(`INSERT INTO img(id, data) VALUES ($id, $data)`)
 }
 export function getScanTransaction() {
-	return db.prepare(`INSERT INTO scan(id, data) VALUES ($id, $data)`)
+	return db.query(`INSERT INTO scan(id, data) VALUES ($id, $data)`)
 }
 export function getScanQuery() {
-	return db.prepare(`SELECT * FROM scan`)
+	return db.query(`SELECT * FROM scan`)
 }
 
 // Stash is too slow to do this live
@@ -119,6 +119,24 @@ const fetchHeresphereVideoEntry = async (
 	return processed
 }
 
+export async function genImage(sceneId: number) {
+	const imgTransaction = getImgTransaction()
+
+	return slimit(() =>
+		fetchAndResizeImage(
+			`${STASH_URL}/scene/${sceneId}/screenshot`,
+			SCREENSHOT_MAXRES
+		)
+			.catch((error) => console.error("generating screenshot error:", error))
+			.then((img) =>
+				(img as sharp.Sharp)
+					.toFormat("jpeg", { quality: 80 } as sharp.JpegOptions)
+					.toBuffer()
+					.then((buffer) => imgTransaction.run({ $id: sceneId, $data: buffer }))
+			)
+	)
+}
+
 export async function genScanDB(first: boolean) {
 	if (!getScanQuery().get() || !first) {
 		console.debug("hsp scan")
@@ -152,29 +170,10 @@ export async function genScanDB(first: boolean) {
 
 		// Downscale images
 		const imgQuery = getImgQuery()
-		const imgTransaction = getImgTransaction()
 		const screenshotPromises: Promise<any[]> = Promise.all(
 			videodata
 				.filter((scene) => !imgQuery.get(scene.id))
-				.map((scene) =>
-					slimit(() =>
-						fetchAndResizeImage(
-							`${STASH_URL}/scene/${scene.id}/screenshot`,
-							SCREENSHOT_MAXRES
-						)
-							.catch((error) =>
-								console.error("generating screenshot error:", error)
-							)
-							.then((img) =>
-								(img as sharp.Sharp)
-									.toFormat("jpeg", { quality: 80 } as sharp.JpegOptions)
-									.toBuffer()
-									.then((buffer) =>
-										imgTransaction.run({ $id: scene.id, $data: buffer })
-									)
-							)
-					)
-				)
+				.map((scene) => genImage(Number(scene.id)))
 		)
 
 		await scenePromises
