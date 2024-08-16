@@ -57,12 +57,12 @@ const server = app.listen(Number(VAR_PORT), "0.0.0.0", async () => {
 
 	const schema = `
 CREATE TABLE IF NOT EXISTS images (
-    id INTEGER PRIMARY KEY,
-    data TEXT,
+    id INTEGER PRIMARY KEY UNIQUE,
+    data BLOB,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS scan (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY UNIQUE,
     data JSONB,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );

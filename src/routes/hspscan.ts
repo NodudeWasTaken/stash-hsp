@@ -33,7 +33,7 @@ interface dbscantype {
 }
 export interface dbimgtype {
 	id: Number
-	data: string
+	data: Buffer
 	timestamp: Date
 }
 
@@ -167,10 +167,10 @@ export async function genScanDB(first: boolean) {
 							)
 							.then((img) =>
 								(img as sharp.Sharp)
-									.toFormat("jpeg")
+									.toFormat("jpeg", { quality: 80 } as sharp.JpegOptions)
 									.toBuffer()
 									.then((buffer) =>
-										imgTransaction.run(scene.id, buffer.toString("base64"))
+										imgTransaction.run({ $id: scene.id, $data: buffer })
 									)
 							)
 					)

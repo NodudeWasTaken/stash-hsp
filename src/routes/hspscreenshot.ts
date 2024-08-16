@@ -17,7 +17,7 @@ const hspScreenshotHandler = async (req: Request, res: Response) => {
 			res.contentType("image/jpeg") // Adjust content type based on your image type
 
 			// Create a read stream and pipe it to the response
-			res.send(Buffer.from(file.data, "base64"))
+			res.send(Buffer.from(file.data))
 		} else {
 			throw new Error(`Image not found at ${sceneId}`)
 		}
