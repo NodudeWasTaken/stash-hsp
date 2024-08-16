@@ -15,7 +15,10 @@ compile:
 dev:
 	DEBUG=express:* bun --watch run $(SRC_INDEX)
 
-PRETTIER_CMD = npx prettier $(SRC_DIR)
+sql:
+	bunx drizzle-kit generate
+
+PRETTIER_CMD = bunx prettier $(SRC_DIR)
 prettier:
 	$(PRETTIER_CMD) --write
 
@@ -23,11 +26,11 @@ prettier-check:
 	$(PRETTIER_CMD) --check
 
 tsc-check:
-	npx tsc
+	bunx tsc
 
 check: tsc-check prettier-check
 
 generate-types:
-	npx graphql-codegen
+	bunx graphql-codegen
 
 .PHONY: start bundle compile dev prettier prettier-check generate-types

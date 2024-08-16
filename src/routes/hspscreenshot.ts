@@ -1,5 +1,7 @@
+import { eq } from "drizzle-orm"
 import { Express, Request, Response } from "express"
-import { dbimgtype, getImgQuery } from "./hspscan"
+import { db } from "../core/vars"
+import { images } from "../db/schema"
 
 const hspScreenshotHandler = async (req: Request, res: Response) => {
 	try {
@@ -11,13 +13,17 @@ const hspScreenshotHandler = async (req: Request, res: Response) => {
 
 		// TODO: If not exist return "Not generated yet"
 
-		const file = getImgQuery().get(sceneId) as dbimgtype
+		const file = await db
+			.select()
+			.from(images)
+			.where(eq(images.id, Number(sceneId)))
+			.get()
 		if (file) {
 			// Set content type to image/jpeg or image/png based on your image
 			res.contentType("image/jpeg") // Adjust content type based on your image type
 
 			// Create a read stream and pipe it to the response
-			res.send(Buffer.from(file.data))
+			res.send(Buffer.from(file.data as string))
 		} else {
 			throw new Error(`Image not found at ${sceneId}`)
 		}

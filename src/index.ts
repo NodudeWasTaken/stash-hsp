@@ -1,11 +1,12 @@
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev"
 import compression from "compression"
+import { migrate } from "drizzle-orm/bun-sqlite/migrator"
 import express, { Express } from "express"
 import requestIp from "request-ip"
 import { heresphereAuthMiddleware } from "./core/authmiddleware"
 import { initClient } from "./core/client"
 import { appendLog } from "./core/logger"
-import { db, DEBUG_MODE, tryAuth, VAR_PORT } from "./core/vars"
+import { db, DEBUG_MODE, sqlite, tryAuth, VAR_PORT } from "./core/vars"
 import { indexRoutes } from "./routes"
 import { debugRoutes } from "./routes/debug"
 import { hspAuthRoutes } from "./routes/hspauth"
@@ -52,24 +53,9 @@ if (DEBUG_MODE) {
 	loadErrorMessages()
 }
 
+// TODO: Embed files
+await migrate(db, { migrationsFolder: "./src/db/migrations" })
 const server = app.listen(Number(VAR_PORT), "0.0.0.0", async () => {
-	db.exec("PRAGMA journal_mode = WAL;")
-
-	const schema = `
-CREATE TABLE IF NOT EXISTS images (
-    id INTEGER PRIMARY KEY UNIQUE,
-    data BLOB,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-CREATE TABLE IF NOT EXISTS scan (
-    id INTEGER PRIMARY KEY UNIQUE,
-    data JSONB,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-`
-	// TODO: Use migration instead
-	db.exec(schema)
-
 	appendLog("debug", "Initialized")
 	initClient()
 	// TODO: Retry this, maybe setTimeout?
@@ -84,7 +70,7 @@ CREATE TABLE IF NOT EXISTS scan (
 function doExit() {
 	server.close((err) => {
 		console.log("server closed")
-		db.close(false)
+		sqlite.close(false)
 		process.exit(err ? 1 : 0)
 	})
 }

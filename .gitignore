@@ -181,3 +181,4 @@ bun.lockb
 cache
 build
 app-*
+src/db/migrations
