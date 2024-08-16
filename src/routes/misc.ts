@@ -1,5 +1,4 @@
 import express, { Express, Request, Response } from "express"
-import path from "path"
 import { client } from "../core/client"
 import { Query } from "../gql/graphql"
 import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
@@ -23,5 +22,5 @@ export const faviconPath = "/favicon.ico"
 export const appletouchiconPath = "/apple-touch-icon.png"
 export function miscRoutes(app: Express) {
 	app.get("/healthcheck", healthcheckHandler)
-	app.use(express.static(path.join(__dirname, "serve/public")))
+	app.use(express.static("serve/public"))
 }
