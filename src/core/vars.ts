@@ -1,7 +1,6 @@
 import { ApolloError } from "@apollo/client/core"
 import { ServerError } from "@apollo/client/link/utils/index.js"
 import { Database } from "bun:sqlite"
-import { drizzle } from "drizzle-orm/bun-sqlite"
 import pLimit from "p-limit"
 import { ConfigResult, CriterionModifier, Query, Tag } from "../gql/graphql"
 import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
@@ -54,9 +53,7 @@ export const slimit = pLimit(Number(VAR_SCALELIMIT))
 
 export const ENABLE_EXPERIMENTAL_AUTH = DEBUG_MODE || false
 
-export const sqlite = new Database("stash-hsp.sqlite")
-sqlite.exec("PRAGMA journal_mode = WAL;")
-export const db = drizzle(sqlite)
+export const db = new Database("stash-hsp.sqlite")
 
 // Type guard to check if the network error is a ServerError
 function isServerError(error: any): error is ServerError {

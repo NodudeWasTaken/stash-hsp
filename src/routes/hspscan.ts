@@ -1,4 +1,3 @@
-import { eq } from "drizzle-orm"
 import { Express, Request, Response } from "express"
 import cron from "node-cron"
 import sharp from "sharp"
@@ -11,7 +10,6 @@ import {
 	VAR_FAVTAG,
 	VAR_SCANCACHE_CRON,
 } from "../core/vars"
-import { images, scans } from "../db/schema"
 import { Query, Scene } from "../gql/graphql"
 import { FIND_SCENES_QUERY, FIND_SCENES_VARS } from "../queries/FindScenesQuery"
 import {
@@ -28,16 +26,41 @@ import {
 } from "../utils/utilities"
 import { videoPath } from "./hspscene"
 
+interface dbscantype {
+	id: Number
+	data: string
+	timestamp: Date
+}
+export interface dbimgtype {
+	id: Number
+	data: Buffer
+	timestamp: Date
+}
+
+export function getImgQuery() {
+	return db.query(`SELECT * FROM images WHERE id = $id`)
+}
+export function getImgTransaction() {
+	return db.query(`INSERT INTO images(id, data) VALUES ($id, $data)`)
+}
+export function getScanTransaction() {
+	return db.prepare(`INSERT INTO scan(id, data) VALUES ($id, $data)`)
+}
+export function getScanQuery() {
+	return db.prepare(`SELECT * FROM scan`)
+}
+
 // Stash is too slow to do this live
 // TODO: Add a way to refresh
 const hspscanfetchHandler = async (req: Request, res: Response) => {
 	try {
-		const entries = await db.select().from(scans)
+		const query = db.query(`select * from scan`)
+		const entries = query.all() as dbscantype[]
 
 		if (entries[0]) {
 			const baseUrl = getBaseURL(req)
 
-			let scandb: HeresphereScanIndex = JSON.parse(entries[0].data as string)
+			let scandb: HeresphereScanIndex = JSON.parse(entries[0].data)
 			scandb.scanData = scandb.scanData.map((scene) => ({
 				...scene,
 				link: `${baseUrl}${scene.link}`,
@@ -97,10 +120,8 @@ const fetchHeresphereVideoEntry = async (
 }
 
 export async function genScanDB(first: boolean) {
-	const scanexists = await db.select().from(scans).get()
-
-	if (!scanexists || !first) {
-		console.debug("writing hsp scan...")
+	if (!getScanQuery().get() || !first) {
+		console.debug("hsp scan")
 		let scenes: HeresphereVideoEntryShort[] = []
 
 		const queryResult = await client.query<Query>({
@@ -130,16 +151,11 @@ export async function genScanDB(first: boolean) {
 		)
 
 		// Downscale images
+		const imgQuery = getImgQuery()
+		const imgTransaction = getImgTransaction()
 		const screenshotPromises: Promise<any[]> = Promise.all(
 			videodata
-				.filter(
-					(scene) =>
-						!db
-							.select()
-							.from(images)
-							.where(eq(images.id, Number(scene.id)))
-							.get()
-				)
+				.filter((scene) => !imgQuery.get(scene.id))
 				.map((scene) =>
 					slimit(() =>
 						fetchAndResizeImage(
@@ -154,9 +170,7 @@ export async function genScanDB(first: boolean) {
 									.toFormat("jpeg", { quality: 80 } as sharp.JpegOptions)
 									.toBuffer()
 									.then((buffer) =>
-										db
-											.insert(images)
-											.values({ id: Number(scene.id), data: buffer })
+										imgTransaction.run({ $id: scene.id, $data: buffer })
 									)
 							)
 					)
@@ -167,7 +181,7 @@ export async function genScanDB(first: boolean) {
 		const scanidx: HeresphereScanIndex = {
 			scanData: scenes,
 		}
-		await db.insert(scans).values({ id: 0, data: JSON.stringify(scanidx) })
+		getScanTransaction().run(0, JSON.stringify(scanidx))
 
 		console.debug("wrote hsp scan")
 

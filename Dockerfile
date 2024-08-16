@@ -11,7 +11,7 @@ COPY package*.json ./
 COPY . .
 
 # Bundle the project using bun
-RUN apk add --no-cache make && bun install --production && make bundle
+RUN apk add --no-cache make && bun install --production && make compile
 
 # Stage 2: Production stage
 FROM oven/bun:alpine AS production
@@ -20,7 +20,7 @@ FROM oven/bun:alpine AS production
 WORKDIR /app
 
 # Copy only necessary files from the build stage
-COPY --from=build /app/build/ ./
+COPY --from=build /app/stashhsp ./stashhsp
 COPY --from=build /app/package*.json ./
 
 # Install production dependencies
@@ -29,4 +29,4 @@ COPY --from=build /app/package*.json ./
 RUN apk add --no-cache vips-dev && bun install --production
 
 # Command to run when the container starts
-CMD ["bun", "run", "./index.js"]
+CMD ["./stashhsp"]

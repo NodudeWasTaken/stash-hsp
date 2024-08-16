@@ -8,15 +8,14 @@ start:
 
 bundle:
 	bun build $(SRC_INDEX) --minify --sourcemap --target bun --outdir ./build
-	cp -r serve ./build
+
+compile:
+	bun build $(SRC_INDEX) --compile --minify --sourcemap --target=bun-linux-x64-baseline --outfile stashhsp
 
 dev:
 	DEBUG=express:* bun --watch run $(SRC_INDEX)
 
-sql:
-	bunx drizzle-kit generate
-
-PRETTIER_CMD = bunx prettier $(SRC_DIR)
+PRETTIER_CMD = npx prettier $(SRC_DIR)
 prettier:
 	$(PRETTIER_CMD) --write
 
@@ -24,11 +23,11 @@ prettier-check:
 	$(PRETTIER_CMD) --check
 
 tsc-check:
-	bunx tsc
+	npx tsc
 
 check: tsc-check prettier-check
 
 generate-types:
-	bunx graphql-codegen
+	npx graphql-codegen
 
 .PHONY: start bundle compile dev prettier prettier-check generate-types
