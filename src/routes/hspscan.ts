@@ -38,10 +38,10 @@ export interface dbimgtype {
 }
 
 export function getImgQuery() {
-	return db.query(`SELECT * FROM images WHERE id = $id`)
+	return db.query(`SELECT * FROM img WHERE id = $id`)
 }
 export function getImgTransaction() {
-	return db.query(`INSERT INTO images(id, data) VALUES ($id, $data)`)
+	return db.query(`INSERT INTO img(id, data) VALUES ($id, $data)`)
 }
 export function getScanTransaction() {
 	return db.prepare(`INSERT INTO scan(id, data) VALUES ($id, $data)`)

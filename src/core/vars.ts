@@ -6,7 +6,7 @@ import { ConfigResult, CriterionModifier, Query, Tag } from "../gql/graphql"
 import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
 import { FIND_TAGS_QUERY, FIND_TAGS_VARS } from "../queries/FindTagsQuery"
 import { genScanDB } from "../routes/hspscan"
-import { checkForErrors } from "../utils/utilities"
+import { checkForErrors, ensureDirectoryExists } from "../utils/utilities"
 import { client } from "./client"
 
 // User vars
@@ -15,7 +15,8 @@ export const VAR_PORT: string = process.env["PORT"] || "3000"
 export const STASH_URL: string =
 	process.env["STASH_URL"] || "http://127.0.0.1:9999"
 export var STASH_APIKEY: string = process.env["STASH_APIKEY"] || ""
-export const VAR_LOGS_DIR: string = process.env["LOGS_DIR"] || "./logs"
+export const VAR_DATA_DIR: string = process.env["DATA_DIR"] || "./data"
+export const VAR_LOGS_DIR: string = `${VAR_DATA_DIR}/logs`
 const VAR_FAVORITE_TAG: string = process.env["FAVORITE_TAG"] || "Favorites"
 export const VAR_SCALELIMIT: string = process.env["SCALE_PROCESS_LIMIT"] || "8"
 export const VAR_GET_RECOMMENDED: boolean =
@@ -53,7 +54,8 @@ export const slimit = pLimit(Number(VAR_SCALELIMIT))
 
 export const ENABLE_EXPERIMENTAL_AUTH = DEBUG_MODE || false
 
-export const db = new Database("stash-hsp.sqlite")
+ensureDirectoryExists(VAR_DATA_DIR)
+export const db = new Database(`${VAR_DATA_DIR}/stash-hsp.sqlite`)
 
 // Type guard to check if the network error is a ServerError
 function isServerError(error: any): error is ServerError {

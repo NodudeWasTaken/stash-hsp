@@ -56,7 +56,7 @@ const server = app.listen(Number(VAR_PORT), "0.0.0.0", async () => {
 	db.exec("PRAGMA journal_mode = WAL;")
 
 	const schema = `
-CREATE TABLE IF NOT EXISTS images (
+CREATE TABLE IF NOT EXISTS img (
     id INTEGER PRIMARY KEY UNIQUE,
     data BLOB,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
