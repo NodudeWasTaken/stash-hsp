@@ -100,7 +100,7 @@ export async function genScanDB(first: boolean) {
 	const scanexists = await db.select().from(scans).get()
 
 	if (!scanexists || !first) {
-		console.debug("hsp scan")
+		console.debug("writing hsp scan...")
 		let scenes: HeresphereVideoEntryShort[] = []
 
 		const queryResult = await client.query<Query>({
