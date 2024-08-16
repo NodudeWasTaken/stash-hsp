@@ -2,3 +2,4 @@
 .env
 screenshots*
 cache*
+*.sqlite

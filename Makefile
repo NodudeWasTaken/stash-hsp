@@ -8,9 +8,7 @@ start:
 
 bundle:
 	bun build $(SRC_INDEX) --minify --sourcemap --target bun --outdir ./build
-
-compile:
-	bun build $(SRC_INDEX) --compile --minify --sourcemap --target=bun-linux-x64-baseline --outfile stashhsp
+	cp -r serve ./build
 
 dev:
 	DEBUG=express:* bun --watch run $(SRC_INDEX)

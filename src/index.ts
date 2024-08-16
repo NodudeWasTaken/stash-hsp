@@ -54,7 +54,7 @@ if (DEBUG_MODE) {
 }
 
 // TODO: Embed files
-await migrate(db, { migrationsFolder: "./src/db/migrations" })
+await migrate(db, { migrationsFolder: "serve/migrations" })
 const server = app.listen(Number(VAR_PORT), "0.0.0.0", async () => {
 	appendLog("debug", "Initialized")
 	initClient()

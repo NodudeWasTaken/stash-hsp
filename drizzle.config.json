@@ -1,5 +1,5 @@
 {
-	"out": "./src/db/migrations",
+	"out": "./serve/migrations",
 	"schema": "./src/db/schema.ts",
 	"dialect": "sqlite",
 	"breakpoints": true

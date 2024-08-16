@@ -23,5 +23,5 @@ export const faviconPath = "/favicon.ico"
 export const appletouchiconPath = "/apple-touch-icon.png"
 export function miscRoutes(app: Express) {
 	app.get("/healthcheck", healthcheckHandler)
-	app.use(express.static(path.join(__dirname, "../public")))
+	app.use(express.static(path.join(__dirname, "serve/public")))
 }
