@@ -44,13 +44,11 @@ export function findQualityLevel(resolution: number, bitrate: number): number {
 	// Find closest resolution and framerate
 	const closestResolutionIndex = findClosestIndex(resolutions, resolution)
 	const closestResolution = resolutions[closestResolutionIndex]!
-	console.log("closest", closestResolutionIndex, closestResolution)
 
 	// Find closest bitrate levels and determine quality
 	let closestQualityLevel = maxQualityLevel
 	for (const [quality, levels] of Object.entries(bitrates)) {
 		const currentBitrate = levels[closestResolutionIndex]!
-		console.log("bitrate", bitrate, currentBitrate)
 		if (currentBitrate >= bitrate) {
 			closestQualityLevel = Math.min(
 				qualityLevels[quality]!,
