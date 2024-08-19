@@ -108,8 +108,8 @@ const debugFindFavoritesHandler = async (req: Request, res: Response) => {
 
 const debugResetScan = async (req: Request, res: Response) => {
 	try {
-		await db.query(`DELETE FROM scan WHERE id = $id`).run(0)
-		setTimeout(() => genScanDB(true), 100)
+		await db.query(`DELETE FROM scan WHERE id = ?`).run(0)
+		setTimeout(() => genScanDB(false), 100)
 
 		res.json({ message: "OK" })
 	} catch (error) {
