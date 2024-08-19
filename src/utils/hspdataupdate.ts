@@ -37,6 +37,7 @@ import {
 	HeresphereVideoEntryShort,
 	HeresphereVideoTag,
 } from "../structs/heresphere_structs"
+import { findQualityLabel, findQualityLevel } from "./quality_selector"
 import { checkForErrors, getBasename } from "./utilities"
 
 // Function to add or remove a favorite tag from input.tag_ids
@@ -423,6 +424,17 @@ export function fillTags(
 	processed.tags.push({
 		name: `Interactive:${scene.interactive}`,
 	} as HeresphereVideoTag)
+
+	if (scene.files[0]) {
+		const q = findQualityLevel(
+			scene.files[0].height,
+			scene.files[0].bit_rate / 1000.0
+		)
+		const label: string = findQualityLabel(q)!
+		processed.tags.push({
+			name: `Quality:${label}`,
+		} as HeresphereVideoTag)
+	}
 
 	if (scene.interactive_speed) {
 		processed.tags.push({
