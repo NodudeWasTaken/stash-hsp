@@ -432,7 +432,7 @@ export function fillTags(
 		)
 		const label: string = findQualityLabel(q)!
 		processed.tags.push({
-			name: `Quality:${label}`,
+			name: `Bitrate:${label}`,
 		} as HeresphereVideoTag)
 	}
 
