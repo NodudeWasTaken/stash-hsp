@@ -1,6 +1,6 @@
 import { Express, Request, Response } from "express"
 import { client } from "../core/client"
-import { VAR_FAV_MINRATING, VAR_FAV_MINSCENES } from "../core/vars"
+import { db, VAR_FAV_MINRATING, VAR_FAV_MINSCENES } from "../core/vars"
 import { Query } from "../gql/graphql"
 import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
 import { FIND_SAVED_FILTERS_QUERY } from "../queries/FindSavedFiltersQuery"
@@ -13,6 +13,7 @@ import {
 	findFavTags,
 	generateRecommendedFilter,
 } from "../utils/find_fav"
+import { genScanDB } from "./hspscan"
 
 const debugFindFiltersHandler = async (req: Request, res: Response) => {
 	const result = await client.query<Query>({
@@ -105,10 +106,23 @@ const debugFindFavoritesHandler = async (req: Request, res: Response) => {
 	}
 }
 
+const debugResetScan = async (req: Request, res: Response) => {
+	try {
+		await db.query(`DELETE FROM scan WHERE id = $id`).run(0)
+		setTimeout(() => genScanDB(true), 100)
+
+		res.json({ message: "OK" })
+	} catch (error) {
+		console.error(error)
+		res.status(500).json(error)
+	}
+}
+
 export function debugRoutes(app: Express) {
 	app.get("/debug/findfilters", debugFindFiltersHandler)
 	app.get("/debug/finddefscenes", debugFindDefScenesHandler)
 	app.get("/debug/findscene/:sceneId", debugFindSceneHandler)
 	app.get("/debug/findscenes", debugFindScenesHandler)
 	app.get("/debug/findfav", debugFindFavoritesHandler)
+	app.post("/debug/resetscan", debugResetScan)
 }
