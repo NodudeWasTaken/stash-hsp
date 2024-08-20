@@ -40,7 +40,7 @@ export function findQualityLevel(
 	bitrate: number,
 	frame_rate: number
 ): number {
-	const maxQualityLevel = 5 // Define your cap here
+	const maxQualityLevel = qualityLevels["Extreme"]! // Define your cap here
 
 	// If 60FPS then we require 50% more bitrate
 	if (frame_rate >= 50) {
