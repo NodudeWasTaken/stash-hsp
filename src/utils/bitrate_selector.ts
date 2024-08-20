@@ -1,16 +1,12 @@
-/*
-Poorly designed quality selector.
-We should be using no reference image quality like piqe or niqe, but this will do for now
-*/
-
 // Define the data
-const resolutions = [144, 240, 360, 480, 720, 1080]
+const resolutions = [144, 240, 360, 480, 720, 1080, 2160]
 const bitrates = {
-	"Ultra low": [60, 120, 250, 500, 1000, 2000],
-	Low: [120, 250, 500, 1000, 2000, 4000],
-	Medium: [250, 500, 1000, 2000, 4000, 8000],
-	High: [500, 1000, 2000, 4000, 8000, 16000],
-	"Ultra high": [1000, 2000, 4000, 8000, 16000, 24000],
+	"Ultra low": [30, 60, 120, 250, 500, 1000, 2000],
+	Low: [60, 120, 250, 500, 1000, 2000, 4000],
+	Medium: [120, 250, 500, 1000, 2000, 4000, 8000],
+	High: [250, 500, 1000, 2000, 4000, 8000, 16000],
+	"Ultra high": [500, 1000, 2000, 4000, 8000, 16000, 24000],
+	Extreme: [1000, 2000, 4000, 8000, 16000, 24000, 48000],
 }
 const qualityLevels: { [label: string]: number } = {
 	"Ultra low": 1,
@@ -18,6 +14,7 @@ const qualityLevels: { [label: string]: number } = {
 	Medium: 3,
 	High: 4,
 	"Ultra high": 5,
+	Extreme: 6,
 }
 
 // Reverse mapping from resolution strings to heights
@@ -38,8 +35,17 @@ function findClosestIndex(array: number[], value: number): number {
 }
 
 // Function to find the closest quality level
-export function findQualityLevel(resolution: number, bitrate: number): number {
+export function findQualityLevel(
+	resolution: number,
+	bitrate: number,
+	frame_rate: number
+): number {
 	const maxQualityLevel = 5 // Define your cap here
+
+	// If 60FPS then we require 50% more bitrate
+	if (frame_rate >= 50) {
+		bitrate *= 0.5
+	}
 
 	// Find closest resolution and framerate
 	const closestResolutionIndex = findClosestIndex(resolutions, resolution)
