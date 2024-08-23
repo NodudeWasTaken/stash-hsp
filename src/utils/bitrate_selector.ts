@@ -46,19 +46,12 @@ for (const [label, val] of Object.entries(bitrateLevels)) {
 }
 
 // Function to find the closest quality level
-export function _findBitrateLevel(
-	resolution: number,
-	bitrate: number,
-	frame_rate: number
-): number {
-	return predictBitrate(resolution, bitrate, frame_rate)
-}
 export function findBitrateLevel(
 	resolution: number,
 	bitrate: number,
 	frame_rate: number
 ) {
-	const pq = _findBitrateLevel(resolution, bitrate, frame_rate)
+	const pq = predictBitrate(resolution, bitrate, frame_rate)
 	return Math.max(
 		Math.min(Math.round(pq), bitrateLevels["Ludicrous"]!),
 		bitrateLevels["Ultra low"]!
