@@ -1,6 +1,6 @@
 import { Express, Request, Response } from "express"
 import { client } from "../core/client"
-import { db, VAR_FAV_MINRATING, VAR_FAV_MINSCENES } from "../core/vars"
+import { VAR_FAV_MINRATING, VAR_FAV_MINSCENES } from "../core/vars"
 import { Query } from "../gql/graphql"
 import { CONFIG_QUERY } from "../queries/ConfigurationQuery"
 import { FIND_SAVED_FILTERS_QUERY } from "../queries/FindSavedFiltersQuery"
@@ -108,7 +108,6 @@ const debugFindFavoritesHandler = async (req: Request, res: Response) => {
 
 const debugResetScan = async (req: Request, res: Response) => {
 	try {
-		await db.query(`DELETE FROM scan WHERE id = ?`).run(0)
 		setTimeout(() => genScanDB(false), 100)
 
 		res.json({ message: "OK" })

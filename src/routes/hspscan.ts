@@ -44,7 +44,7 @@ export function getImgTransaction() {
 	return db.query(`INSERT INTO img(id, data) VALUES ($id, $data)`)
 }
 export function getScanTransaction() {
-	return db.query(`INSERT INTO scan(id, data) VALUES ($id, $data)`)
+	return db.query(`REPLACE INTO scan(id, data) VALUES ($id, $data)`)
 }
 export function getScanQuery() {
 	return db.query(`SELECT * FROM scan`)
