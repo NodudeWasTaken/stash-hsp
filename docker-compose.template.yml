@@ -12,12 +12,13 @@ services:
       PORT: 3000 # The port stash_hsp runs on
       STASH_URL: "http://192.168.1.123:9999" # Stash's URL
       STASH_APIKEY: abcd # Stash api key if needed
-      DATA_DIR: "./data"
+      DATA_DIR: "/data"
       SCALE_PROCESS_LIMIT: 8 # When downscaling screenshots, how many concurrent processes are allowed
       SCANCACHE_CRON: "0 6 * * *" # How often to regenerate the scan database of all scenes
       LOCALHSP: "" # Set to a directory like ./data/hspfiles if we dont have access to stash, so we store HSP files locally instead of assuming direct access
     volumes:
       - logs-storage:/logs
+      - ./data:/data
     healthcheck:
       test: curl --fail http://localhost:3000/healthcheck || exit 1
       interval: 60s
