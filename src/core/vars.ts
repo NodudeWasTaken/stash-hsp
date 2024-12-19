@@ -18,6 +18,7 @@ export var STASH_APIKEY: string = process.env["STASH_APIKEY"] || ""
 export const VAR_DATA_DIR: string = process.env["DATA_DIR"] || "./data"
 export const VAR_LOGS_DIR: string = `${VAR_DATA_DIR}/logs`
 const VAR_FAVORITE_TAG: string = process.env["FAVORITE_TAG"] || "Favorites"
+const VAR_AUG_TAG: string = process.env["AUGMENTED_TAG"] || "Augmented Reality"
 export const VAR_SCALELIMIT: string = process.env["SCALE_PROCESS_LIMIT"] || "8"
 export const VAR_GET_RECOMMENDED: boolean =
 	process.env["ENABLE_RECOMMENDED"] === "true" ||
@@ -44,6 +45,7 @@ export const VAR_GET_FILTERS: boolean =
 // System vars
 export var VAR_UICFG: ConfigResult
 export var VAR_FAVTAG: Tag | undefined
+export var VAR_AUGTAG: Tag | undefined
 
 export var NEEDS_AUTH: boolean // We should require user-auth (no APIKEY supplied)
 export var INITIAL_FETCH: boolean // We have fetched initial data like apikey, tags, etc.
@@ -72,6 +74,7 @@ export async function _SET_APIKEY(apikey: any) {
 export async function tryAuth() {
 	try {
 		await getVrTag()
+		await getAugTag()
 		INITIAL_FETCH = true
 
 		console.log(`Generating scan.json in 10 seconds`)
@@ -119,6 +122,12 @@ export async function getVrTag() {
 							value: VAR_FAVORITE_TAG,
 							modifier: CriterionModifier.Equals,
 						},
+						OR: {
+							aliases: {
+								value: VAR_FAVORITE_TAG,
+								modifier: CriterionModifier.Equals,
+							},
+						},
 					},
 				} as FIND_TAGS_VARS,
 			})
@@ -151,5 +160,40 @@ export async function getVrTag() {
 			console.error("Non-Apollo error:", error)
 		}
 		throw error
+	}
+}
+
+export async function getAugTag() {
+	try {
+		const queryResult = await client.query<Query>({
+			query: FIND_TAGS_QUERY,
+			variables: {
+				filter: {
+					per_page: -1,
+				},
+				tag_filter: {
+					name: {
+						value: VAR_AUG_TAG,
+						modifier: CriterionModifier.Equals,
+					},
+					OR: {
+						aliases: {
+							value: VAR_AUG_TAG,
+							modifier: CriterionModifier.Equals,
+						},
+					},
+				},
+			} as FIND_TAGS_VARS,
+		})
+		checkForErrors(queryResult.errors)
+
+		if (!queryResult.data.findTags.tags[0]) {
+			console.error(`\"${VAR_AUG_TAG}\" tag not found`)
+			return
+		}
+
+		VAR_AUGTAG = queryResult.data.findTags?.tags[0]
+	} catch (error) {
+		console.error("getAugTag error:", error)
 	}
 }

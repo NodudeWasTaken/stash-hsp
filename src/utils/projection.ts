@@ -1,4 +1,4 @@
-import { VAR_UICFG } from "../core/vars"
+import { VAR_AUGTAG, VAR_UICFG } from "../core/vars"
 import {
 	HeresphereLensMKX200,
 	HeresphereLensMKX220,
@@ -48,6 +48,14 @@ function findProjectionTagsFromTags(
 			processedScene.projection = HeresphereProjectionFisheye
 			if (processedScene.stereo === HeresphereStereoMono) {
 				processedScene.stereo = HeresphereStereoSbs
+			}
+		}
+
+		// Har AR tag
+		const arTag = VAR_AUGTAG?.name
+		if (arTag && tagPre == arTag) {
+			processedScene.alphaPackedSettings = {
+				defaultSettings: true,
 			}
 		}
 	})
@@ -116,6 +124,11 @@ function findProjectionTagsFromFilename(
 		processedScene.projection = HeresphereProjectionFisheye
 		processedScene.fov = 220.0
 		processedScene.lens = HeresphereLensVRCA220
+	}
+	if (path.includes("_ALPHA")) {
+		processedScene.alphaPackedSettings = {
+			defaultSettings: true,
+		}
 	}
 }
 

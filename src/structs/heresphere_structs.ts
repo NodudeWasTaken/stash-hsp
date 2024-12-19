@@ -112,6 +112,7 @@ export interface HeresphereHSPAlphaPacked {
 	scaleX?: number
 	scaleY?: number
 	opacityMultiplier?: number
+	defaultSettings?: boolean
 }
 
 export interface HeresphereHSPChromaKey {
