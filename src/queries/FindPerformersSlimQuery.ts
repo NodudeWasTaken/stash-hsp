@@ -9,13 +9,13 @@ query FindPerformers($filter: FindFilterType, $performer_filter: PerformerFilter
 	) {
 	  count
 	  performers {
-		...SlimPerformerData
+		...PerformerData
 		__typename
 	  }
 	  __typename
 	}
   }
   
-  fragment SlimPerformerData on Performer {
+  fragment PerformerData on Performer {
 	id
   }`
