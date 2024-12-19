@@ -59,13 +59,4 @@ query FindScene($id: ID!, $checksum: String) {
 	}
 	__typename
   }
-  
-  fragment SlimTagData on Tag {
-	id
-	name
-	aliases
-	image_path
-	parent_count
-	child_count
-	__typename
-  }`
+`

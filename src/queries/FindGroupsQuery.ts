@@ -64,13 +64,4 @@ query FindGroups($filter: FindFilterType, $group_filter: GroupFilterType) {
 	}
 	__typename
   }
-  
-  fragment SlimTagData on Tag {
-	id
-	name
-	aliases
-	image_path
-	parent_count
-	child_count
-	__typename
-  }`
+`
