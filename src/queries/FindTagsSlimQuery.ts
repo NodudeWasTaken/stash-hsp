@@ -5,13 +5,13 @@ query FindTags($filter: FindFilterType, $tag_filter: TagFilterType) {
 	findTags(filter: $filter, tag_filter: $tag_filter) {
 	  count
 	  tags {
-		...SlimTagData
+		...ReallySlimTagData
 		__typename
 	  }
 	  __typename
 	}
   }
   
-  fragment SlimTagData on Tag {
+  fragment ReallySlimTagData on Tag {
 	id
   }`

@@ -16,6 +16,8 @@ dev:
 PRETTIER_CMD = npx prettier $(SRC_DIR)
 prettier:
 	$(PRETTIER_CMD) --write
+	
+format: prettier
 
 prettier-check:
 	$(PRETTIER_CMD) --check
@@ -24,6 +26,7 @@ tsc-check:
 	npx tsc
 
 check: tsc-check prettier-check
+
 
 generate-types:
 	npx graphql-codegen

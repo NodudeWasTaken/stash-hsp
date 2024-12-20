@@ -1,3 +1,4 @@
+import { createFragmentRegistry } from "@apollo/client/cache"
 import {
 	ApolloClient,
 	DefaultOptions,
@@ -6,6 +7,7 @@ import {
 	NormalizedCacheObject,
 } from "@apollo/client/core"
 import fetch from "node-fetch"
+import { SHARED_FRAGMENTS } from "../queries/SharedFragments"
 import { STASH_APIKEY, STASH_URL } from "./vars"
 
 export const StashApiKeyHeader = "ApiKey"
@@ -44,7 +46,9 @@ export function initClient() {
 
 	client = new ApolloClient({
 		link: httpLink,
-		cache: new InMemoryCache(),
+		cache: new InMemoryCache({
+			fragments: createFragmentRegistry(SHARED_FRAGMENTS),
+		}),
 		defaultOptions: customOptions,
 	})
 }

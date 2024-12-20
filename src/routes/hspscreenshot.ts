@@ -17,7 +17,7 @@ const hspScreenshotHandler = async (req: Request, res: Response) => {
 		const imgTransaction = getImgTransaction()
 
 		if (!imgQuery.get(sceneId)) {
-			await genImage(sceneId)
+			await genImage(sceneId, false)
 		}
 
 		const file = getImgQuery().get(sceneId) as dbimgtype

@@ -119,10 +119,10 @@ const fetchHeresphereVideoEntry = async (
 	return processed
 }
 
-export async function genImage(sceneId: number) {
+export async function genImage(sceneId: number, useLimit: boolean = false) {
 	const imgTransaction = getImgTransaction()
 
-	return slimit(() =>
+	const anon = () =>
 		fetchAndResizeImage(
 			`${STASH_URL}/scene/${sceneId}/screenshot`,
 			SCREENSHOT_MAXRES
@@ -130,11 +130,15 @@ export async function genImage(sceneId: number) {
 			.catch((error) => console.error("generating screenshot error:", error))
 			.then((img) =>
 				(img as sharp.Sharp)
-					.toFormat("jpeg", { quality: 80 } as sharp.JpegOptions)
+					.toFormat("jpeg", { quality: 85 } as sharp.JpegOptions)
 					.toBuffer()
 					.then((buffer) => imgTransaction.run({ $id: sceneId, $data: buffer }))
 			)
-	)
+
+	if (useLimit) {
+		return slimit(anon)
+	}
+	return anon()
 }
 
 export async function genScanDB(first: boolean) {
