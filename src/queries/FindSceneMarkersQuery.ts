@@ -21,6 +21,7 @@ query FindSceneMarkers($filter: FindFilterType, $scene_marker_filter: SceneMarke
 	id
 	title
 	seconds
+	end_seconds
 	stream
 	preview
 	screenshot

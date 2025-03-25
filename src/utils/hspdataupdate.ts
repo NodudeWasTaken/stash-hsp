@@ -341,7 +341,8 @@ export const hspDataUpdate = async (
 							mutation: SCENE_MARKER_CREATE_MUTATION,
 							variables: {
 								scene_id: sceneId,
-								seconds: Math.round(marker.start / 1000),
+								seconds: Math.round((marker.start ?? 0) / 1000),
+								end_seconds: Math.round((marker.end ?? 0) / 1000),
 								primary_tag_id: tag.id,
 							} as SCENE_MARKER_CREATE_VARS,
 						})
@@ -468,7 +469,9 @@ export function fillTags(
 				start: mark.seconds * 1000,
 				track: trackNumber,
 			}
-			if (nextMarker) {
+			if (mark.end_seconds) {
+				marker.end = mark.end_seconds * 1000
+			} else if (nextMarker) {
 				marker.end = nextMarker.seconds * 1000
 			}
 			processed.tags.push(marker)

@@ -106,13 +106,20 @@ function CriterionFixer(obj: any): SceneFilterType {
 				depth: obj[key].value.depth,
 				excludes: [],
 			}
-			if (obj[key].items != null) {
-				for (let entry of obj[key].items) {
+
+			// Bugfix
+			var loc = obj[key]
+			if (loc.value) {
+				loc = loc.value
+			}
+
+			if (loc.items != null) {
+				for (let entry of loc.items) {
 					lst[key].value.push(entry.id)
 				}
 			}
-			if (obj[key].excludes != null) {
-				for (let entry of obj[key].excludes) {
+			if (loc.excludes != null) {
+				for (let entry of loc.excludes) {
 					lst[key].excludes.push(entry.id)
 				}
 			}
@@ -140,6 +147,8 @@ function CriterionFixer(obj: any): SceneFilterType {
 			SCENEMARKERFILTER_TYPE.includes(key)*/
 		) {
 			lst[key] = CriterionFixer(obj[key])
+		} else {
+			console.error("Unknown tag found: " + key)
 		}
 	}
 
