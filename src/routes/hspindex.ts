@@ -4,6 +4,7 @@ import {
 	DEBUG_MODE,
 	VAR_GET_FILTERS,
 	VAR_GET_RECOMMENDED,
+	VAR_GROUPS,
 	VAR_UICFG,
 } from "../core/vars"
 import {
@@ -13,6 +14,8 @@ import {
 	SceneFilterType,
 	SortDirectionEnum,
 } from "../gql/graphql"
+import { FIND_GROUPS_VARS } from "../queries/FindGroupsQuery"
+import { FIND_GROUPS_SLIM_QUERY } from "../queries/FindGroupsSlimQuery"
 import {
 	FIND_SAVED_FILTERS_QUERY,
 	FIND_SAVED_FILTERS_VARS,
@@ -28,6 +31,7 @@ import {
 import { CriterionFixer } from "../utils/criterion_fix"
 import { generateRecommendedFilter } from "../utils/find_fav"
 import { checkForErrors, getBaseURL } from "../utils/utilities"
+import { groupPath } from "./hspgroup"
 import { videoPath } from "./hspscene"
 
 const hspIndexHandler = async (req: Request, res: Response) => {
@@ -98,6 +102,28 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 			} catch (error) {
 				console.error("Couldn't find recommended", error)
 			}
+		}
+
+		if (VAR_GROUPS) {
+			const entry: HeresphereIndexEntry = {
+				name: `Groups`,
+				list: [],
+			}
+
+			client
+				.query<Query>({
+					query: FIND_GROUPS_SLIM_QUERY,
+					variables: {
+						filter: { per_page: -1 } as FindFilterType,
+					} as FIND_GROUPS_VARS,
+				})
+				.then((groups) => {
+					groups.data.findGroups.groups.forEach((group) => {
+						entry.list.push(`${baseurl}${groupPath}/${group.id}`)
+					})
+				})
+
+			library.library.push(entry)
 		}
 
 		{

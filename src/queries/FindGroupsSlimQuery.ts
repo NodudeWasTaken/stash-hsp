@@ -5,13 +5,13 @@ query FindGroups($filter: FindFilterType, $group_filter: GroupFilterType) {
 	findGroups(filter: $filter, group_filter: $group_filter) {
 	  count
 	  groups {
-		...GroupData
+		...SlimGroupData
 		__typename
 	  }
 	  __typename
 	}
   }
   
-  fragment GroupData on Group {
+  fragment SlimGroupData on Group {
 	id
   }`

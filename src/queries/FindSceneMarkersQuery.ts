@@ -16,28 +16,4 @@ query FindSceneMarkers($filter: FindFilterType, $scene_marker_filter: SceneMarke
 	  __typename
 	}
   }
-  
-  fragment SceneMarkerData on SceneMarker {
-	id
-	title
-	seconds
-	end_seconds
-	stream
-	preview
-	screenshot
-	scene {
-	  id
-	  __typename
-	}
-	primary_tag {
-	  id
-	  name
-	  __typename
-	}
-	tags {
-	  id
-	  name
-	  __typename
-	}
-	__typename
-  }`
+`

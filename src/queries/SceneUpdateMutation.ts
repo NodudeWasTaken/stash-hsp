@@ -116,30 +116,6 @@ mutation SceneUpdate($input: SceneUpdateInput!) {
 	__typename
   }
   
-  fragment SceneMarkerData on SceneMarker {
-	id
-	title
-	seconds
-	stream
-	preview
-	screenshot
-	scene {
-	  id
-	  __typename
-	}
-	primary_tag {
-	  id
-	  name
-	  __typename
-	}
-	tags {
-	  id
-	  name
-	  __typename
-	}
-	__typename
-  }
-  
   fragment SlimGalleryData on Gallery {
 	id
 	title
@@ -232,59 +208,6 @@ mutation SceneUpdate($input: SceneUpdateInput!) {
 	fingerprints {
 	  type
 	  value
-	  __typename
-	}
-	__typename
-  }
-  
-  fragment SlimStudioData on Studio {
-	id
-	name
-	image_path
-	stash_ids {
-	  endpoint
-	  stash_id
-	  __typename
-	}
-	parent_studio {
-	  id
-	  __typename
-	}
-	details
-	rating100
-	aliases
-	tags {
-	  id
-	  name
-	  __typename
-	}
-	__typename
-  }
-  
-  fragment GroupData on Group {
-	id
-	name
-	aliases
-	duration
-	date
-	rating100
-	director
-	studio {
-	  ...SlimStudioData
-	  __typename
-	}
-	tags {
-	  ...SlimTagData
-	  __typename
-	}
-	synopsis
-	urls
-	front_image_path
-	back_image_path
-	scene_count
-	scenes {
-	  id
-	  title
 	  __typename
 	}
 	__typename

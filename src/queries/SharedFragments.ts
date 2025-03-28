@@ -12,6 +12,26 @@ export const SHARED_FRAGMENTS = gql`
 	__typename
   }
 
+  fragment VideoFileData on VideoFile {
+	id
+	path
+	size
+	mod_time
+	duration
+	video_codec
+	audio_codec
+	width
+	height
+	frame_rate
+	bit_rate
+	fingerprints {
+	  type
+	  value
+	  __typename
+	}
+	__typename
+  }
+
   fragment SlimSceneData on Scene {
     id
     title
@@ -151,6 +171,96 @@ export const SHARED_FRAGMENTS = gql`
 	death_date
 	hair_color
 	weight
+	__typename
+  }
+  
+  fragment SlimStudioData on Studio {
+	id
+	name
+	image_path
+	stash_ids {
+	  endpoint
+	  stash_id
+	  __typename
+	}
+	parent_studio {
+	  id
+	  __typename
+	}
+	details
+	rating100
+	aliases
+	tags {
+	  id
+	  name
+	  __typename
+	}
+	__typename
+  }
+  
+  fragment GroupData on Group {
+	id
+	name
+	aliases
+	duration
+	date
+	rating100
+	director
+	studio {
+	  ...SlimStudioData
+	  __typename
+	}
+	tags {
+	  ...SlimTagData
+	  __typename
+	}
+	synopsis
+	urls
+	front_image_path
+	back_image_path
+	scene_count
+	scenes {
+	  id
+	  title
+	  interactive
+	  paths {
+		funscript
+		__typename
+	  }
+      files {
+        ...VideoFileData
+        __typename
+      }
+	  groups {
+		scene_index
+		__typename
+	  }
+	  __typename
+	}
+	__typename
+  }
+  
+  fragment SceneMarkerData on SceneMarker {
+	id
+	title
+	seconds
+	stream
+	preview
+	screenshot
+	scene {
+	  id
+	  __typename
+	}
+	primary_tag {
+	  id
+	  name
+	  __typename
+	}
+	tags {
+	  id
+	  name
+	  __typename
+	}
 	__typename
   }
 `

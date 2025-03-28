@@ -41,6 +41,9 @@ export const VAR_MULTITRACK_MARKERS: boolean =
 export const VAR_GET_FILTERS: boolean =
 	process.env["ENABLE_FILTERS"] === "true" ||
 	process.env["ENABLE_FILTERS"] === "1"
+export const VAR_GROUPS: boolean =
+	process.env["ENABLE_GROUPS"] === "true" ||
+	process.env["ENABLE_GROUPS"] === "1"
 
 // System vars
 export var VAR_UICFG: ConfigResult

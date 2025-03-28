@@ -11,6 +11,7 @@ import { debugRoutes } from "./routes/debug"
 import { hspAuthRoutes } from "./routes/hspauth"
 import { hspEventRoutes } from "./routes/hspevent"
 import { hspFileRoutes } from "./routes/hspfile"
+import { hspGroupRoutes } from "./routes/hspgroup"
 import { hspIndexRoutes } from "./routes/hspindex"
 import { hspScanRoutes } from "./routes/hspscan"
 import { hspSceneRoutes } from "./routes/hspscene"
@@ -43,6 +44,7 @@ hspIndexRoutes(app)
 hspEventRoutes(app)
 hspFileRoutes(app)
 hspAuthRoutes(app)
+hspGroupRoutes(app)
 
 // TODO: Frontend UI???
 

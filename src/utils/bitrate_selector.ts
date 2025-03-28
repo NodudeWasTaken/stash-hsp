@@ -32,7 +32,7 @@ function predictBitrate(
 ): number {
 	// If 60FPS then we require 50% more bitrate
 	if (frame_rate >= 50) {
-		bitrate *= 0.5
+		bitrate *= 1.5
 	}
 
 	const quality = a1 * resolution + a2 * bitrate + intercept
