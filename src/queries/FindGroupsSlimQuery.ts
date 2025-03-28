@@ -14,4 +14,5 @@ query FindGroups($filter: FindFilterType, $group_filter: GroupFilterType) {
   
   fragment SlimGroupData on Group {
 	id
+	scene_count
   }`

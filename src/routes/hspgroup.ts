@@ -4,6 +4,8 @@ import { STASH_URL } from "../core/vars"
 import { Query, Scene } from "../gql/graphql"
 import { FIND_GROUP_QUERY, FIND_GROUP_VARS } from "../queries/FindGroupQuery"
 import {
+	HeresphereProjectionPerspective,
+	HeresphereStereoMono,
 	HeresphereVideoEntry,
 	HeresphereVideoScript,
 } from "../structs/heresphere_structs"
@@ -247,12 +249,12 @@ const groupFetchHandler = async (req: Request, res: Response) => {
 			access: 0,
 			title: rdata.name,
 			description: "",
-			duration: data.data.findGroup?.duration!,
+			duration: data.data.findGroup?.duration! * 1000,
 			thumbnailImage: rdata.front_image_path!,
 			favorites: 0,
 			isFavorite: false,
-			projection: "equirectangular",
-			stereo: "mono",
+			projection: HeresphereProjectionPerspective,
+			stereo: HeresphereStereoMono,
 			isEyeSwapped: false,
 			lens: "Linear",
 			cameraIPD: 0,

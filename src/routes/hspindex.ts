@@ -118,9 +118,11 @@ const hspIndexHandler = async (req: Request, res: Response) => {
 					} as FIND_GROUPS_VARS,
 				})
 				.then((groups) => {
-					groups.data.findGroups.groups.forEach((group) => {
-						entry.list.push(`${baseurl}${groupPath}/${group.id}`)
-					})
+					groups.data.findGroups.groups
+						.filter((g) => g.scene_count > 0)
+						.forEach((group) => {
+							entry.list.push(`${baseurl}${groupPath}/${group.id}`)
+						})
 				})
 
 			library.library.push(entry)
